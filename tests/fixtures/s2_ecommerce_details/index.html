@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Commerce Product Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ecommerce-theme">
+  <div id="root" class="product-page">
+    <nav class="top-nav">
+      <button class="icon-button" aria-label="Back">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <span class="nav-title">Product Details</span>
+      <button class="icon-button" aria-label="Wishlist">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+        </svg>
+      </button>
+    </nav>
+
+    <main class="product-content">
+      <div class="gallery-carousel">
+        <div class="carousel-image-container">
+          <div class="mock-product-image">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="1.5">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <circle cx="8" cy="10" r="2" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
+          </div>
+          <span class="badge badge-sale">-25% OFF</span>
+        </div>
+        <div class="carousel-indicators">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+
+      <section class="details-section">
+        <div class="rating-row">
+          <div class="stars">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+          </div>
+          <span class="rating-text">4.8 (142 reviews)</span>
+        </div>
+
+        <h1 class="product-name">Minimalist Nordic Desk Lamp</h1>
+
+        <div class="price-row">
+          <span class="current-price">$89.00</span>
+          <span class="original-price">$119.00</span>
+          <span class="badge badge-stock">In Stock</span>
+        </div>
+
+        <p class="product-description">
+          Engineered from aviation-grade anodized aluminum with warm-white dimmable LED array. Features capacitive touch sensor with continuous brightness stepping.
+        </p>
+
+        <div class="color-selection">
+          <label class="section-label">Finish</label>
+          <div class="color-options">
+            <button class="color-chip active" style="background-color: #1F2937" aria-label="Matte Black"></button>
+            <button class="color-chip" style="background-color: #E5E7EB" aria-label="Anodized Silver"></button>
+            <button class="color-chip" style="background-color: #D97706" aria-label="Warm Brass"></button>
+          </div>
+        </div>
+
+        <div class="quantity-row">
+          <label class="section-label">Quantity</label>
+          <div class="quantity-stepper">
+            <button class="stepper-btn minus" aria-label="Decrease quantity">-</button>
+            <span class="stepper-value" id="qtyVal">1</span>
+            <button class="stepper-btn plus" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bottom-action-bar">
+      <div class="total-summary">
+        <span class="total-label">Total Price</span>
+        <span class="total-amount">$89.00</span>
+      </div>
+      <button class="btn btn-cart ripple" id="addToCartBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+        </svg>
+        <span>Add to Cart</span>
+      </button>
+    </footer>
+  </div>
+</body>
+</html>

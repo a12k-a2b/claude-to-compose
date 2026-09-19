@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "metadata": {
+    "title": "Nexus Analytics Dashboard",
+    "sourceUrl": "file://tests/fixtures/s1_saas_dashboard/index.html",
+    "extractedAt": "2026-09-18T17:00:00.000Z",
+    "version": "1.0.0"
+  },
+  "viewports": {
+    "mobile": {
+      "width": 412,
+      "height": 915,
+      "scale": 3.0,
+      "screenshotPath": "screenshots/reference_mobile.png"
+    },
+    "desktop": {
+      "width": 1440,
+      "height": 900,
+      "scale": 2.0,
+      "screenshotPath": "screenshots/reference_desktop.png"
+    }
+  },
+  "theme": {
+    "colors": {
+      "primary": "#4F46E5",
+      "primaryHover": "#4338CA",
+      "onPrimary": "#FFFFFF",
+      "background": "#F9FAFB",
+      "surface": "#FFFFFF",
+      "onSurface": "#111827",
+      "textSecondary": "#6B7280",
+      "border": "#E5E7EB",
+      "success": "#10B981",
+      "error": "#EF4444"
+    },
+    "typography": {
+      "fontFamily": "Roboto, sans-serif",
+      "titleLarge": {
+        "fontSize": 24,
+        "fontWeight": 700,
+        "lineHeight": 32,
+        "letterSpacing": 0.0
+      },
+      "bodyMedium": {
+        "fontSize": 14,
+        "fontWeight": 400,
+        "lineHeight": 20,
+        "letterSpacing": 0.25
+      },
+      "labelMedium": {
+        "fontSize": 13,
+        "fontWeight": 600,
+        "lineHeight": 16,
+        "letterSpacing": 0.1
+      }
+    },
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32
+    },
+    "radii": {
+      "sm": 6,
+      "md": 10,
+      "lg": 16
+    },
+    "elevations": {
+      "flat": 0,
+      "card": 2,
+      "modal": 8
+    }
+  },
+  "hierarchy": {
+    "id": "root-node-0",
+    "type": "CONTAINER",
+    "name": "DashboardScreen",
+    "layout": {
+      "display": "flex",
+      "flexDirection": "column",
+      "width": 412,
+      "height": 915,
+      "padding": { "top": 24, "right": 24, "bottom": 24, "left": 24 },
+      "gap": 32
+    },
+    "style": {
+      "backgroundColor": "#F9FAFB",
+      "borderRadius": 0
+    },
+    "children": [
+      {
+        "id": "header-node-1",
+        "type": "HEADER",
+        "name": "DashboardHeader",
+        "layout": {
+          "display": "flex",
+          "flexDirection": "row",
+          "justifyContent": "space-between",
+          "alignItems": "center",
+          "width": 364,
+          "height": 56
+        },
+        "style": {
+          "backgroundColor": "transparent"
+        },
+        "children": [
+          {
+            "id": "title-node-2",
+            "type": "TEXT",
+            "name": "HeaderTitle",
+            "text": "Nexus Analytics",
+            "typography": {
+              "fontSize": 24,
+              "fontWeight": 700,
+              "color": "#111827"
+            }
+          },
+          {
+            "id": "export-btn-node-3",
+            "type": "BUTTON",
+            "name": "ExportButton",
+            "text": "Export Report",
+            "layout": {
+              "width": 140,
+              "height": 48
+            },
+            "style": {
+              "backgroundColor": "#4F46E5",
+              "borderRadius": 10
+            },
+            "typography": {
+              "fontSize": 14,
+              "fontWeight": 600,
+              "color": "#FFFFFF"
+            },
+            "interaction": {
+              "clickable": true,
+              "ripple": true,
+              "actionName": "onExportClicked"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "vectors": [
+    {
+      "id": "icon-brand-logo",
+      "name": "BrandLogo",
+      "width": 28,
+      "height": 28,
+      "viewBox": "0 0 24 24",
+      "paths": [
+        {
+          "d": "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",
+          "fill": "none",
+          "stroke": "#4F46E5",
+          "strokeWidth": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura Banking Wallet</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="banking-theme">
+  <div id="root" class="wallet-container">
+    <header class="wallet-header">
+      <div class="user-profile">
+        <div class="avatar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <div class="user-greeting">
+          <span class="greeting-subtitle">Welcome back,</span>
+          <span class="user-name">Alexander Wright</span>
+        </div>
+      </div>
+      <button class="icon-btn" aria-label="Notifications">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 01-3.46 0" />
+        </svg>
+      </button>
+    </header>
+
+    <main class="wallet-main">
+      <section class="card-balance-banner">
+        <div class="balance-meta">
+          <span class="balance-label">Total Liquid Balance</span>
+          <button class="toggle-visibility-btn" id="toggleBalanceBtn" aria-label="Toggle Balance Visibility">
+            <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <div class="balance-amount" id="balanceAmount">$48,290.45</div>
+        <div class="card-chip-row">
+          <span class="account-num">•••• 8912</span>
+          <div class="card-type-icon">
+            <svg width="32" height="20" viewBox="0 0 32 20" fill="none">
+              <rect width="32" height="20" rx="3" fill="#3B82F6"/>
+              <circle cx="12" cy="10" r="6" fill="#EF4444" fill-opacity="0.8"/>
+              <circle cx="20" cy="10" r="6" fill="#F59E0B" fill-opacity="0.8"/>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="quick-actions">
+        <button class="action-item" id="sendBtn">
+          <div class="action-icon bg-indigo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </div>
+          <span class="action-label">Transfer</span>
+        </button>
+
+        <button class="action-item" id="payBtn">
+          <div class="action-icon bg-emerald">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+          </div>
+          <span class="action-label">Pay Bill</span>
+        </button>
+
+        <button class="action-item" id="investBtn">
+          <div class="action-icon bg-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </svg>
+          </div>
+          <span class="action-label">Invest</span>
+        </button>
+
+        <button class="action-item" id="moreBtn">
+          <div class="action-icon bg-slate">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="19" cy="12" r="1" />
+              <circle cx="5" cy="12" r="1" />
+            </svg>
+          </div>
+          <span class="action-label">More</span>
+        </button>
+      </section>
+
+      <section class="transactions-section">
+        <div class="section-header">
+          <h2 class="section-title">Recent Activity</h2>
+          <button class="text-link">See All</button>
+        </div>
+
+        <div class="transaction-list">
+          <div class="transaction-item">
+            <div class="tx-icon apple-bg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z" />
+              </svg>
+            </div>
+            <div class="tx-details">
+              <span class="tx-title">Apple Store Fifth Ave</span>
+              <span class="tx-date">Today, 2:45 PM</span>
+            </div>
+            <span class="tx-amount negative">-$1,299.00</span>
+          </div>
+
+          <div class="transaction-item">
+            <div class="tx-icon payroll-bg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+              </svg>
+            </div>
+            <div class="tx-details">
+              <span class="tx-title">Acme Corp Payroll</span>
+              <span class="tx-date">Yesterday, 9:00 AM</span>
+            </div>
+            <span class="tx-amount positive">+$4,850.00</span>
+          </div>
+
+          <div class="transaction-item">
+            <div class="tx-icon cafe-bg">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3" />
+              </svg>
+            </div>
+            <div class="tx-details">
+              <span class="tx-title">Blue Bottle Coffee</span>
+              <span class="tx-date">Sep 16, 8:15 AM</span>
+            </div>
+            <span class="tx-amount negative">-$6.75</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,424 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.dev/schemas/design_spec.json",
+  "title": "ClaudeDesignSpecification",
+  "description": "Normalized intermediate representation extracted from Claude Design artifacts for Jetpack Compose synthesis.",
+  "type": "object",
+  "required": ["version", "metadata", "theme", "viewports", "hierarchy"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "enum": ["1.0.0"]
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "source": { "type": "string" },
+        "sourceUrl": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "extractedAt": { "type": "string" },
+        "generator": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "viewports": {
+      "type": "object",
+      "required": ["mobile", "desktop"],
+      "properties": {
+        "mobile": { "$ref": "#/$defs/ViewportConfig" },
+        "desktop": { "$ref": "#/$defs/ViewportConfig" }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "required": ["colors", "typography", "spacing", "radii", "elevations"],
+      "properties": {
+        "colors": {
+          "type": "object",
+          "properties": {
+            "light": { "$ref": "#/$defs/ColorSchemeTokens" },
+            "dark": { "$ref": "#/$defs/ColorSchemeTokens" },
+            "primary": { "type": "string" },
+            "primaryHover": { "type": "string" },
+            "onPrimary": { "type": "string" },
+            "background": { "type": "string" },
+            "surface": { "type": "string" },
+            "onSurface": { "type": "string" },
+            "textSecondary": { "type": "string" },
+            "border": { "type": "string" },
+            "success": { "type": "string" },
+            "error": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "typography": {
+          "type": "object",
+          "properties": {
+            "fontFamilies": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "fontFamily": { "type": "string" },
+            "styles": {
+              "type": "object",
+              "additionalProperties": { "$ref": "#/$defs/TextStyleToken" }
+            }
+          },
+          "additionalProperties": true
+        },
+        "spacing": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "number" },
+              "description": "Extracted unique spacing scale values in dp (e.g. 4, 8, 12, 16, 24, 32)."
+            },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            }
+          ]
+        },
+        "radii": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "elevations": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "$ref": "#/$defs/ElevationToken" }
+            },
+            {
+              "type": "object",
+              "additionalProperties": { "type": "number" }
+            }
+          ]
+        }
+      }
+    },
+    "hierarchy": {
+      "$ref": "#/$defs/DesignNode"
+    },
+    "vectors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "fileName": { "type": "string" },
+          "assetPath": { "type": "string" },
+          "width": { "type": "number" },
+          "height": { "type": "number" },
+          "viewBox": { "type": "string" },
+          "rawSvg": { "type": "string" },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["d"],
+              "properties": {
+                "d": { "type": "string" },
+                "fill": { "type": "string" },
+                "stroke": { "type": "string" },
+                "strokeWidth": { "type": "number" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ViewportConfig": {
+      "type": "object",
+      "required": ["width", "height", "screenshotPath"],
+      "properties": {
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "deviceScaleFactor": { "type": "number" },
+        "scale": { "type": "number" },
+        "screenshotPath": { "type": "string" }
+      }
+    },
+    "ColorSchemeTokens": {
+      "type": "object",
+      "required": ["primary", "onPrimary", "background", "onBackground", "surface", "onSurface"],
+      "properties": {
+        "primary": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "onPrimary": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "primaryContainer": { "type": "string" },
+        "onPrimaryContainer": { "type": "string" },
+        "secondary": { "type": "string" },
+        "onSecondary": { "type": "string" },
+        "secondaryContainer": { "type": "string" },
+        "onSecondaryContainer": { "type": "string" },
+        "tertiary": { "type": "string" },
+        "onTertiary": { "type": "string" },
+        "background": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "onBackground": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "surface": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "onSurface": { "type": "string", "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$" },
+        "surfaceVariant": { "type": "string" },
+        "onSurfaceVariant": { "type": "string" },
+        "outline": { "type": "string" },
+        "outlineVariant": { "type": "string" },
+        "error": { "type": "string" },
+        "onError": { "type": "string" }
+      }
+    },
+    "TextStyleToken": {
+      "type": "object",
+      "required": ["fontFamily", "fontSize", "fontWeight"],
+      "properties": {
+        "fontFamily": { "type": "string" },
+        "fontSize": { "type": "number", "description": "Size in sp/pt" },
+        "fontWeight": { "type": "integer", "enum": [100, 200, 300, 400, 500, 600, 700, 800, 900] },
+        "fontStyle": { "type": "string", "enum": ["normal", "italic"] },
+        "lineHeight": { "type": "number", "description": "Line height in sp" },
+        "letterSpacing": { "type": "number", "description": "Letter spacing in sp" },
+        "textAlign": { "type": "string", "enum": ["left", "right", "center", "justify", "start", "end"] }
+      }
+    },
+    "ElevationToken": {
+      "type": "object",
+      "required": ["level", "elevationDp", "shadows"],
+      "properties": {
+        "level": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "elevationDp": { "type": "number" },
+        "shadows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "offsetX": { "type": "number" },
+              "offsetY": { "type": "number" },
+              "blurRadius": { "type": "number" },
+              "spreadRadius": { "type": "number" },
+              "color": { "type": "string" },
+              "inset": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "DesignNode": {
+      "type": "object",
+      "required": ["id", "layout"],
+      "properties": {
+        "id": { "type": "string" },
+        "tag": { "type": "string" },
+        "type": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "componentType": {
+          "type": "string",
+          "enum": [
+            "Screen", "Container", "Row", "Column", "Box", "Grid",
+            "Button", "IconButton", "Card", "TextField", "Text",
+            "Icon", "Image", "Badge", "Chip", "Divider", "Spacer",
+            "TopAppBar", "NavigationBar", "NavigationItem", "Switch", "Checkbox",
+            "RadioButton"
+          ]
+        },
+        "bounds": {
+          "type": "object",
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          }
+        },
+        "rect": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" }
+          }
+        },
+        "layout": {
+          "type": "object",
+          "properties": {
+            "display": { "type": "string" },
+            "flexDirection": { "type": "string" },
+            "justifyContent": { "type": "string" },
+            "alignItems": { "type": "string" },
+            "flexWrap": { "type": "string" },
+            "gap": { "type": "number" },
+            "rowGap": { "type": "number" },
+            "columnGap": { "type": "number" },
+            "flexGrow": { "type": "number" },
+            "flexShrink": { "type": "number" },
+            "width": { "type": "number" },
+            "height": { "type": "number" },
+            "padding": {
+              "type": "object",
+              "properties": {
+                "top": { "type": "number" },
+                "right": { "type": "number" },
+                "bottom": { "type": "number" },
+                "left": { "type": "number" }
+              }
+            },
+            "margin": {
+              "type": "object",
+              "properties": {
+                "top": { "type": "number" },
+                "right": { "type": "number" },
+                "bottom": { "type": "number" },
+                "left": { "type": "number" }
+              }
+            },
+            "position": { "type": "string" },
+            "zIndex": { "type": "integer" }
+          }
+        },
+        "style": {
+          "type": "object",
+          "properties": {
+            "backgroundColor": { "type": "string" },
+            "color": { "type": "string" },
+            "opacity": { "type": "number" },
+            "borderRadius": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "topLeft": { "type": "number" },
+                    "topRight": { "type": "number" },
+                    "bottomRight": { "type": "number" },
+                    "bottomLeft": { "type": "number" },
+                    "isUniform": { "type": "boolean" },
+                    "isPill": { "type": "boolean" },
+                    "isCircle": { "type": "boolean" }
+                  }
+                },
+                { "type": "number" }
+              ]
+            },
+            "border": {
+              "type": "object",
+              "properties": {
+                "width": { "type": "number" },
+                "style": { "type": "string" },
+                "color": { "type": "string" }
+              }
+            },
+            "boxShadows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "offsetX": { "type": "number" },
+                  "offsetY": { "type": "number" },
+                  "blurRadius": { "type": "number" },
+                  "spreadRadius": { "type": "number" },
+                  "color": { "type": "string" },
+                  "inset": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "text": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "content": { "type": "string" },
+                "typographyStyle": { "type": "string" },
+                "fontSize": { "type": "number" },
+                "fontWeight": { "type": "integer" },
+                "lineHeight": { "type": "number" },
+                "letterSpacing": { "type": "number" },
+                "color": { "type": "string" },
+                "fontFamily": { "type": "string" },
+                "textAlign": { "type": "string" }
+              }
+            },
+            { "type": "string" }
+          ]
+        },
+        "typography": {
+          "type": "object",
+          "properties": {
+            "fontSize": { "type": "number" },
+            "fontWeight": { "type": "integer" },
+            "lineHeight": { "type": "number" },
+            "letterSpacing": { "type": "number" },
+            "color": { "type": "string" },
+            "fontFamily": { "type": "string" }
+          }
+        },
+        "vectorData": {
+          "type": "object",
+          "properties": {
+            "rawSvg": { "type": "string" },
+            "viewBox": { "type": "string" },
+            "width": { "type": "number" },
+            "height": { "type": "number" },
+            "assetPath": { "type": "string" },
+            "paths": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["d"],
+                "properties": {
+                  "d": { "type": "string" },
+                  "fill": { "type": "string" },
+                  "stroke": { "type": "string" },
+                  "strokeWidth": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "interactions": {
+          "type": "object",
+          "properties": {
+            "isClickable": { "type": "boolean" },
+            "hasRipple": { "type": "boolean" },
+            "hoverStyle": { "type": "object" },
+            "activeStyle": { "type": "object" },
+            "focusStyle": { "type": "object" },
+            "disabled": { "type": "boolean" },
+            "transitions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "property": { "type": "string" },
+                  "durationMs": { "type": "number" },
+                  "easing": { "type": "string" },
+                  "delayMs": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "interaction": {
+          "type": "object",
+          "properties": {
+            "clickable": { "type": "boolean" },
+            "ripple": { "type": "boolean" },
+            "actionName": { "type": "string" }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/DesignNode" }
+        }
+      }
+    }
+  }
+}

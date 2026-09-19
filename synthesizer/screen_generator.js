@@ -1,0 +1,518 @@
+/**
+ * synthesizer/screen_generator.js
+ * Generates ClaudeDesignScreen.kt and ClaudeDesignPreview.kt
+ */
+
+const fs = require('node:fs');
+const path = require('node:path');
+const { sanitizeIdentifier } = require('./component_generator');
+
+/**
+ * Collects interactive states required by elements in the hierarchy.
+ * @param {Object} rootNode 
+ * @returns {Array<Object>} list of state definitions
+ */
+function extractInteractiveStates(rootNode) {
+  const states = [];
+  let inputIndex = 0;
+  let checkIndex = 0;
+  let tabIndex = 0;
+  let switchIndex = 0;
+
+  function traverse(node) {
+    if (!node) return;
+    const type = (node.componentType || '').toLowerCase();
+    const tag = (node.tag || '').toLowerCase();
+
+    if (type === 'textfield' || tag === 'input' && node.layout?.type !== 'checkbox' || tag === 'textarea') {
+      inputIndex++;
+      const name = sanitizeIdentifier(node.name || `field_${inputIndex}`);
+      states.push({
+        varName: `${name}Text`,
+        type: 'String',
+        defaultVal: '""',
+        kind: 'text',
+        nodeId: node.id
+      });
+    } else if (type === 'checkbox' || (tag === 'input' && node.layout?.type === 'checkbox')) {
+      checkIndex++;
+      const name = sanitizeIdentifier(node.name || `consent_${checkIndex}`);
+      states.push({
+        varName: `is${capitalize(name)}Checked`,
+        type: 'Boolean',
+        defaultVal: 'false',
+        kind: 'checkbox',
+        nodeId: node.id
+      });
+    } else if (type === 'navigationbar' || tag === 'nav') {
+      tabIndex++;
+      states.push({
+        varName: `selectedTab_${tabIndex}`,
+        type: 'Int',
+        defaultVal: '0',
+        kind: 'tab',
+        nodeId: node.id
+      });
+    } else if (tag === 'label' || (node.interactions && node.interactions.isClickable && (node.style?.isPill || type === 'box'))) {
+      if (node.children?.some(c => c.style?.isPill || c.style?.borderRadius?.isPill)) {
+        switchIndex++;
+        const name = sanitizeIdentifier(node.name || `switch_${switchIndex}`);
+        states.push({
+          varName: `is${capitalize(name)}Enabled`,
+          type: 'Boolean',
+          defaultVal: 'true',
+          kind: 'switch',
+          nodeId: node.id
+        });
+      }
+    }
+
+    if (Array.isArray(node.children)) {
+      for (const child of node.children) {
+        traverse(child);
+      }
+    }
+  }
+
+  traverse(rootNode);
+  return states;
+}
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+/**
+ * Translates CSS layout properties to Compose Arrangement and Alignment
+ */
+function translateLayout(layout = {}) {
+  const isRow = layout.flexDirection === 'row' || layout.display === 'inline-flex';
+  const gap = layout.gap || layout.rowGap || layout.columnGap || 0;
+
+  // Row Arrangement (Horizontal)
+  let rowArrangement = 'Arrangement.Start';
+  if (layout.justifyContent === 'center') rowArrangement = 'Arrangement.Center';
+  else if (layout.justifyContent === 'space-between') rowArrangement = 'Arrangement.SpaceBetween';
+  else if (layout.justifyContent === 'space-around') rowArrangement = 'Arrangement.SpaceAround';
+  else if (layout.justifyContent === 'space-evenly') rowArrangement = 'Arrangement.SpaceEvenly';
+  else if (layout.justifyContent === 'flex-end' || layout.justifyContent === 'end') rowArrangement = 'Arrangement.End';
+  else if (gap > 0) rowArrangement = `Arrangement.spacedBy(${gap}.dp)`;
+
+  // Row Alignment (Vertical)
+  let rowAlignment = 'Alignment.CenterVertically';
+  if (layout.alignItems === 'flex-start' || layout.alignItems === 'start') rowAlignment = 'Alignment.Top';
+  else if (layout.alignItems === 'flex-end' || layout.alignItems === 'end') rowAlignment = 'Alignment.Bottom';
+  else if (layout.alignItems === 'center') rowAlignment = 'Alignment.CenterVertically';
+
+  // Column Arrangement (Vertical)
+  let colArrangement = 'Arrangement.Top';
+  if (layout.justifyContent === 'center') colArrangement = 'Arrangement.Center';
+  else if (layout.justifyContent === 'space-between') colArrangement = 'Arrangement.SpaceBetween';
+  else if (gap > 0) colArrangement = `Arrangement.spacedBy(${gap}.dp)`;
+
+  // Column Alignment (Horizontal)
+  let colAlignment = 'Alignment.Start';
+  if (layout.alignItems === 'center') colAlignment = 'Alignment.CenterHorizontally';
+  else if (layout.alignItems === 'flex-end' || layout.alignItems === 'end') colAlignment = 'Alignment.End';
+  else if (layout.alignItems === 'flex-start' || layout.alignItems === 'start') colAlignment = 'Alignment.Start';
+
+  return {
+    isRow,
+    gap,
+    rowArrangement,
+    rowAlignment,
+    colArrangement,
+    colAlignment
+  };
+}
+
+/**
+ * Recursively translates a DesignNode into Compose Kotlin code.
+ */
+function translateNode(node, indent = '        ', stateMap = {}) {
+  if (!node) return `${indent}Box {}\n`;
+
+  const type = node.componentType || 'Container';
+  const textContent = node.text?.content || (typeof node.text === 'string' ? node.text : '');
+  const children = Array.isArray(node.children) ? node.children : [];
+
+  // 1. Text Component
+  if (type === 'Text') {
+    const safeText = JSON.stringify(textContent || '');
+    let textStyle = 'MaterialTheme.typography.bodyMedium';
+    if (node.text?.fontWeight >= 700 || node.tag === 'h1' || node.tag === 'h2') {
+      textStyle = 'MaterialTheme.typography.titleLarge';
+    } else if (node.text?.fontSize <= 12) {
+      textStyle = 'MaterialTheme.typography.bodySmall';
+    }
+    return `${indent}Text(\n${indent}    text = ${safeText},\n${indent}    style = ${textStyle}\n${indent})\n`;
+  }
+
+  // 2. Button Component
+  if (type === 'Button') {
+    const label = JSON.stringify(textContent || 'Action');
+    return `${indent}PrimaryActionButton(\n${indent}    text = ${label},\n${indent}    onClick = { /* Action */ },\n${indent}    modifier = Modifier.padding(vertical = 4.dp)\n${indent})\n`;
+  }
+
+  // 3. IconButton Component
+  if (type === 'IconButton') {
+    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ClaudeIcons.Icon1Icon, contentDescription = null)\n${indent}}\n`;
+  }
+
+  // 4. Card Component
+  if (type === 'Card') {
+    let inner = '';
+    if (children.length > 0) {
+      inner = children.map(c => translateNode(c, indent + '        ', stateMap)).join('');
+    } else {
+      inner = `${indent}        Text(text = ${JSON.stringify(textContent || 'Card Content')})\n`;
+    }
+    return `${indent}AppCard(\n${indent}    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)\n${indent}) {\n${indent}    Column(modifier = Modifier.padding(16.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
+  }
+
+  // 5. TextField Component
+  if (type === 'TextField') {
+    const state = stateMap[node.id];
+    const valVar = state ? state.varName : 'textState';
+    const label = JSON.stringify(node.name || 'Input');
+    return `${indent}AppInputField(\n${indent}    value = ${valVar},\n${indent}    onValueChange = { ${valVar} = it },\n${indent}    label = ${label},\n${indent}    modifier = Modifier.padding(vertical = 4.dp)\n${indent})\n`;
+  }
+
+  // 6. Badge Component
+  if (type === 'Badge') {
+    const label = JSON.stringify(textContent || 'Status');
+    return `${indent}StatusBadge(\n${indent}    text = ${label},\n${indent}    modifier = Modifier.padding(2.dp)\n${indent})\n`;
+  }
+
+  // 7. Checkbox Component
+  if (type === 'Checkbox') {
+    const state = stateMap[node.id];
+    const checkVar = state ? state.varName : 'isChecked';
+    const label = JSON.stringify(textContent || 'I agree to the terms');
+    return `${indent}AppCheckbox(\n${indent}    checked = ${checkVar},\n${indent}    onCheckedChange = { ${checkVar} = it },\n${indent}    label = ${label}\n${indent})\n`;
+  }
+
+  // 8. RadioButton Component
+  if (type === 'RadioButton') {
+    const label = JSON.stringify(textContent || 'Option');
+    return `${indent}AppRadioButton(\n${indent}    selected = true,\n${indent}    onClick = { /* Select */ },\n${indent}    label = ${label}\n${indent})\n`;
+  }
+
+  // 9. Icon / SVG Component
+  if (type === 'Icon' || node.tag === 'svg') {
+    return `${indent}Icon(\n${indent}    imageVector = ClaudeIcons.Icon1Icon,\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp)\n${indent})\n`;
+  }
+
+  // 10. Switch (label toggle container)
+  if (node.tag === 'label' && stateMap[node.id]) {
+    const s = stateMap[node.id];
+    return `${indent}Switch(\n${indent}    checked = ${s.varName},\n${indent}    onCheckedChange = { ${s.varName} = it }\n${indent})\n`;
+  }
+
+  // 11. Divider Component
+  if (type === 'Divider') {
+    return `${indent}HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))\n`;
+  }
+
+  // 12. Spacer Component
+  if (type === 'Spacer') {
+    const h = node.bounds?.height || 16;
+    return `${indent}Spacer(modifier = Modifier.height(${h}.dp))\n`;
+  }
+
+  // 13. TopAppBar Component
+  if (type === 'TopAppBar' || node.tag === 'header') {
+    const inner = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
+    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
+  }
+
+  // 14. NavigationBar Component
+  if (type === 'NavigationBar' || node.tag === 'nav') {
+    const tabState = stateMap[node.id] || { varName: 'selectedTabIndex' };
+    const tabTitles = children.map(c => c.text?.content || 'Tab').filter(Boolean);
+    const titlesArray = tabTitles.length > 0 ? tabTitles : ['Overview', 'Analytics', 'Infrastructure'];
+    const titlesLiteral = titlesArray.map(t => JSON.stringify(t)).join(', ');
+
+    return `${indent}TabRow(\n${indent}    selectedTabIndex = ${tabState.varName},\n${indent}    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)\n${indent}) {\n${indent}    val tabs = listOf(${titlesLiteral})\n${indent}    tabs.forEachIndexed { index, title ->\n${indent}        Tab(\n${indent}            selected = ${tabState.varName} == index,\n${indent}            onClick = { ${tabState.varName} = index },\n${indent}            text = { Text(title) }\n${indent}        )\n${indent}    }\n${indent}}\n`;
+  }
+
+  // 15. Layout Containers (Row, Column, Grid, Box, Container)
+  if (children.length === 0) {
+    if (textContent) {
+      return `${indent}Text(text = ${JSON.stringify(textContent)})\n`;
+    }
+    return '';
+  }
+
+  const { isRow, rowArrangement, rowAlignment, colArrangement, colAlignment } = translateLayout(node.layout);
+
+  if (type === 'Row' || (type === 'Container' && isRow)) {
+    const childCode = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
+    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth(),\n${indent}    horizontalArrangement = ${rowArrangement},\n${indent}    verticalAlignment = ${rowAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
+  }
+
+  // High child count check (> 30 items switches to LazyColumn)
+  if (children.length > 30) {
+    const childCode = children.map(c => `${indent}    item {\n${translateNode(c, indent + '        ', stateMap)}${indent}    }\n`).join('');
+    return `${indent}LazyColumn(\n${indent}    modifier = Modifier.fillMaxSize()\n${indent}) {\n${childCode}${indent}}\n`;
+  }
+
+  // Default Column
+  const childCode = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
+  return `${indent}Column(\n${indent}    modifier = Modifier.fillMaxWidth(),\n${indent}    verticalArrangement = ${colArrangement},\n${indent}    horizontalAlignment = ${colAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
+}
+
+/**
+ * Generates ClaudeDesignScreen.kt
+ */
+function generateScreenFile(spec, packageName) {
+  const root = spec ? spec.hierarchy : null;
+  if (!root || !root.children || root.children.length === 0) {
+    // Empty hierarchy boundary handling (T2_B11_01)
+    return `package ${packageName}.screen
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+
+@Composable
+fun ClaudeDesignScreen(
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier.fillMaxSize())
+}
+`;
+  }
+
+  const interactiveStates = extractInteractiveStates(root);
+  const stateMap = {};
+  for (const s of interactiveStates) {
+    if (s.nodeId) stateMap[s.nodeId] = s;
+  }
+
+  // If no tab state extracted, provide default tab state for navigation
+  if (!interactiveStates.some(s => s.kind === 'tab')) {
+    interactiveStates.push({
+      varName: 'selectedTabIndex',
+      type: 'Int',
+      defaultVal: '0',
+      kind: 'tab'
+    });
+  }
+
+  let stateDecls = '';
+  for (const s of interactiveStates) {
+    if (s.type === 'Int') {
+      stateDecls += `    var ${s.varName} by rememberSaveable { mutableIntStateOf(${s.defaultVal}) }\n`;
+    } else {
+      stateDecls += `    var ${s.varName} by rememberSaveable { mutableStateOf(${s.defaultVal}) }\n`;
+    }
+  }
+
+  // Form validation line if multiple inputs exist
+  let validationLine = '';
+  const textStates = interactiveStates.filter(s => s.kind === 'text');
+  const checkStates = interactiveStates.filter(s => s.kind === 'checkbox');
+  if (textStates.length > 0) {
+    const conditions = [];
+    for (const ts of textStates) conditions.push(`${ts.varName}.isNotBlank()`);
+    for (const cs of checkStates) conditions.push(`${cs.varName}`);
+    validationLine = `    val isFormValid = ${conditions.join(' && ')}\n`;
+  }
+
+  const contentCode = translateNode(root, '            ', stateMap);
+
+  return `package ${packageName}.screen
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import ${packageName}.components.*
+import ${packageName}.icons.*
+import ${packageName}.motion.*
+import ${packageName}.theme.*
+
+@Composable
+fun ClaudeDesignScreen(
+    modifier: Modifier = Modifier
+) {
+${stateDecls}${validationLine}
+    Scaffold(modifier = modifier) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+${contentCode}
+        }
+    }
+}
+`;
+}
+
+/**
+ * Generates ClaudeDesignPreview.kt with multi-theme and multi-device previews.
+ */
+function generatePreviewFile(packageName) {
+  return `package ${packageName}.screen
+
+import android.content.res.Configuration
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import ${packageName}.theme.AppTheme
+import ${packageName}.theme.ClaudeDesignTheme
+
+@Preview(
+    name = "Light Theme",
+    showBackground = true,
+    widthDp = 390,
+    heightDp = 844,
+    uiMode = Configuration.UI_MODE_NIGHT_NO
+)
+@Composable
+fun ClaudeDesignScreenLightPreview() {
+    ClaudeDesignTheme(darkTheme = false) {
+        ClaudeDesignScreen()
+    }
+}
+
+@Preview(
+    name = "Dark Theme",
+    showBackground = true,
+    widthDp = 390,
+    heightDp = 844,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun ClaudeDesignScreenDarkPreview() {
+    ClaudeDesignTheme(darkTheme = true) {
+        ClaudeDesignScreen()
+    }
+}
+
+@Preview(
+    name = "Mobile Pixel 7",
+    device = Devices.PIXEL_7,
+    showSystemUi = true
+)
+@Composable
+fun ClaudeDesignScreenPixel7Preview() {
+    ClaudeDesignTheme {
+        ClaudeDesignScreen()
+    }
+}
+
+@Preview(
+    name = "Tablet Landscape",
+    widthDp = 1280,
+    heightDp = 800,
+    showBackground = true
+)
+@Composable
+fun ClaudeDesignScreenTabletPreview() {
+    AppTheme {
+        ClaudeDesignScreen()
+    }
+}
+
+@Preview(
+    name = "Claude Design Screen Preview",
+    showBackground = true
+)
+@Composable
+fun ClaudeDesignScreenPreview() {
+    ClaudeDesignTheme {
+        ClaudeDesignScreen()
+    }
+}
+`;
+}
+
+class ScreenGenerator {
+  /**
+   * Main screen synthesis driver.
+   * @param {Object} spec design_spec.json
+   * @param {string|Object} optionsOrOutputDir Root directory or options object { outputDir, packageName }
+   * @param {string} [packageName='com.claude.compose'] e.g. "com.claude.compose"
+   * @returns {Array<string>} list of generated file paths
+   */
+  static generateScreen(spec, optionsOrOutputDir, packageName = 'com.claude.compose') {
+    let targetBaseDir;
+    let pkg = packageName;
+
+    if (typeof optionsOrOutputDir === 'object' && optionsOrOutputDir !== null) {
+      targetBaseDir = optionsOrOutputDir.outputDir;
+      if (optionsOrOutputDir.packageName) {
+        pkg = optionsOrOutputDir.packageName;
+      }
+    } else {
+      targetBaseDir = optionsOrOutputDir;
+    }
+
+    const targetDir = targetBaseDir.endsWith('screen')
+      ? path.resolve(targetBaseDir)
+      : path.resolve(targetBaseDir, 'screen');
+
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    const basePkg = pkg.endsWith('.screen') ? pkg.slice(0, -7) : pkg;
+
+    const files = [
+      { name: 'ClaudeDesignScreen.kt', content: generateScreenFile(spec, basePkg) },
+      { name: 'ClaudeDesignPreview.kt', content: generatePreviewFile(basePkg) }
+    ];
+
+    const written = [];
+    for (const f of files) {
+      const fullPath = path.join(targetDir, f.name);
+      fs.writeFileSync(fullPath, f.content, 'utf8');
+      written.push(fullPath);
+    }
+    return written;
+  }
+}
+
+function generateScreen(spec, optionsOrOutputDir, packageName = 'com.claude.compose') {
+  return ScreenGenerator.generateScreen(spec, optionsOrOutputDir, packageName);
+}
+
+module.exports = {
+  ScreenGenerator,
+  generateScreen,
+  generateScreenFile,
+  generatePreviewFile,
+  translateLayout,
+  translateNode,
+  extractInteractiveStates
+};

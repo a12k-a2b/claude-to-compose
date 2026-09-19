@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Malformed & Edge-Case SVGs</title>
+</head>
+<body id="root" style="padding: 20px;">
+  <h2>SVG Robustness Test Suite</h2>
+
+  <!-- 1. SVG missing viewBox, width, height -->
+  <svg id="svg_no_viewbox">
+    <path d="M 0 0 L 24 24 Z" fill="#ff0000" />
+  </svg>
+
+  <!-- 2. SVG with unclosed / truncated path string -->
+  <svg id="svg_unclosed_path" width="32" height="32" viewBox="0 0 32 32">
+    <path d="M 5 5 L 25 5 L 25 25" stroke="#0000ff" stroke-width="2" />
+  </svg>
+
+  <!-- 3. SVG with empty path string -->
+  <svg id="svg_empty_path" width="24" height="24" viewBox="0 0 24 24">
+    <path d="" fill="none" />
+  </svg>
+
+  <!-- 4. SVG with odd number of polygon coordinates -->
+  <svg id="svg_odd_polygon" width="50" height="50" viewBox="0 0 50 50">
+    <polygon points="10,10 40,10 25" fill="#00ff00" />
+  </svg>
+
+  <!-- 5. SVG with extreme coordinates and negative viewBox -->
+  <svg id="svg_extreme_coords" width="100" height="100" viewBox="-1000 -1000 2000 2000">
+    <circle cx="-500" cy="-500" r="250" fill="#f59e0b" />
+    <rect x="100000" y="100000" width="50000" height="50000" fill="#3b82f6" />
+  </svg>
+
+  <!-- 6. SVG with currentColor and nested groups -->
+  <div style="color: #8b5cf6;">
+    <svg id="svg_currentcolor" width="24" height="24" viewBox="0 0 24 24">
+      <g id="group1">
+        <g id="group2">
+          <circle cx="12" cy="12" r="8" fill="currentColor" stroke="currentColor" stroke-width="1.5" />
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 7. SVG zero width/height -->
+  <svg id="svg_zero_size" width="0" height="0">
+    <line x1="0" y1="0" x2="10" y2="10" stroke="#000" />
+  </svg>
+</body>
+</html>

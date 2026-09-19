@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="bad-width" height="NaN">
+  <path d="M 0 0 L 100 invalid-syntax Z" fill="not-a-color"
+  <!-- Missing closing tags -->

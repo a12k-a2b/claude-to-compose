@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Step Verification Form</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="form-theme">
+  <div id="root" class="form-wrapper">
+    <header class="form-header">
+      <div class="step-indicator">
+        <div class="step-item completed">
+          <div class="step-circle">✓</div>
+          <span class="step-title">Account</span>
+        </div>
+        <div class="step-line active"></div>
+        <div class="step-item current">
+          <div class="step-circle">2</div>
+          <span class="step-title">Identity</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item pending">
+          <div class="step-circle">3</div>
+          <span class="step-title">Confirm</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="form-body">
+      <div class="title-group">
+        <h1 class="page-title">Identity Verification</h1>
+        <p class="page-subtitle">Please provide your government identification details to complete workspace onboarding.</p>
+      </div>
+
+      <form id="verifyForm" class="inputs-container" novalidate>
+        <div class="input-field-group">
+          <label for="legalName" class="field-label">Legal Full Name</label>
+          <input type="text" id="legalName" class="text-input" placeholder="e.g. Jane Marie Doe" value="Jane Doe" required />
+          <span class="helper-text">Matches your official government ID</span>
+        </div>
+
+        <div class="input-field-group error">
+          <label for="taxId" class="field-label">National Tax ID / SSN</label>
+          <input type="text" id="taxId" class="text-input input-error" placeholder="XXX-XX-XXXX" value="1234" />
+          <span class="error-message">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            Tax ID must be 9 digits in format XXX-XX-XXXX
+          </span>
+        </div>
+
+        <div class="input-field-group">
+          <label for="countrySelect" class="field-label">Issuing Country</label>
+          <select id="countrySelect" class="select-input">
+            <option value="US" selected>United States</option>
+            <option value="CA">Canada</option>
+            <option value="GB">United Kingdom</option>
+            <option value="DE">Germany</option>
+          </select>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="termsConsent" class="form-checkbox" />
+          <label for="termsConsent" class="checkbox-label">
+            I certify that the information provided is accurate and consent to identity verification checks.
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="backBtn">Previous</button>
+          <button type="submit" class="btn btn-primary ripple" id="continueBtn" disabled>Continue</button>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

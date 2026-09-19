@@ -1,0 +1,46 @@
+{
+  "name": "claude-to-compose",
+  "version": "1.0.0",
+  "description": "Hybrid developer tool, verification suite, and multi-agent workflow translating Claude Design artifacts to Jetpack Compose",
+  "main": "extractor/engine.js",
+  "bin": {
+    "claude-extract": "bin/claude-extract.js"
+  },
+  "scripts": {
+    "extract": "node bin/claude-extract.js",
+    "test": "node tests/e2e_runner.js",
+    "test:tier1": "node tests/e2e_runner.js --tier 1",
+    "test:tier2": "node tests/e2e_runner.js --tier 2",
+    "test:tier3": "node tests/e2e_runner.js --tier 3",
+    "test:tier4": "node tests/e2e_runner.js --tier 4",
+    "test:unit": "node --test tests/unit/**/*.test.js",
+    "diff": "node verification/run_diff.js",
+    "audit": "node verification/audit_rubric.js"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "claude",
+    "jetpack-compose",
+    "android",
+    "design-tokens",
+    "playwright",
+    "code-generation"
+  ],
+  "author": "a12k",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "commander": "^13.1.0",
+    "playwright": "^1.50.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
+    "ssim.js": "^3.5.0"
+  }
+}

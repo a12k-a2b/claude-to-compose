@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>&lt;script&gt;alert('XSS Title')&lt;/script&gt;</title>
+</head>
+<body id="app" class="p-6 bg-slate-50">
+  <div class="xss-container">
+    <h1 class="text-2xl font-bold">XSS Attack Resilience Test</h1>
+    <!-- Classic script injection -->
+    <script>
+      try {
+        window.__xss_flag = "executed";
+        // Attempt to check if node globals are leaked into browser
+        if (typeof process !== 'undefined' || typeof require !== 'undefined') {
+          window.__node_leak = true;
+        }
+      } catch(e) {}
+    </script>
+
+    <!-- Image onerror execution -->
+    <img src="invalid-image-source.png" onerror="window.__img_err = true;" alt="<script>alert('img-alt-xss')</script>" />
+
+    <!-- Anchor javascript uri -->
+    <a href="javascript:void(document.body.innerHTML='Hacked')" class="text-blue-500 underline">Evil Link</a>
+
+    <!-- SVG script attack -->
+    <svg width="100" height="100" viewBox="0 0 100 100">
+      <script>
+        window.__svg_script = true;
+      </script>
+      <circle cx="50" cy="50" r="40" fill="red" onclick="alert('svg-xss')" />
+    </svg>
+
+    <!-- Dangerous attributes -->
+    <div data-xss="&quot;><script>alert('attr')</script>" class="p-4 bg-white rounded border">
+      Safe content inside container
+    </div>
+  </div>
+</body>
+</html>

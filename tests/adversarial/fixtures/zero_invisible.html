@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Zero Dimensions & Invisible Elements Test</title>
+  <style>
+    .hidden-display { display: none; }
+    .hidden-vis { visibility: hidden; }
+    .hidden-opacity { opacity: 0; }
+    .zero-box { width: 0px; height: 0px; padding: 0; margin: 0; overflow: hidden; }
+    .zero-box-with-text { width: 0px; height: 0px; overflow: visible; }
+    .offscreen { position: absolute; left: -9999px; top: -9999px; width: 100px; height: 100px; }
+  </style>
+</head>
+<body id="root" style="background: #ffffff; padding: 16px;">
+  <!-- Visible container -->
+  <div class="card" style="width: 300px; height: 200px; background: #f0f4f8; padding: 16px;">
+    <h2>Main Card Visible</h2>
+
+    <!-- display: none element -->
+    <div class="hidden-display">
+      <p>I should not be extracted (display:none)</p>
+      <span>Nested hidden</span>
+    </div>
+
+    <!-- visibility: hidden element -->
+    <div class="hidden-vis">
+      <p>I should not be extracted (visibility:hidden)</p>
+    </div>
+
+    <!-- opacity: 0 element without transition -->
+    <div class="hidden-opacity">
+      <p>I should not be extracted (opacity:0 without transition)</p>
+    </div>
+
+    <!-- opacity: 0 with transition: opacity (should be preserved for animations!) -->
+    <div style="opacity: 0; transition: opacity 0.3s ease;">
+      <p>I should be extracted (animatable opacity)</p>
+    </div>
+
+    <!-- 0x0 leaf without text -->
+    <div class="zero-box"></div>
+
+    <!-- 0x0 with text -->
+    <div class="zero-box-with-text">
+      Overflowing zero size text
+    </div>
+
+    <!-- Offscreen element -->
+    <div class="offscreen">
+      Offscreen element content
+    </div>
+  </div>
+</body>
+</html>

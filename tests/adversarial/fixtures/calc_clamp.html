@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSS Calc & Clamp Stress Test</title>
+  <style>
+    :root {
+      --base-spacing: 8px;
+      --scale-factor: 1.5;
+      --dynamic-padding: calc(var(--base-spacing) * var(--scale-factor));
+      --main-color: rgb(30, 64, 175);
+    }
+    .calc-container {
+      width: calc(100% - 32px);
+      max-width: calc(1200px / 2);
+      min-width: min(300px, 90vw);
+      height: calc(100vh - 200px);
+      margin: calc(16px + 4px) auto calc(32px - 8px) auto;
+      padding: clamp(12px, 3vw + 4px, 32px);
+      gap: calc(4px * 2);
+      background-color: var(--main-color);
+      border-radius: clamp(4px, 1vw, 16px);
+      border: calc(2px * 1) solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 calc(2px * 2) calc(4px * 3) rgba(0, 0, 0, 0.15);
+    }
+    .responsive-text {
+      font-size: clamp(1rem, 2.5vw, 2rem);
+      line-height: calc(1.2em + 4px);
+      letter-spacing: calc(0.5px * 2);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body id="root" style="margin: 0; padding: 0; background: #f8fafc;">
+  <div class="calc-container">
+    <h1 class="responsive-text">Fluid Dynamic Typography & Dimensions</h1>
+    <p style="font-size: min(18px, 4vw); margin-top: calc(8px * 2); color: #e2e8f0;">
+      Testing computed resolution of calc, clamp, min, and max expressions.
+    </p>
+  </div>
+</body>
+</html>
