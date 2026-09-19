@@ -103,9 +103,10 @@ function generateReportMarkdown(data = {}) {
   const auditPassed = audit.passed !== undefined ? audit.passed : auditScore >= 90 && !hasVeto;
 
   const diffSimilarity = diff.pixelSimilarityPercentage;
+  const diffInkIou = diff.inkIou;
   const diffPassed =
     typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)
-      ? diffSimilarity >= 90.0
+      ? diffSimilarity >= 90.0 && (diffInkIou === undefined || diffInkIou > 0.0)
       : true;
 
   const overallPassed = buildPassed && auditPassed && diffPassed;

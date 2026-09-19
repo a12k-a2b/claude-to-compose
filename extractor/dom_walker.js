@@ -225,6 +225,9 @@ async function walkDOM(frame, options = {}) {
         return 'TextField';
       }
 
+      if (role === 'toolbar' || /\b(toolbar)\b/.test(cls)) return 'Toolbar';
+      if (role === 'dialog' || /\b(modal|overlay|dialog|backdrop)\b/.test(cls)) return 'Overlay';
+
       if (/\b(badge|chip|tag|pill)\b/.test(cls)) return 'Badge';
       if (tag === 'nav' || role === 'navigation') return 'NavigationBar';
       if (tag === 'header' || role === 'banner' || /\b(navbar|appbar|topbar)\b/.test(cls)) return 'TopAppBar';

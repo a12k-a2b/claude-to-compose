@@ -203,4 +203,31 @@ describe('Subsystem 4: Localized Multi-Zone Perceptual Diffing & Auto-Tuner', ()
     assert.equal(metricsZonal.inkIou, 50.0);
     assert.equal(metricsZonal.inkDice, 66.67);
   });
+
+  it('guarantees blank white screens score 0.00% Ink IoU and heavily penalize feature pruning', () => {
+    const blankPngA = { width: 10, height: 10, data: Buffer.alloc(10 * 10 * 4, 255) };
+    const blankPngB = { width: 10, height: 10, data: Buffer.alloc(10 * 10 * 4, 255) };
+    const inkPng = { width: 10, height: 10, data: Buffer.alloc(10 * 10 * 4, 255) };
+    // Put ink in inkPng
+    inkPng.data[0] = 0; inkPng.data[1] = 0; inkPng.data[2] = 0; inkPng.data[3] = 255;
+
+    // 1. Both blank white screens
+    const bothBlank = computeInkMetrics(blankPngA, blankPngB, 10, 10);
+    assert.equal(bothBlank.inkIou, 0.0);
+    assert.equal(bothBlank.inkDice, 0.0);
+
+    // 2. Rendered screen is blank white (feature pruning)
+    const prunedRendered = computeInkMetrics(inkPng, blankPngB, 10, 10);
+    assert.equal(prunedRendered.inkIou, 0.0);
+    assert.equal(prunedRendered.inkDice, 0.0);
+
+    // 3. Zonal metrics on blank screens
+    const zonalBlank = computeZonalInkMetrics(blankPngA, blankPngB, 10, 10);
+    assert.equal(zonalBlank.inkIou, 0.0);
+    assert.equal(zonalBlank.inkDice, 0.0);
+
+    const zonalPruned = computeZonalInkMetrics(inkPng, blankPngB, 10, 10);
+    assert.equal(zonalPruned.inkIou, 0.0);
+    assert.equal(zonalPruned.inkDice, 0.0);
+  });
 });

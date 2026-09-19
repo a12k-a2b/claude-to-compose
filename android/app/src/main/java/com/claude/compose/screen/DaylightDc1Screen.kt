@@ -57,6 +57,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.claude.compose.R
+import com.claude.compose.theme.AbcArizonaFlare
 
 // Daylight DC1 SolOS Neutral Grayscale Tokens
 private val Os0 = Color(0xFFFFFFFF)     // Base paper ground (#FFFFFF)
@@ -64,7 +65,7 @@ private val Os50 = Color(0xFFF7F7F7)    // Surface cards
 private val Os100 = Color(0xFFE2E0D8)   // Hairline grid & borders (#DCD5C9 / #E2E0D8)
 private val Os150 = Color(0xFFF5F5F5)   // Recessed canvas
 private val Os200 = Color(0xFFCECECE)   // Subtle lot outline
-private val Os300 = Color(0xFF9E9E96)   // Monospace labels
+private val Os300 = Color(0xFF858585)   // Low emphasis / grid / tertiary ink (#858585)
 private val Os400 = Color(0xFF535353)   // Secondary text & unselected chip text
 private val Os800 = Color(0xFF343434)   // Description text
 private val Os900 = Color(0xFF1A1A1A)   // Primary ink
@@ -99,13 +100,13 @@ fun DaylightDc1Screen(
             val outerColor = Color(0xFFA8A8A0)
             val innerColor = Os100.copy(alpha = 0.6f)
 
-            val outerLeft = 27.5.dp.toPx()
-            val outerRight = size.width - 27.5.dp.toPx()
+            val outerLeft = 27.25.dp.toPx()
+            val outerRight = size.width - 26.5.dp.toPx()
             val outerTop = 26.5.dp.toPx()
             val outerBottom = 680.dp.toPx()
 
             val innerLeft = 34.dp.toPx()
-            val innerRight = size.width - 34.dp.toPx()
+            val innerRight = size.width - 33.5.dp.toPx()
             val innerTop = 34.dp.toPx()
             val innerBottom = 650.dp.toPx()
 
@@ -118,7 +119,7 @@ fun DaylightDc1Screen(
                 quadraticTo(outerRight, outerTop, outerRight, outerTop + 4.dp.toPx())
                 lineTo(outerRight, outerBottom)
             }
-            drawPath(outerPath, color = outerColor, style = Stroke(width = 1.dp.toPx()))
+            drawPath(outerPath, color = outerColor, style = Stroke(width = 1.4.dp.toPx()))
 
             // Inner Frame (top + sides with rounded top corners)
             val innerPath = Path().apply {
@@ -155,7 +156,7 @@ fun DaylightDc1Screen(
         CompassRoseGraphic(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 102.dp, end = 53.dp)
+                .padding(top = 101.dp, end = 58.dp)
                 .size(68.dp)
         )
 
@@ -206,14 +207,14 @@ fun DaylightDc1Screen(
             // Description Body Text
             Text(
                 text = "A reflective paper screen that moves like ink — 60 to\n120 frames a second, and not a drop of blue light.\nLet's make it yours.",
-                fontSize = 14.5.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Os800,
                 textAlign = TextAlign.Center,
                 lineHeight = 20.sp
             )
 
-            Spacer(modifier = Modifier.height(23.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // "Get started" Solid Black Pill CTA
             val interactionSource = remember { MutableInteractionSource() }
@@ -228,12 +229,12 @@ fun DaylightDc1Screen(
                     focusedElevation = 0.dp,
                     hoveredElevation = 0.dp
                 ),
-                shape = RoundedCornerShape(22.dp),
+                shape = RoundedCornerShape(21.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
                     .minimumInteractiveComponentSize()
-                    .height(44.dp)
-                    .width(126.dp)
+                    .height(42.dp)
+                    .width(125.dp)
             ) {
                 Text(
                     text = "Get started",
@@ -243,20 +244,21 @@ fun DaylightDc1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(21.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // "PAPER MOTION" Row 1 Chips
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
                     text = "PAPER MOTION",
-                    fontSize = 9.5.sp,
+                    fontSize = 8.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Monospace,
-                    letterSpacing = 1.6.sp,
-                    color = Os400
+                    letterSpacing = 0.5.sp,
+                    color = Os400,
+                    modifier = Modifier.padding(end = 4.dp)
                 )
                 row1Chips.forEachIndexed { index, name ->
                     PaperMotionChip(
@@ -272,7 +274,7 @@ fun DaylightDc1Screen(
             // Row 2 Chips
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 row2Chips.forEachIndexed { index, name ->
                     val chipIndex = row1Chips.size + index
@@ -309,7 +311,7 @@ private fun PaperMotionChip(
             .clip(RoundedCornerShape(13.dp))
             .background(bg)
             .clickable(onClick = onClick)
-            .padding(horizontal = 4.5.dp, vertical = 5.dp)
+            .padding(horizontal = 6.dp, vertical = 5.dp)
     ) {
         Text(
             text = text,
@@ -368,7 +370,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         )
         for ((xDp, startYDp, endYDp) in vertGridSegments) {
             drawLine(
-                color = Os100,
+                color = Os300,
                 start = Offset(xDp.toPx(), startYDp.toPx()),
                 end = Offset(xDp.toPx(), endYDp.toPx()),
                 strokeWidth = 1f
@@ -390,13 +392,108 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         )
         for ((yDp, startXDp, endXDp) in horizGridSegments) {
             drawLine(
-                color = Os100,
+                color = Os300,
                 start = Offset(startXDp.toPx(), yDp.toPx()),
                 end = Offset(endXDp.toPx(), yDp.toPx()),
                 strokeWidth = 1f
             )
         }
 
+        // 2. Rectangular Building / Lot Outlines
+        val lotOutlines = listOf(
+            Offset(76.dp.toPx(), 177.dp.toPx()) to Size(44.dp.toPx(), 32.dp.toPx()),
+            Offset(210.5.dp.toPx(), 156.5.dp.toPx()) to Size(29.5.dp.toPx(), 30.dp.toPx()),
+            Offset(269.dp.toPx(), 176.dp.toPx()) to Size(33.dp.toPx(), 22.dp.toPx()),
+            Offset(317.dp.toPx(), 140.dp.toPx()) to Size(18.5.dp.toPx(), 18.5.dp.toPx()),
+            Offset(380.dp.toPx(), 220.dp.toPx()) to Size(27.dp.toPx(), 29.dp.toPx()),
+            Offset(503.5.dp.toPx(), 173.dp.toPx()) to Size(41.5.dp.toPx(), 28.5.dp.toPx()),
+            Offset(341.5.dp.toPx(), 168.dp.toPx()) to Size(41.dp.toPx(), 25.dp.toPx()),
+            Offset(418.5.dp.toPx(), 310.dp.toPx()) to Size(34.dp.toPx(), 20.dp.toPx()),
+            Offset(186.dp.toPx(), 339.dp.toPx()) to Size(37.dp.toPx(), 17.dp.toPx()),
+            Offset(388.dp.toPx(), 328.dp.toPx()) to Size(40.5.dp.toPx(), 12.5.dp.toPx()),
+            Offset(345.dp.toPx(), 385.5.dp.toPx()) to Size(37.dp.toPx(), 25.dp.toPx()),
+            Offset(300.dp.toPx(), 375.dp.toPx()) to Size(40.dp.toPx(), 22.dp.toPx()),
+            Offset(255.dp.toPx(), 424.dp.toPx()) to Size(34.dp.toPx(), 25.dp.toPx()),
+            Offset(270.dp.toPx(), 458.dp.toPx()) to Size(32.dp.toPx(), 18.dp.toPx()),
+            Offset(410.dp.toPx(), 470.dp.toPx()) to Size(42.dp.toPx(), 25.dp.toPx()),
+            Offset(486.dp.toPx(), 411.dp.toPx()) to Size(25.dp.toPx(), 20.dp.toPx()),
+            Offset(108.dp.toPx(), 540.dp.toPx()) to Size(30.dp.toPx(), 28.dp.toPx()),
+            Offset(440.dp.toPx(), 590.dp.toPx()) to Size(40.dp.toPx(), 22.dp.toPx())
+        )
+
+        lotOutlines.forEach { (pos, size) ->
+            drawRoundRect(
+                color = Os800,
+                topLeft = pos,
+                size = size,
+                cornerRadius = CornerRadius(2f, 2f),
+                style = Stroke(width = 1.2f)
+            )
+        }
+
+        // 3. Lane 1: Diagonal curve with double rails, closed cap, and alternating footprints
+        val lane1 = Path().apply {
+            moveTo(283.dp.toPx(), 70.dp.toPx())
+            cubicTo(
+                350.dp.toPx(), 155.dp.toPx(),
+                440.dp.toPx(), 255.dp.toPx(),
+                462.dp.toPx(), 370.dp.toPx()
+            )
+            cubicTo(
+                465.dp.toPx(), 430.dp.toPx(),
+                440.dp.toPx(), 500.dp.toPx(),
+                385.dp.toPx(), 560.dp.toPx()
+            )
+            cubicTo(
+                350.dp.toPx(), 610.dp.toPx(),
+                330.dp.toPx(), 655.dp.toPx(),
+                325.dp.toPx(), 700.dp.toPx()
+            )
+        }
+        drawLaneWithFootprints(lane1, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
+
+        // 4. Lane 2: Horizontal curve across middle
+        val lane2 = Path().apply {
+            moveTo(18.dp.toPx(), 223.dp.toPx())
+            cubicTo(
+                120.dp.toPx(), 260.dp.toPx(),
+                240.dp.toPx(), 270.dp.toPx(),
+                360.dp.toPx(), 281.dp.toPx()
+            )
+            cubicTo(
+                430.dp.toPx(), 286.dp.toPx(),
+                510.dp.toPx(), 265.dp.toPx(),
+                560.dp.toPx(), 226.dp.toPx()
+            )
+        }
+        drawLaneWithFootprints(lane2, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
+
+        // 5. Lane 3: Left vertical/diagonal curve with rounded dome top cap
+        val lane3 = Path().apply {
+            moveTo(208.dp.toPx(), 92.dp.toPx())
+            cubicTo(
+                205.dp.toPx(), 180.dp.toPx(),
+                175.dp.toPx(), 260.dp.toPx(),
+                116.dp.toPx(), 360.dp.toPx()
+            )
+            cubicTo(
+                65.dp.toPx(), 460.dp.toPx(),
+                40.dp.toPx(), 560.dp.toPx(),
+                30.dp.toPx(), 670.dp.toPx()
+            )
+        }
+        drawTwoRailLane(lane3, railSpacing = 3.5.dp.toPx(), roundedStartCap = true)
+
+        // 6. Lane 4: Lower subtle curve passing behind text
+        val lane4 = Path().apply {
+            moveTo(45.dp.toPx(), 540.dp.toPx())
+            cubicTo(
+                225.dp.toPx(), 580.dp.toPx(),
+                375.dp.toPx(), 575.dp.toPx(),
+                532.dp.toPx(), 505.dp.toPx()
+            )
+        }
+        drawPath(lane4, color = Os400, style = Stroke(width = 1.5.dp.toPx()))
     }
 }
 
@@ -437,8 +534,8 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float, roundedSta
         }
         curD += 4f
     }
-    drawPath(leftRail, color = Os800, style = Stroke(width = 1.2f))
-    drawPath(rightRail, color = Os800, style = Stroke(width = 1.2f))
+    drawPath(leftRail, color = Os400, style = Stroke(width = 1.2f))
+    drawPath(rightRail, color = Os400, style = Stroke(width = 1.2f))
 
     // Closed top cap
     val nx = -startT.y * halfSpace
@@ -450,11 +547,11 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float, roundedSta
             val topDome = Offset(startP.x - startT.x * halfSpace, startP.y - startT.y * halfSpace)
             quadraticTo(topDome.x, topDome.y, startP.x - nx, startP.y - ny)
         }
-        drawPath(dome, color = Os800, style = Stroke(width = 1.2f))
+        drawPath(dome, color = Os400, style = Stroke(width = 1.2f))
     } else {
         // Flat cap connecting left and right rail
         drawLine(
-            color = Os800,
+            color = Os400,
             start = Offset(startP.x + nx, startP.y + ny),
             end = Offset(startP.x - nx, startP.y - ny),
             strokeWidth = 1.2f
@@ -530,7 +627,7 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             color = Os1000,
             radius = r * 0.96f,
             center = c,
-            style = Stroke(width = 2.dp.toPx())
+            style = Stroke(width = 1.2.dp.toPx())
         )
 
         // Inner Concentric Ring
@@ -538,7 +635,7 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             color = Os300,
             radius = r * 0.70f,
             center = c,
-            style = Stroke(width = 1.2.dp.toPx())
+            style = Stroke(width = 1.dp.toPx())
         )
 
         // 4 Diagonal Ticks
@@ -553,7 +650,7 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
                 color = Os400,
                 start = Offset(c.x + cos * tickR1, c.y + sin * tickR1),
                 end = Offset(c.x + cos * tickR2, c.y + sin * tickR2),
-                strokeWidth = 1.2.dp.toPx()
+                strokeWidth = 1.dp.toPx()
             )
         }
 
@@ -574,8 +671,8 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             lineTo(c.x, c.y - spikeLen)
             close()
         }
-        drawPath(northLeft, color = Os800)
-        drawPath(northRight, color = Os1000)
+        drawPath(northLeft, color = Os400)
+        drawPath(northRight, color = Os800)
 
         // South Point
         val southLeft = Path().apply {
@@ -590,8 +687,8 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             lineTo(c.x, c.y + spikeLen)
             close()
         }
-        drawPath(southLeft, color = Os1000)
-        drawPath(southRight, color = Os800)
+        drawPath(southLeft, color = Os800)
+        drawPath(southRight, color = Os400)
 
         // East Point
         val eastTop = Path().apply {
@@ -606,8 +703,8 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             lineTo(c.x + spikeLen, c.y)
             close()
         }
-        drawPath(eastTop, color = Os800)
-        drawPath(eastBottom, color = Os1000)
+        drawPath(eastTop, color = Os400)
+        drawPath(eastBottom, color = Os800)
 
         // West Point
         val westTop = Path().apply {
@@ -622,8 +719,8 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
             lineTo(c.x - spikeLen, c.y)
             close()
         }
-        drawPath(westTop, color = Os1000)
-        drawPath(westBottom, color = Os800)
+        drawPath(westTop, color = Os800)
+        drawPath(westBottom, color = Os400)
     }
 }
 

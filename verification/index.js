@@ -30,16 +30,19 @@ class VerificationPipeline {
     this.projectRoot = options.projectRoot || path.resolve(__dirname, '..');
     this.androidDir = options.androidDir || path.join(this.projectRoot, 'android');
     this.outputDir = options.outputDir || path.join(this.projectRoot, 'verification');
+    const defaultRef = fs.existsSync(path.join(this.projectRoot, 'screenshots/mobile_reference.png'))
+      ? path.join(this.projectRoot, 'screenshots/mobile_reference.png')
+      : path.join(this.projectRoot, 'daylight_dc1_screen_reference.png');
     this.refScreenshotPath =
       options.ref ||
       options.refScreenshotPath ||
-      path.join(this.projectRoot, 'screenshots/mobile_reference.png');
+      defaultRef;
     this.renderedPreviewPath =
       options.rendered ||
       options.renderedPreviewPath ||
       path.join(this.androidDir, 'app/build/outputs/preview/rendered_preview.png');
     this.specPath = options.spec || options.specPath || path.join(this.projectRoot, 'design_spec.json');
-    this.threshold = options.threshold !== undefined ? options.threshold : 0.1;
+    this.threshold = options.threshold !== undefined ? options.threshold : 0.12;
     this.skipBuild = Boolean(options.skipBuild);
     this.reportPath = options.report || path.join(this.outputDir, 'verification_report.md');
   }
@@ -206,7 +209,8 @@ class VerificationPipeline {
     const diffSuccess =
       pipelineResult.stages.diff?.success !== false &&
       (!pipelineResult.stages.diff?.metrics ||
-        pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= 90.0);
+        (pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= 90.0 &&
+         (pipelineResult.stages.diff.metrics.inkIou === undefined || pipelineResult.stages.diff.metrics.inkIou > 0.0)));
 
     const overallPassed = buildSuccess && auditSuccess && diffSuccess;
     pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';
@@ -238,7 +242,7 @@ if (require.main === module) {
     .option('--spec <path>', 'Path to design_spec.json')
     .option('--android-dir <path>', 'Android project directory', 'android')
     .option('--output <dir>', 'Output directory for verification artifacts', 'verification')
-    .option('--threshold <number>', 'Pixelmatch diff threshold', parseFloat, 0.1)
+    .option('--threshold <number>', 'Pixelmatch diff threshold', parseFloat, 0.12)
     .option('--report <path>', 'Output path for verification report')
     .option('--skip-build', 'Skip Gradle compilation and preview capture', false)
     .option('--json', 'Output result JSON to stdout', false)

@@ -223,7 +223,7 @@
             "Screen", "Container", "Row", "Column", "Box", "Grid",
             "Button", "IconButton", "Card", "TextField", "Text",
             "Icon", "Image", "Badge", "Chip", "Divider", "Spacer",
-            "TopAppBar", "NavigationBar", "NavigationItem", "Switch", "Checkbox",
+            "TopAppBar", "Toolbar", "Overlay", "Dialog", "NavigationBar", "NavigationItem", "Switch", "Checkbox",
             "RadioButton"
           ]
         },

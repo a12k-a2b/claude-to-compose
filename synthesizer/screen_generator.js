@@ -352,6 +352,26 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
+  // 13b. Toolbar Component
+  if (type === 'Toolbar') {
+    const inner = children.map((c, idx) => translateNode(c, indent + '    ', stateMap, {
+      inRow: true,
+      siblingCount: children.length,
+      childIndex: idx
+    })).join('');
+    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),\n${indent}    horizontalArrangement = Arrangement.spacedBy(8.dp),\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
+  }
+
+  // 13c. Overlay / Dialog Component
+  if (type === 'Overlay' || type === 'Dialog') {
+    const inner = children.map((c, idx) => translateNode(c, indent + '        ', stateMap, {
+      inRow: false,
+      siblingCount: children.length,
+      childIndex: idx
+    })).join('');
+    return `${indent}Box(\n${indent}    modifier = Modifier.fillMaxSize().background(Color(0x66000000)),\n${indent}    contentAlignment = Alignment.Center\n${indent}) {\n${indent}    AppCard(modifier = Modifier.padding(24.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
+  }
+
   // 14. NavigationBar Component
   if (type === 'NavigationBar' || node.tag === 'nav') {
     const tabState = stateMap[node.id] || { varName: 'selectedTabIndex' };
@@ -526,6 +546,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -554,6 +575,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ${packageName}.components.*

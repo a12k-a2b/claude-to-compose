@@ -215,11 +215,15 @@ function computeInkMetrics(normRefPng, normRenderedPng, width, height) {
     if (isInkA || isInkB) union++;
   }
 
-  const inkIou = union > 0 ? parseFloat(((intersection / union) * 100).toFixed(2)) : 100.0;
+  // Blank white screens (or if rendered has no ink, or union is 0) must score 0.00% IoU
+  const inkIou =
+    union > 0 && renderedInk > 0 && refInk > 0
+      ? parseFloat(((intersection / union) * 100).toFixed(2))
+      : 0.0;
   const inkDice =
-    refInk + renderedInk > 0
+    refInk + renderedInk > 0 && renderedInk > 0 && refInk > 0
       ? parseFloat(((2 * intersection / (refInk + renderedInk)) * 100).toFixed(2))
-      : 100.0;
+      : 0.0;
 
   return {
     inkIou,
@@ -399,6 +403,8 @@ if (require.main === module) {
     .requiredOption('--rendered <path>', 'Path to rendered Compose preview screenshot')
     .option('--output <dir>', 'Directory to write diff outputs', 'verification')
     .option('--threshold <number>', 'Pixelmatch diff threshold [0.01 - 0.5]', parseFloat, 0.1)
+    .option('--min-similarity <number>', 'Minimum pixel similarity percentage required to pass', parseFloat)
+    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat)
     .option('--json', 'Output metrics as JSON to stdout', false)
     .parse(process.argv);
 
@@ -418,6 +424,17 @@ if (require.main === module) {
         console.log(`  Diff Overlay Artifact:      ${metrics.diffOverlayPath}`);
         console.log(`  3-Way Composite Artifact:   ${metrics.compositePath}\n`);
       }
+
+      // Check quality gates if specified
+      if (opts.minSimilarity !== undefined && metrics.pixelSimilarityPercentage < opts.minSimilarity) {
+        console.error(`Quality Gate Failed: Pixel similarity ${metrics.pixelSimilarityPercentage}% < required ${opts.minSimilarity}%`);
+        process.exit(1);
+      }
+      if (opts.minInkIou !== undefined && metrics.inkIou < opts.minInkIou) {
+        console.error(`Quality Gate Failed: Ink IoU ${metrics.inkIou}% < required ${opts.minInkIou}%`);
+        process.exit(1);
+      }
+
       process.exit(0);
     })
     .catch((err) => {

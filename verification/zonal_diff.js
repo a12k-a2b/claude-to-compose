@@ -124,11 +124,15 @@ function computeZonalInkMetrics(refPng, renderedPng, width, height) {
     if (isInkA || isInkB) union++;
   }
 
-  const inkIou = union > 0 ? parseFloat(((intersection / union) * 100).toFixed(2)) : 100.0;
+  // Blank white screens (or if rendered has no ink, or union is 0) must score 0.00% IoU
+  const inkIou =
+    union > 0 && renderedInk > 0 && refInk > 0
+      ? parseFloat(((intersection / union) * 100).toFixed(2))
+      : 0.0;
   const inkDice =
-    refInk + renderedInk > 0
+    refInk + renderedInk > 0 && renderedInk > 0 && refInk > 0
       ? parseFloat(((2 * intersection / (refInk + renderedInk)) * 100).toFixed(2))
-      : 100.0;
+      : 0.0;
 
   return {
     inkIou,
