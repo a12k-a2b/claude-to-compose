@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -197,7 +198,8 @@ fun DaylightDc1Screen(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
-                    .height(46.dp)
+                    .minimumInteractiveComponentSize()
+                    .height(48.dp)
                     .width(138.dp)
             ) {
                 Text(
