@@ -44,6 +44,8 @@ class SvgParser {
       const fillMatch = attrs.match(/\bfill=["']([^"']+)["']/i);
       const strokeMatch = attrs.match(/\bstroke=["']([^"']+)["']/i);
       const strokeWidthMatch = attrs.match(/\bstroke-width=["']([^"']+)["']/i);
+      const linecapMatch = attrs.match(/\bstroke-linecap=["']([^"']+)["']/i);
+      const linejoinMatch = attrs.match(/\bstroke-linejoin=["']([^"']+)["']/i);
 
       let fill = fillMatch ? fillMatch[1] : undefined;
       let stroke = strokeMatch ? strokeMatch[1] : undefined;
@@ -55,7 +57,9 @@ class SvgParser {
         d: dMatch[1].trim(),
         fill: fill !== 'none' ? fill : undefined,
         stroke: stroke !== 'none' ? stroke : undefined,
-        strokeWidth: strokeWidthMatch ? parseFloat(strokeWidthMatch[1]) : undefined
+        strokeWidth: strokeWidthMatch ? parseFloat(strokeWidthMatch[1]) : undefined,
+        strokeLinecap: linecapMatch ? linecapMatch[1].toLowerCase() : undefined,
+        strokeLinejoin: linejoinMatch ? linejoinMatch[1].toLowerCase() : undefined
       });
     }
 
@@ -119,11 +123,15 @@ class SvgParser {
       const y2 = parseFloat(attrs.match(/\by2=["']([^"']+)["']/i)?.[1] || 0);
       const stroke = attrs.match(/\bstroke=["']([^"']+)["']/i)?.[1];
       const strokeWidth = parseFloat(attrs.match(/\bstroke-width=["']([^"']+)["']/i)?.[1] || 1);
+      const linecapMatch = attrs.match(/\bstroke-linecap=["']([^"']+)["']/i);
+      const linejoinMatch = attrs.match(/\bstroke-linejoin=["']([^"']+)["']/i);
 
       paths.push({
         d: `M ${x1},${y1} L ${x2},${y2}`,
         stroke: stroke !== 'none' ? stroke : undefined,
-        strokeWidth: stroke ? strokeWidth : undefined
+        strokeWidth: stroke ? strokeWidth : undefined,
+        strokeLinecap: linecapMatch ? linecapMatch[1].toLowerCase() : undefined,
+        strokeLinejoin: linejoinMatch ? linejoinMatch[1].toLowerCase() : undefined
       });
     }
 
@@ -141,12 +149,16 @@ class SvgParser {
         const fill = attrs.match(/\bfill=["']([^"']+)["']/i)?.[1];
         const stroke = attrs.match(/\bstroke=["']([^"']+)["']/i)?.[1];
         const strokeWidth = parseFloat(attrs.match(/\bstroke-width=["']([^"']+)["']/i)?.[1] || 1);
+        const polyLinecapMatch = attrs.match(/\bstroke-linecap=["']([^"']+)["']/i);
+        const polyLinejoinMatch = attrs.match(/\bstroke-linejoin=["']([^"']+)["']/i);
 
         paths.push({
           d,
           fill: fill !== 'none' ? fill : undefined,
           stroke: stroke !== 'none' ? stroke : undefined,
-          strokeWidth: stroke ? strokeWidth : undefined
+          strokeWidth: stroke ? strokeWidth : undefined,
+          strokeLinecap: polyLinecapMatch ? polyLinecapMatch[1].toLowerCase() : undefined,
+          strokeLinejoin: polyLinejoinMatch ? polyLinejoinMatch[1].toLowerCase() : undefined
         });
       }
     }

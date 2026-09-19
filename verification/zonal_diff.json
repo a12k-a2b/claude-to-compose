@@ -1,0 +1,92 @@
+{
+  "canvas": {
+    "width": 1184,
+    "height": 1584
+  },
+  "totalPixels": 1875456,
+  "totalMismatches": 230353,
+  "globalSimilarity": 87.72,
+  "zones": [
+    {
+      "id": "zone_navigation",
+      "name": "Navigation & Header Frame",
+      "dpRange": "0 - 90 dp",
+      "yStart": 0,
+      "yEnd": 180,
+      "height": 180,
+      "similarity": 95.15,
+      "mismatchCount": 10339,
+      "totalPixels": 213120,
+      "ssimScore": 0.788,
+      "refInkCount": 11300,
+      "renderedInkCount": 6609,
+      "centroidDrift": {
+        "deltaX": 43.32,
+        "deltaY": -4.62,
+        "deltaXDp": 21.66,
+        "deltaYDp": -2.31
+      }
+    },
+    {
+      "id": "zone_illustration",
+      "name": "Hero Map & Tracks Canvas",
+      "dpRange": "90 - 400 dp",
+      "yStart": 180,
+      "yEnd": 800,
+      "height": 620,
+      "similarity": 86.45,
+      "mismatchCount": 99494,
+      "totalPixels": 734080,
+      "ssimScore": 0.4082,
+      "refInkCount": 106186,
+      "renderedInkCount": 60931,
+      "centroidDrift": {
+        "deltaX": 12.54,
+        "deltaY": -0.77,
+        "deltaXDp": 6.27,
+        "deltaYDp": -0.39
+      }
+    },
+    {
+      "id": "zone_typography",
+      "name": "Headline & Subtitle Typography",
+      "dpRange": "400 - 675 dp",
+      "yStart": 800,
+      "yEnd": 1350,
+      "height": 550,
+      "similarity": 84.22,
+      "mismatchCount": 102731,
+      "totalPixels": 651200,
+      "ssimScore": 0.4256,
+      "refInkCount": 116841,
+      "renderedInkCount": 97690,
+      "centroidDrift": {
+        "deltaX": -1.44,
+        "deltaY": 31.11,
+        "deltaXDp": -0.72,
+        "deltaYDp": 15.55
+      }
+    },
+    {
+      "id": "zone_controls",
+      "name": "Action Controls & Motion Chips",
+      "dpRange": "675 - 792 dp",
+      "yStart": 1350,
+      "yEnd": 1584,
+      "height": 234,
+      "similarity": 93.58,
+      "mismatchCount": 17789,
+      "totalPixels": 277056,
+      "ssimScore": 0.7361,
+      "refInkCount": 43237,
+      "renderedInkCount": 53508,
+      "centroidDrift": {
+        "deltaX": 10.88,
+        "deltaY": 19.5,
+        "deltaXDp": 5.44,
+        "deltaYDp": 9.75
+      }
+    }
+  ],
+  "zonalDiffOverlay": "/Users/anjan/.gemini/antigravity/scratch/claude_to_compose/verification/zonal_diff_overlay.png"
+}

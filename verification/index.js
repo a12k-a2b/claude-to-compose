@@ -19,6 +19,8 @@ const { Command } = require('commander');
 
 const { BuildRunner } = require('./build_runner');
 const { runDiff, compareImages } = require('./run_diff');
+const { runZonalDiff } = require('./zonal_diff');
+const { AutoTuner } = require('./auto_tuner');
 const { evaluateRubric, auditSynthesizedCode } = require('./audit_rubric');
 const { generateVerificationReport } = require('./report_generator');
 
@@ -97,6 +99,8 @@ class VerificationPipeline {
     // Stage 3: Programmatic Visual Diff
     console.log('▶ [Stage 3/5] Executing Pixelmatch & SSIM Visual Diff Analysis...');
     let diffMetrics = null;
+    let zonalReport = null;
+    let autoTunerDirectives = null;
     const canRunDiff = fs.existsSync(this.refScreenshotPath) && fs.existsSync(renderedPath);
 
     if (canRunDiff) {
@@ -113,6 +117,15 @@ class VerificationPipeline {
         console.log(
           `✓ Visual diff completed: Similarity: ${diffMetrics.pixelSimilarityPercentage}%, MSSIM: ${diffMetrics.mssimScore}`
         );
+
+        // Run Localized Multi-Zone Perceptual Diffing
+        zonalReport = await runZonalDiff(this.refScreenshotPath, renderedPath, {
+          outputDir: this.outputDir,
+          threshold: this.threshold
+        });
+        const tuner = new AutoTuner(zonalReport);
+        autoTunerDirectives = tuner.generateTuningDirectives();
+        console.log(`✓ Multi-zone analysis completed across ${zonalReport.zones.length} functional zones.`);
       } catch (err) {
         console.error(`✗ Visual diff error: ${err.message}`);
         pipelineResult.stages.diff = { success: false, error: err.message };
@@ -153,6 +166,8 @@ class VerificationPipeline {
         pixelMismatchCount: 142,
         compositePath: path.join(this.outputDir, 'composite.png')
       },
+      zonalDiff: zonalReport,
+      autoTunerDirectives: autoTunerDirectives,
       auditResult,
       auditScore: auditResult.totalScore,
       metadata: {

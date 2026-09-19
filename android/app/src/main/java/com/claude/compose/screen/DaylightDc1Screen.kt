@@ -15,6 +15,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -135,22 +137,22 @@ fun DaylightDc1Screen(
                 .size(68.dp)
         )
 
-        // 5. Central Hero Content Stack (starts at 403dp for baseline alignment)
+        // 5. Central Hero Content Stack (tuned baseline alignment at y = 394dp / 788px)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .padding(top = 403.dp, start = 24.dp, end = 24.dp),
+                .padding(top = 394.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Daylight DC1 Brand Glyph
             Image(
                 painter = painterResource(id = R.drawable.daylight_logo),
                 contentDescription = "Daylight DC1 Logo",
-                modifier = Modifier.size(44.dp)
+                modifier = Modifier.size(40.dp)
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Subtitle Label
             Text(
@@ -163,7 +165,7 @@ fun DaylightDc1Screen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Headline in Serif
             Text(
@@ -177,9 +179,9 @@ fun DaylightDc1Screen(
                 lineHeight = 48.sp
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Description Body Text (3 lines)
+            // Description Body Text
             Text(
                 text = "A reflective paper screen that moves like ink — 60 to\n120 frames a second, and not a drop of blue light.\nLet's make it yours.",
                 fontSize = 14.5.sp,
@@ -189,13 +191,13 @@ fun DaylightDc1Screen(
                 lineHeight = 21.sp
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(34.dp))
 
             // "Get started" Solid Black Pill CTA
             val interactionSource = remember { MutableInteractionSource() }
             val isPressed by interactionSource.collectIsPressedAsState()
             val elevation by animateDpAsState(
-                targetValue = if (isPressed) 2.dp else 5.dp,
+                targetValue = if (isPressed) 2.dp else 4.dp,
                 animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
                 label = "btnElev"
             )
@@ -207,8 +209,9 @@ fun DaylightDc1Screen(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
+                    .minimumInteractiveComponentSize()
                     .height(46.dp)
-                    .width(138.dp)
+                    .width(146.dp)
             ) {
                 Text(
                     text = "Get started",
@@ -218,7 +221,7 @@ fun DaylightDc1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // "PAPER MOTION" Row 1 Chips
             Row(
@@ -244,7 +247,7 @@ fun DaylightDc1Screen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Row 2 Chips (centered under row 1)
             Row(
@@ -313,7 +316,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         // Note: In the Claude reference, the top 90dp is a clean open header with no grid!
         val xStep = 40.5.dp.toPx()
         val yStep = 50.dp.toPx()
-        val startX = 34.dp.toPx()
+        val startX = 18.dp.toPx()
         val gridTopY = 90.dp.toPx() // Vertical lines start at 90dp (180px)
 
         var gx = startX
@@ -332,8 +335,8 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         while (gy < h - 24.dp.toPx()) {
             drawLine(
                 color = Os100,
-                start = Offset(34.dp.toPx(), gy),
-                end = Offset(w - 34.dp.toPx(), gy),
+                start = Offset(startX, gy),
+                end = Offset(w - startX, gy),
                 strokeWidth = 1f
             )
             gy += yStep
@@ -373,10 +376,10 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 3. Lane 1: Diagonal curve with double rails, closed cap, and alternating footprints
         val lane1 = Path().apply {
-            moveTo(280.dp.toPx(), 70.dp.toPx())
+            moveTo(311.dp.toPx(), 70.dp.toPx())
             cubicTo(
-                375.dp.toPx(), 130.dp.toPx(),
-                425.dp.toPx(), 195.dp.toPx(),
+                395.dp.toPx(), 130.dp.toPx(),
+                435.dp.toPx(), 195.dp.toPx(),
                 462.dp.toPx(), 280.dp.toPx()
             )
             cubicTo(
@@ -410,11 +413,11 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 5. Lane 3: Left vertical/diagonal curve with rounded dome top cap
         val lane3 = Path().apply {
-            moveTo(209.dp.toPx(), 92.dp.toPx())
+            moveTo(65.dp.toPx(), 70.dp.toPx())
             cubicTo(
-                195.dp.toPx(), 175.dp.toPx(),
-                165.dp.toPx(), 255.dp.toPx(),
-                120.dp.toPx(), 360.dp.toPx()
+                95.dp.toPx(), 160.dp.toPx(),
+                125.dp.toPx(), 255.dp.toPx(),
+                110.dp.toPx(), 360.dp.toPx()
             )
             cubicTo(
                 75.dp.toPx(), 480.dp.toPx(),
@@ -485,7 +488,7 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float, roundedSta
         val dome = Path().apply {
             moveTo(startP.x + nx, startP.y + ny)
             val topDome = Offset(startP.x - startT.x * halfSpace, startP.y - startT.y * halfSpace)
-            quadraticBezierTo(topDome.x, topDome.y, startP.x - nx, startP.y - ny)
+            quadraticTo(topDome.x, topDome.y, startP.x - nx, startP.y - ny)
         }
         drawPath(dome, color = Os800, style = Stroke(width = 1.2f))
     } else {

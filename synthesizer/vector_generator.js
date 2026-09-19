@@ -341,13 +341,16 @@ class VectorGenerator {
         const strokeWidth = p.strokeWidth !== undefined ? p.strokeWidth : (strokeColor ? 2 : 0);
         const escapedPathData = VectorGenerator.escapeXml(p.d || '');
 
+        const strokeCap = VectorGenerator.mapXmlStrokeCap(p.strokeLinecap);
+        const strokeJoin = VectorGenerator.mapXmlStrokeJoin(p.strokeLinejoin);
+
         xml += `    <path\n`;
         if (fillColor) xml += `        android:fillColor="${fillColor}"\n`;
         if (strokeColor) {
           xml += `        android:strokeColor="${strokeColor}"\n`;
           xml += `        android:strokeWidth="${strokeWidth}"\n`;
-          xml += `        android:strokeLineCap="round"\n`;
-          xml += `        android:strokeLineJoin="round"\n`;
+          xml += `        android:strokeLineCap="${strokeCap}"\n`;
+          xml += `        android:strokeLineJoin="${strokeJoin}"\n`;
         }
         xml += `        android:pathData="${escapedPathData}" />\n`;
       }
@@ -427,12 +430,15 @@ class VectorGenerator {
           const fillExpr = fillHex ? `SolidColor(Color(${fillHex}))` : 'null';
           const strokeExpr = strokeHex ? `SolidColor(Color(${strokeHex}))` : 'null';
 
+          const composeCap = VectorGenerator.mapComposeStrokeCap(p.strokeLinecap);
+          const composeJoin = VectorGenerator.mapComposeStrokeJoin(p.strokeLinejoin);
+
           code += `            path(\n`;
           code += `                fill = ${fillExpr},\n`;
           code += `                stroke = ${strokeExpr},\n`;
           code += `                strokeLineWidth = ${strokeWidth}f,\n`;
-          code += `                strokeLineCap = StrokeCap.Round,\n`;
-          code += `                strokeLineJoin = StrokeJoin.Round\n`;
+          code += `                strokeLineCap = ${composeCap},\n`;
+          code += `                strokeLineJoin = ${composeJoin}\n`;
           code += `            ) {\n`;
 
           const dslLines = VectorGenerator.pathToComposeDsl(p.d || '');
@@ -456,6 +462,42 @@ class VectorGenerator {
     }
 
     return code;
+  }
+
+  static mapComposeStrokeCap(cap) {
+    switch ((cap || '').toLowerCase()) {
+      case 'square': return 'StrokeCap.Square';
+      case 'butt': return 'StrokeCap.Butt';
+      case 'round':
+      default: return 'StrokeCap.Round';
+    }
+  }
+
+  static mapComposeStrokeJoin(join) {
+    switch ((join || '').toLowerCase()) {
+      case 'bevel': return 'StrokeJoin.Bevel';
+      case 'miter': return 'StrokeJoin.Miter';
+      case 'round':
+      default: return 'StrokeJoin.Round';
+    }
+  }
+
+  static mapXmlStrokeCap(cap) {
+    switch ((cap || '').toLowerCase()) {
+      case 'square': return 'square';
+      case 'butt': return 'butt';
+      case 'round':
+      default: return 'round';
+    }
+  }
+
+  static mapXmlStrokeJoin(join) {
+    switch ((join || '').toLowerCase()) {
+      case 'bevel': return 'bevel';
+      case 'miter': return 'miter';
+      case 'round':
+      default: return 'round';
+    }
   }
 }
 

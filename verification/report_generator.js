@@ -169,6 +169,34 @@ function generateReportMarkdown(data = {}) {
   md += `\n`;
   md += `![Visual Diff Composite](${compositeImagePath})\n\n`;
 
+  const zonalData = data.zonalDiff || diff.zonalDiff;
+  if (zonalData && Array.isArray(zonalData.zones) && zonalData.zones.length > 0) {
+    md += `### Multi-Zone Perceptual Breakdown (Daylight DC1 1184 × 1584)\n\n`;
+    md += `| Zone | Y Range (px) | Similarity | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    for (const z of zonalData.zones) {
+      const driftPx = `${z.centroidDrift?.deltaX ?? 0}, ${z.centroidDrift?.deltaY ?? 0}`;
+      const driftDp = `${z.centroidDrift?.deltaXDp ?? 0}dp, ${z.centroidDrift?.deltaYDp ?? 0}dp`;
+      md += `| **${escapeMarkdown(z.name)}** | ${z.yStart}-${z.yEnd} | ${z.similarity}% | ${z.ssimScore} | ${z.mismatchCount} | \`${driftPx}\` | \`${driftDp}\` |\n`;
+    }
+    md += `\n`;
+    if (zonalData.zonalDiffOverlay) {
+      md += `![Multi-Zone Heatmap Overlay](${zonalData.zonalDiffOverlay})\n\n`;
+    }
+  }
+
+  if (data.autoTunerDirectives && Array.isArray(data.autoTunerDirectives) && data.autoTunerDirectives.length > 0) {
+    md += `### Auto-Tuner Layout Compensations\n\n`;
+    md += `| Zone | Measured Drift (dp) | Match | Recommended Action |\n`;
+    md += `| :--- | :--- | :--- | :--- |\n`;
+    for (const d of data.autoTunerDirectives) {
+      const driftStr = `Δx: ${d.driftDp?.x ?? 0}dp, Δy: ${d.driftDp?.y ?? 0}dp`;
+      const actions = (d.recommendedCorrections || []).map(c => `• **${escapeMarkdown(c.target)}**: ${escapeMarkdown(c.action)}`).join('<br>');
+      md += `| **${escapeMarkdown(d.zoneName)}** | \`${driftStr}\` | ${d.currentSimilarity}% | ${actions || 'Within tolerance'} |\n`;
+    }
+    md += `\n`;
+  }
+
   // Section 4: Agent-as-Judge 10-Point Audit Rubric
   md += `## 4. Agent-as-Judge 10-Point Audit Rubric\n`;
   md += `| Dimension | Score (0-10) | Notes |\n`;

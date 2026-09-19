@@ -12,6 +12,8 @@ const { Screenshotter } = require('./screenshotter');
 const { walkDOM } = require('./dom_walker');
 const { extractSVGs } = require('./svg_parser');
 const { buildAndValidateSpec } = require('./spec_builder');
+const { getCanvasInterceptionScript, extractCanvasOperations, saveCanvasOperations } = require('./canvas_interceptor');
+const { FontExtractor } = require('./font_extractor');
 
 // MIME taxonomy for local ephemeral server
 const MIME_TYPES = {
@@ -153,6 +155,10 @@ class ExtractionEngine {
     this.browser = null;
     this.ephemeralServer = null;
     this.screenshotter = new Screenshotter(this.options);
+    this.fontExtractor = new FontExtractor({
+      outputDir: this.options.outputDir,
+      debug: this.options.debug
+    });
   }
 
   /**
@@ -386,7 +392,10 @@ class ExtractionEngine {
             : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
         });
 
+        await context.addInitScript(getCanvasInterceptionScript());
+
         const page = await context.newPage();
+        this.fontExtractor.attachNetworkSniffer(page);
         page.setDefaultTimeout(this.options.timeout);
 
         let response;
@@ -459,6 +468,20 @@ class ExtractionEngine {
         outputDir: this.options.outputDir,
         debug: this.options.debug
       });
+
+      // 3.5 Intercept canvas 2D stream operations & sniff fonts
+      if (this.options.debug) console.log('[EXTRACT] Intercepting HTML5 Canvas 2D operations...');
+      const canvasStreams = await extractCanvasOperations(primaryFrame);
+      if (canvasStreams && canvasStreams.length > 0) {
+        saveCanvasOperations(canvasStreams, this.options.outputDir);
+        if (this.options.debug) {
+          console.log(`[CANVAS] Saved ${canvasStreams.length} canvas stream(s) to canvas_ops.json`);
+        }
+      }
+
+      if (this.options.debug) console.log('[EXTRACT] Sniffing font-face rules and assets...');
+      const fontFaceRules = await this.fontExtractor.discoverFontFaceRules(primaryFrame);
+      this.fontExtractor.saveFonts(fontFaceRules);
 
       // 4. Assemble and validate design_spec.json
       if (this.options.debug) console.log('[BUILD] Assembling and validating design_spec.json...');
