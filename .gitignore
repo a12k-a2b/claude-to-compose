@@ -27,3 +27,7 @@ android/.kotlin/
 
 # Agent internals
 .agents/
+
+# Scratch & test artifacts
+daylight_*
+scripts/*.png

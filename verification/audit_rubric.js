@@ -554,7 +554,7 @@ if (require.main === module) {
   program
     .name('audit_rubric')
     .description('10-Point Agent-as-Judge audit rubric evaluator')
-    .option('--scores <path>', 'JSON file containing 10 dimension scores')
+    .option('--scores <scores>', 'JSON file path or inline JSON string containing 10 dimension scores')
     .option('--android <dir>', 'Android project directory', 'android')
     .option('--spec <path>', 'Path to design_spec.json', 'design_spec.json')
     .option('--output <path>', 'Output JSON result file')
@@ -564,9 +564,30 @@ if (require.main === module) {
   const opts = program.opts();
 
   let result;
-  if (opts.scores && fs.existsSync(opts.scores)) {
-    const scoresContent = JSON.parse(fs.readFileSync(opts.scores, 'utf8'));
-    result = evaluateRubric(scoresContent);
+  if (opts.scores) {
+    let scoresContent;
+    if (fs.existsSync(opts.scores)) {
+      try {
+        scoresContent = JSON.parse(fs.readFileSync(opts.scores, 'utf8'));
+      } catch (err) {
+        console.error(`[ERROR] Failed to parse scores JSON file "${opts.scores}": ${err.message}`);
+        process.exit(1);
+      }
+    } else {
+      try {
+        scoresContent = JSON.parse(opts.scores);
+      } catch (err) {
+        console.error(`[ERROR] Failed to parse scores argument as file or inline JSON: ${err.message}`);
+        process.exit(1);
+      }
+    }
+
+    try {
+      result = evaluateRubric(scoresContent);
+    } catch (err) {
+      console.error(`[ERROR] Rubric evaluation failed: ${err.message}`);
+      process.exit(1);
+    }
   } else {
     result = auditSynthesizedCode({
       androidDir: opts.android,
@@ -584,6 +605,7 @@ if (require.main === module) {
     console.log('\n=== Agent-as-Judge 10-Point Audit Rubric Results ===');
     console.log(`  Total Score: ${result.totalScore}/100 (Pass threshold: >= ${result.threshold})`);
     console.log(`  Verdict:     ${result.passed ? 'PASSED' : 'FAILED'}`);
+    console.log(`  VETO:        ${result.hasVeto ? 'YES' : 'NO'}`);
     console.log(`  Veto Status: ${result.hasVeto ? 'TRIGGERED (<5 in dimension)' : 'NONE'}\n`);
     result.dimensions.forEach((d) => {
       console.log(`  [${d.score}/10] ${d.name}${d.veto ? ' (VETO)' : ''}`);

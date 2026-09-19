@@ -64,7 +64,7 @@ class ClaudeToComposeWorkflow {
   constructor(options = {}) {
     this.projectRoot = PROJECT_ROOT;
     this.options = {
-      input: options.input || null,
+      input: options.input || options.file || options.url || null,
       outputDir: path.resolve(process.cwd(), options.output || './output'),
       androidDir: path.resolve(process.cwd(), options.androidDir || './android'),
       basePackage: options.package || 'com.claude.compose',
@@ -484,6 +484,7 @@ if (require.main === module) {
     .description('Autonomous multi-agent workflow runner executing Extraction, Synthesis, and Verification.')
     .version('1.0.0')
     .argument('[input]', 'Target URL (https://claude.site/...) or local HTML file path')
+    .option('-i, --input <target>', 'Target URL or local HTML file path')
     .option('-u, --url <url>', 'Explicit Claude shareable URL')
     .option('-f, --file <path>', 'Explicit local HTML file path')
     .option('-o, --output <dir>', 'Spec and screenshot output directory', './output')
@@ -499,7 +500,7 @@ if (require.main === module) {
 
   program.parse(process.argv);
   const opts = program.opts();
-  const inputArg = program.args[0] || opts.url || opts.file;
+  const inputArg = opts.input || opts.file || opts.url || program.args[0];
 
   if (!inputArg) {
     console.error('[ERROR] Target URL or local HTML file path is required.');
