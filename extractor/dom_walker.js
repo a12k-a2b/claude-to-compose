@@ -183,6 +183,8 @@ async function walkDOM(frame, options = {}) {
       const role = (el.getAttribute('role') || '').toLowerCase();
       const cls = (el.className && typeof el.className === 'string') ? el.className.toLowerCase() : '';
       const inputType = (el.type || el.getAttribute('type') || '').toLowerCase();
+      const ariaLabel = (el.getAttribute('aria-label') || '').toLowerCase();
+      const elId = (el.id || el.getAttribute('id') || '').toLowerCase();
 
       if (tag === 'body' || tag === 'html') return 'Screen';
       if (tag === 'svg') return 'Icon';
@@ -225,8 +227,8 @@ async function walkDOM(frame, options = {}) {
         return 'TextField';
       }
 
-      if (role === 'toolbar' || /\b(toolbar)\b/.test(cls)) return 'Toolbar';
-      if (role === 'dialog' || /\b(modal|overlay|dialog|backdrop)\b/.test(cls)) return 'Overlay';
+      if (role === 'toolbar' || /\b(toolbar)\b/.test(cls) || /\b(toolbar)\b/.test(elId) || /\b(toolbar)\b/.test(ariaLabel)) return 'Toolbar';
+      if (role === 'dialog' || tag === 'dialog' || /\b(modal|overlay|dialog|backdrop)\b/.test(cls) || /\b(modal|overlay|dialog|backdrop)\b/.test(elId) || /\b(modal|overlay|dialog)\b/.test(ariaLabel)) return 'Overlay';
 
       if (/\b(badge|chip|tag|pill)\b/.test(cls)) return 'Badge';
       if (tag === 'nav' || role === 'navigation') return 'NavigationBar';
@@ -520,4 +522,86 @@ async function walkDOM(frame, options = {}) {
   return JSON.parse(serialized);
 }
 
-module.exports = { walkDOM };
+/**
+ * Standalone classifier for unit testing and DOM element inspection.
+ */
+function classifyComponent(el = {}, style = {}, rect = {}, children = [], directText = '') {
+  const getAttr = (name) => {
+    if (el && typeof el.getAttribute === 'function') return el.getAttribute(name) || '';
+    if (!el) return '';
+    if (name === 'role') return el.role || '';
+    if (name === 'type') return el.type || '';
+    if (name === 'aria-label') return el.ariaLabel || el['aria-label'] || '';
+    if (name === 'id') return el.id || '';
+    return '';
+  };
+  const tag = (el.tagName || el.tag || '').toLowerCase();
+  const role = (getAttr('role') || '').toLowerCase();
+  const cls = (el.className && typeof el.className === 'string') ? el.className.toLowerCase() : '';
+  const inputType = (el.type || getAttr('type') || '').toLowerCase();
+  const ariaLabel = (getAttr('aria-label') || '').toLowerCase();
+  const elId = (el.id || getAttr('id') || '').toLowerCase();
+
+  if (tag === 'body' || tag === 'html') return 'Screen';
+  if (tag === 'svg') return 'Icon';
+  if (tag === 'img' || tag === 'picture') return 'Image';
+  if (tag === 'hr' || (rect.height <= 2 && rect.width >= 40) || (rect.width <= 2 && rect.height >= 40)) return 'Divider';
+
+  if (inputType === 'checkbox' || role === 'checkbox') {
+    if (role === 'switch' || /\b(switch|toggle)\b/.test(cls)) {
+      return 'Switch';
+    }
+    return 'Checkbox';
+  }
+
+  if (inputType === 'radio' || role === 'radio') {
+    return 'RadioButton';
+  }
+
+  if (role === 'switch' || /\b(switch|toggle)\b/.test(cls)) {
+    return 'Switch';
+  }
+
+  if (
+    tag === 'button' ||
+    role === 'button' ||
+    inputType === 'button' ||
+    inputType === 'submit' ||
+    inputType === 'reset' ||
+    /\b(btn|button|cta)\b/.test(cls)
+  ) {
+    if (children.length === 1 && children[0].componentType === 'Icon' && !directText) {
+      return 'IconButton';
+    }
+    return 'Button';
+  }
+
+  if (['input', 'textarea', 'select'].includes(tag) || role === 'textbox') {
+    return 'TextField';
+  }
+
+  if (role === 'toolbar' || /\b(toolbar)\b/.test(cls) || /\b(toolbar)\b/.test(elId) || /\b(toolbar)\b/.test(ariaLabel)) return 'Toolbar';
+  if (role === 'dialog' || tag === 'dialog' || /\b(modal|overlay|dialog|backdrop)\b/.test(cls) || /\b(modal|overlay|dialog|backdrop)\b/.test(elId) || /\b(modal|overlay|dialog)\b/.test(ariaLabel)) return 'Overlay';
+
+  if (/\b(badge|chip|tag|pill)\b/.test(cls)) return 'Badge';
+  if (tag === 'nav' || role === 'navigation') return 'NavigationBar';
+  if (tag === 'header' || role === 'banner' || /\b(navbar|appbar|topbar)\b/.test(cls)) return 'TopAppBar';
+
+  const isCardClass = /\b(card|panel|surface)\b/.test(cls) && !/\b(header|footer|body|title|subtitle|content|text|icon|wrapper)\b/.test(cls);
+  const hasCardStyle = children.length > 0 && rect.width > 120 && rect.height > 60 &&
+    (style.boxShadow !== 'none' || (style.borderWidth !== '0px' && style.borderStyle !== 'none')) &&
+    parseFloat(style.borderRadius) >= 6;
+
+  if (isCardClass || hasCardStyle) return 'Card';
+  if (children.length === 0 && directText) return 'Text';
+
+  if (style.display === 'flex' || style.display === 'inline-flex') {
+    return style.flexDirection && style.flexDirection.startsWith('column') ? 'Column' : 'Row';
+  }
+  if (style.display === 'grid' || style.display === 'inline-grid') return 'Grid';
+  if (style.position === 'absolute' || style.position === 'fixed') return 'Box';
+
+  return children.length > 0 ? 'Container' : 'Box';
+}
+
+module.exports = { walkDOM, classifyComponent };

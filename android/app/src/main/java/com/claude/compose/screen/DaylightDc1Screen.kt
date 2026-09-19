@@ -152,11 +152,11 @@ fun DaylightDc1Screen(
             )
         }
 
-        // 4. Upper-Right Compass Rose Graphic (anchored on reference cx = 1010px, cy = 272px)
+        // 4. Upper-Right Compass Rose Graphic (anchored on reference cx = 1003px, cy = 273.5px)
         CompassRoseGraphic(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 101.dp, end = 58.dp)
+                .padding(top = 102.5.dp, end = 56.5.dp)
                 .size(68.dp)
         )
 
@@ -195,7 +195,7 @@ fun DaylightDc1Screen(
                 text = "Step into daylight",
                 fontSize = 44.sp,
                 fontWeight = FontWeight.Medium,
-                fontFamily = FontFamily.Serif,
+                fontFamily = AbcArizonaFlare,
                 letterSpacing = (-3.2).sp,
                 color = Os1000,
                 textAlign = TextAlign.Center,
@@ -433,7 +433,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 3. Lane 1: Diagonal curve with double rails, closed cap, and alternating footprints
         val lane1 = Path().apply {
-            moveTo(283.dp.toPx(), 70.dp.toPx())
+            moveTo(280.5.dp.toPx(), 75.dp.toPx())
             cubicTo(
                 350.dp.toPx(), 155.dp.toPx(),
                 440.dp.toPx(), 255.dp.toPx(),
@@ -486,14 +486,14 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 6. Lane 4: Lower subtle curve passing behind text
         val lane4 = Path().apply {
-            moveTo(45.dp.toPx(), 540.dp.toPx())
+            moveTo(45.dp.toPx(), 575.dp.toPx())
             cubicTo(
-                225.dp.toPx(), 580.dp.toPx(),
-                375.dp.toPx(), 575.dp.toPx(),
-                532.dp.toPx(), 505.dp.toPx()
+                180.dp.toPx(), 530.dp.toPx(),
+                380.dp.toPx(), 522.dp.toPx(),
+                532.dp.toPx(), 504.dp.toPx()
             )
         }
-        drawPath(lane4, color = Os400, style = Stroke(width = 1.5.dp.toPx()))
+        drawTwoRailLane(lane4, railSpacing = 3.5.dp.toPx(), roundedStartCap = false)
     }
 }
 

@@ -43,6 +43,8 @@ class VerificationPipeline {
       path.join(this.androidDir, 'app/build/outputs/preview/rendered_preview.png');
     this.specPath = options.spec || options.specPath || path.join(this.projectRoot, 'design_spec.json');
     this.threshold = options.threshold !== undefined ? options.threshold : 0.12;
+    this.minSimilarity = options.minSimilarity !== undefined ? options.minSimilarity : 90.0;
+    this.minInkIou = options.minInkIou !== undefined ? options.minInkIou : 0.0;
     this.skipBuild = Boolean(options.skipBuild);
     this.reportPath = options.report || path.join(this.outputDir, 'verification_report.md');
   }
@@ -209,8 +211,8 @@ class VerificationPipeline {
     const diffSuccess =
       pipelineResult.stages.diff?.success !== false &&
       (!pipelineResult.stages.diff?.metrics ||
-        (pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= 90.0 &&
-         (pipelineResult.stages.diff.metrics.inkIou === undefined || pipelineResult.stages.diff.metrics.inkIou > 0.0)));
+        (pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= this.minSimilarity &&
+         (pipelineResult.stages.diff.metrics.inkIou === undefined || pipelineResult.stages.diff.metrics.inkIou > this.minInkIou)));
 
     const overallPassed = buildSuccess && auditSuccess && diffSuccess;
     pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';
@@ -243,6 +245,8 @@ if (require.main === module) {
     .option('--android-dir <path>', 'Android project directory', 'android')
     .option('--output <dir>', 'Output directory for verification artifacts', 'verification')
     .option('--threshold <number>', 'Pixelmatch diff threshold', parseFloat, 0.12)
+    .option('--min-similarity <number>', 'Minimum pixel similarity percentage required to pass', parseFloat, 90.0)
+    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat, 0.0)
     .option('--report <path>', 'Output path for verification report')
     .option('--skip-build', 'Skip Gradle compilation and preview capture', false)
     .option('--json', 'Output result JSON to stdout', false)

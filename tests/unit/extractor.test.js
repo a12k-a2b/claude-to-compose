@@ -273,3 +273,120 @@ describe('ExtractionEngine Unit Tests', () => {
     assert.ok(execPath.includes('Google Chrome for Testing') || execPath.includes('chrome'));
   });
 });
+
+const { classifyComponent } = require('../../extractor/dom_walker');
+const { generateScreenFile } = require('../../synthesizer/screen_generator');
+
+describe('Subsystem Integration & Advanced Component Classification', () => {
+  test('SpecBuilder validates specs with Toolbar, Overlay, and Dialog against Draft 2020-12 schema', () => {
+    const builder = new SpecBuilder();
+    const hierarchy = {
+      id: 'root',
+      type: 'SCREEN',
+      componentType: 'Screen',
+      bounds: { x: 0, y: 0, width: 390, height: 844 },
+      layout: { display: 'block' },
+      children: [
+        {
+          id: 'node_toolbar',
+          type: 'TOOLBAR',
+          componentType: 'Toolbar',
+          bounds: { x: 0, y: 0, width: 390, height: 48 },
+          layout: { display: 'flex' },
+          children: []
+        },
+        {
+          id: 'node_overlay',
+          type: 'OVERLAY',
+          componentType: 'Overlay',
+          bounds: { x: 0, y: 0, width: 390, height: 844 },
+          layout: { display: 'block' },
+          children: []
+        },
+        {
+          id: 'node_dialog',
+          type: 'DIALOG',
+          componentType: 'Dialog',
+          bounds: { x: 20, y: 200, width: 350, height: 200 },
+          layout: { display: 'block' },
+          children: []
+        }
+      ]
+    };
+
+    const spec = builder.buildSpec({
+      metadata: { title: 'Toolbar and Overlay Spec' },
+      viewports: {},
+      domHierarchy: hierarchy,
+      vectorAssets: []
+    });
+
+    const validation = builder.validate(spec);
+    assert.equal(validation.valid, true, `Validation errors: ${validation.errors?.join(', ')}`);
+  });
+
+  test('ScreenGenerator transpiles Toolbar and Overlay into valid Compose layouts', () => {
+    const spec = {
+      metadata: { title: 'Test Toolbar Screen' },
+      theme: { colors: {}, typography: { styles: {} } },
+      viewports: {},
+      hierarchy: {
+        id: 'screen_root',
+        type: 'SCREEN',
+        componentType: 'Screen',
+        bounds: { x: 0, y: 0, width: 390, height: 844 },
+        layout: { display: 'block' },
+        children: [
+          {
+            id: 'tools',
+            type: 'TOOLBAR',
+            componentType: 'Toolbar',
+            bounds: { x: 0, y: 0, width: 390, height: 48 },
+            children: [
+              {
+                id: 'tool_btn',
+                type: 'BUTTON',
+                componentType: 'Button',
+                text: { content: 'Action' }
+              }
+            ]
+          },
+          {
+            id: 'modal_dialog',
+            type: 'OVERLAY',
+            componentType: 'Overlay',
+            bounds: { x: 0, y: 0, width: 390, height: 844 },
+            children: [
+              {
+                id: 'dialog_text',
+                type: 'TEXT',
+                componentType: 'Text',
+                text: { content: 'Dialog Notice' }
+              }
+            ]
+          }
+        ]
+      }
+    };
+
+    const kotlin = generateScreenFile(spec, 'com.claude.compose');
+    assert.ok(kotlin.includes('Arrangement.spacedBy(8.dp)'), 'Toolbar must use spacedBy(8.dp)');
+    assert.ok(kotlin.includes('background(Color(0x66000000))'), 'Overlay must have semi-transparent backdrop');
+    assert.ok(kotlin.includes('AppCard(modifier = Modifier.padding(24.dp))'), 'Overlay must wrap content in AppCard');
+  });
+
+  test('dom_walker classifies elements with aria-label / id / role of toolbar and dialog / overlay', () => {
+    // Toolbar heuristics
+    assert.equal(classifyComponent({ tagName: 'div', role: 'toolbar' }), 'Toolbar');
+    assert.equal(classifyComponent({ tagName: 'div', className: 'editor-toolbar-container' }), 'Toolbar');
+    assert.equal(classifyComponent({ tagName: 'div', id: 'main-toolbar' }), 'Toolbar');
+    assert.equal(classifyComponent({ tagName: 'div', ariaLabel: 'formatting toolbar' }), 'Toolbar');
+
+    // Overlay / Dialog heuristics
+    assert.equal(classifyComponent({ tagName: 'dialog' }), 'Overlay');
+    assert.equal(classifyComponent({ tagName: 'div', role: 'dialog' }), 'Overlay');
+    assert.equal(classifyComponent({ tagName: 'div', className: 'modal-backdrop' }), 'Overlay');
+    assert.equal(classifyComponent({ tagName: 'div', id: 'confirm-dialog' }), 'Overlay');
+    assert.equal(classifyComponent({ tagName: 'div', ariaLabel: 'alert dialog' }), 'Overlay');
+  });
+});

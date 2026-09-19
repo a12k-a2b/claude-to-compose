@@ -337,6 +337,8 @@ if (require.main === module) {
     .requiredOption('--rendered <path>', 'Rendered preview screenshot')
     .option('--output <dir>', 'Output directory', 'verification')
     .option('--threshold <number>', 'Pixelmatch threshold [0.01-0.5]', parseFloat, 0.1)
+    .option('--min-similarity <number>', 'Minimum global similarity percentage required to pass', parseFloat)
+    .option('--min-ink-iou <number>', 'Minimum global ink IoU percentage required to pass', parseFloat)
     .option('--json', 'Output JSON to stdout', false)
     .parse(process.argv);
 
@@ -365,6 +367,17 @@ if (require.main === module) {
         );
         console.log(`\nAnnotated Zonal Overlay: ${res.zonalDiffOverlay}\n`);
       }
+
+      // Check quality gates if specified
+      if (opts.minSimilarity !== undefined && res.globalSimilarity < opts.minSimilarity) {
+        console.error(`Quality Gate Failed: Global similarity ${res.globalSimilarity}% < required ${opts.minSimilarity}%`);
+        process.exit(1);
+      }
+      if (opts.minInkIou !== undefined && res.globalInkIou < opts.minInkIou) {
+        console.error(`Quality Gate Failed: Global Ink IoU ${res.globalInkIou}% < required ${opts.minInkIou}%`);
+        process.exit(1);
+      }
+
       process.exit(0);
     })
     .catch((err) => {
