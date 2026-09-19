@@ -343,7 +343,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   }
 
   // 13. TopAppBar Component
-  if (type === 'TopAppBar' || node.tag === 'header') {
+  if (type === 'TopAppBar' || (node.tag === 'header' && isRowLayout(node.layout))) {
     const inner = children.map((c, idx) => translateNode(c, indent + '    ', stateMap, {
       inRow: true,
       siblingCount: children.length,
@@ -473,19 +473,6 @@ fun ClaudeDesignScreen(
     }
   }
 
-  // Motion states (R2 motion and transitions)
-  stateDecls += `    var isBannerVisible by rememberSaveable { mutableStateOf(true) }\n`;
-  stateDecls += `    val animatedCardElevation by animateDpAsState(\n` +
-                `        targetValue = if (${primaryTabVar} == 0) 4.dp else 1.dp,\n` +
-                `        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),\n` +
-                `        label = "cardElevation"\n` +
-                `    )\n`;
-  stateDecls += `    val animatedTabColor by animateColorAsState(\n` +
-                `        targetValue = if (${primaryTabVar} == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,\n` +
-                `        animationSpec = tween(durationMillis = 300),\n` +
-                `        label = "tabColor"\n` +
-                `    )\n`;
-
   // Form validation line if multiple inputs exist
   let validationLine = '';
   const textStates = interactiveStates.filter(s => s.kind === 'text');
@@ -499,40 +486,35 @@ fun ClaudeDesignScreen(
     }
   }
 
-  const bannerCard = 
-    `AppCard(\n` +
-    `    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),\n` +
-    `    onClick = { isBannerVisible = false }\n` +
-    `) {\n` +
-    `    Row(\n` +
-    `        modifier = Modifier.fillMaxWidth().padding(12.dp),\n` +
-    `        horizontalArrangement = Arrangement.SpaceBetween,\n` +
-    `        verticalAlignment = Alignment.CenterVertically\n` +
-    `    ) {\n` +
-    `        Text(\n` +
-    `            text = "Live Workspace Active — Tap to dismiss",\n` +
-    `            style = MaterialTheme.typography.bodyMedium\n` +
-    `        )\n` +
-    `        StatusBadge(text = "Active")\n` +
-    `    }\n` +
-    `}`;
-
-  const bannerVisibility = MotionGenerator.generateAnimatedVisibility({
-    visibleCondition: 'isBannerVisible',
-    durationMs: 300,
-    content: bannerCard
-  });
-
-  const bannerSnippet = bannerVisibility
-    .split('\n')
-    .map(line => `            ${line}`)
-    .join('\n') + '\n';
-
   const contentCode = translateNode(root, '            ', stateMap, {
     inRow: false,
     siblingCount: 1,
     childIndex: 0
   });
+
+  const hasAbsoluteChildren = Array.isArray(root?.children) && root.children.some(c => 
+    c?.style?.position === 'absolute' || 
+    c?.layout?.position === 'absolute' || 
+    c?.style?.zIndex != null || 
+    c?.componentType === 'Overlay'
+  );
+
+  const containerBody = hasAbsoluteChildren
+    ? `        Box(\n` +
+      `            modifier = Modifier\n` +
+      `                .fillMaxSize()\n` +
+      `                .padding(innerPadding)\n` +
+      `        ) {\n` +
+      `${contentCode}` +
+      `        }`
+    : `        Column(\n` +
+      `            modifier = Modifier\n` +
+      `                .fillMaxSize()\n` +
+      `                .padding(innerPadding)\n` +
+      `                .verticalScroll(rememberScrollState())\n` +
+      `        ) {\n` +
+      `${contentCode}` +
+      `        }`;
 
   return `package ${packageName}.screen
 
@@ -588,16 +570,11 @@ fun ClaudeDesignScreen(
     modifier: Modifier = Modifier
 ) {
 ${stateDecls}${validationLine}
-    Scaffold(modifier = modifier) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-        ) {
-${bannerSnippet}
-${contentCode}
-        }
+    Scaffold(
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+${containerBody}
     }
 }
 `;
