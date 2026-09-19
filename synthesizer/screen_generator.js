@@ -36,9 +36,10 @@ function extractInteractiveStates(rootNode) {
 
     if (isCheckbox) {
       checkIndex++;
-      const name = sanitizeIdentifier(node.name || `consent_${checkIndex}`);
+      const rawName = node.name || `consent_${checkIndex}`;
+      const cleanName = sanitizeIdentifier(rawName).replace(/`/g, '');
       states.push({
-        varName: `is${capitalize(name)}Checked`,
+        varName: `is${capitalize(cleanName)}Checked`,
         type: 'Boolean',
         defaultVal: 'false',
         kind: 'checkbox',
@@ -48,9 +49,10 @@ function extractInteractiveStates(rootNode) {
       // Radio button handling
     } else if (!isCheckbox && !isRadio && (type === 'textfield' || tag === 'input' || tag === 'textarea')) {
       inputIndex++;
-      const name = sanitizeIdentifier(node.name || `field_${inputIndex}`);
+      const rawName = node.name || `field_${inputIndex}`;
+      const cleanName = sanitizeIdentifier(rawName).replace(/`/g, '');
       states.push({
-        varName: `${name}Text`,
+        varName: `${cleanName}Text`,
         type: 'String',
         defaultVal: '""',
         kind: 'text',
@@ -65,12 +67,13 @@ function extractInteractiveStates(rootNode) {
         kind: 'tab',
         nodeId: node.id
       });
-    } else if (tag === 'label' || (node.interactions && node.interactions.isClickable && (node.style?.isPill || type === 'box'))) {
-      if (node.children?.some(c => c.style?.isPill || c.style?.borderRadius?.isPill)) {
+    } else if (tag === 'label' || type === 'switch' || (node.interactions && node.interactions.isClickable && (node.style?.isPill || type === 'box'))) {
+      if (type === 'switch' || node.children?.some(c => c.style?.isPill || c.style?.borderRadius?.isPill)) {
         switchIndex++;
-        const name = sanitizeIdentifier(node.name || `switch_${switchIndex}`);
+        const rawName = node.name || `switch_${switchIndex}`;
+        const cleanName = sanitizeIdentifier(rawName).replace(/`/g, '');
         states.push({
-          varName: `is${capitalize(name)}Enabled`,
+          varName: `is${capitalize(cleanName)}Enabled`,
           type: 'Boolean',
           defaultVal: 'true',
           kind: 'switch',
@@ -315,10 +318,17 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     return `${indent}Icon(\n${indent}    imageVector = ClaudeIcons.Icon1Icon,\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = MaterialTheme.colorScheme.primary\n${indent})\n`;
   }
 
-  // 10. Switch (label toggle container)
-  if (node.tag === 'label' && stateMap[node.id]) {
+  // 10. Switch
+  if (type === 'Switch' || (node.tag === 'label' && stateMap[node.id])) {
     const s = stateMap[node.id];
-    return `${indent}Switch(\n${indent}    checked = ${s.varName},\n${indent}    onCheckedChange = { ${s.varName} = it }\n${indent})\n`;
+    const checkedExpr = s ? s.varName : 'true';
+    const onChangeExpr = s ? `{ ${s.varName} = it }` : '{ /* toggle */ }';
+    return `${indent}Switch(\n${indent}    checked = ${checkedExpr},\n${indent}    onCheckedChange = ${onChangeExpr}\n${indent})\n`;
+  }
+
+  // 10b. Chip Component
+  if (type === 'Chip') {
+    return `${indent}AppFilterChip(\n${indent}    selected = true,\n${indent}    onClick = { /* chip */ },\n${indent}    label = ${JSON.stringify(textContent || 'Chip')}\n${indent})\n`;
   }
 
   // 11. Divider Component

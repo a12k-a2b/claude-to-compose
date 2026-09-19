@@ -351,167 +351,168 @@ class ExtractionEngine {
   async run({ target, isFile }) {
     let navigationUrl = target;
 
-    // 1. Start ephemeral HTTP server if input is a local file
-    if (isFile) {
-      try {
-        fs.accessSync(target, fs.constants.R_OK);
-      } catch (err) {
-        throw new CustomEngineError(`Cannot read target file "${target}": ${err.message}`, 'NAVIGATION_FAILED');
-      }
-      this.ephemeralServer = new EphemeralServer(target, this.options.debug);
-      navigationUrl = await this.ephemeralServer.start();
-    }
-
-    // 2. Launch browser
-    await this.launchBrowser();
-
-    const outputAssetsDir = path.join(this.options.outputDir, 'assets', 'vectors');
-    const outputScreenshotsDir = path.join(this.options.outputDir, 'screenshots');
-    fs.mkdirSync(outputAssetsDir, { recursive: true });
-    fs.mkdirSync(outputScreenshotsDir, { recursive: true });
-
-    const capturedScreenshots = [];
-
-    // Helper to extract for a specific viewport context
-    const processViewport = async ({ name, width, height, scale, isMobile }) => {
-      if (this.options.debug) console.log(`\n[INFO] Starting extraction for viewport: ${name} (${width}x${height}@${scale}x)`);
-      const context = await this.browser.newContext({
-        viewport: { width, height },
-        deviceScaleFactor: scale,
-        isMobile,
-        hasTouch: isMobile,
-        userAgent: isMobile
-          ? 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36'
-          : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
-      });
-
-      const page = await context.newPage();
-      page.setDefaultTimeout(this.options.timeout);
-
-      let response;
-      try {
-        response = await page.goto(navigationUrl, { waitUntil: 'load', timeout: this.options.timeout });
-      } catch (err) {
-        throw new CustomEngineError(`Failed to navigate to ${navigationUrl}: ${err.message}`, 'NAVIGATION_FAILED');
+    try {
+      // 1. Start ephemeral HTTP server if input is a local file
+      if (isFile) {
+        try {
+          fs.accessSync(target, fs.constants.R_OK);
+        } catch (err) {
+          throw new CustomEngineError(`Cannot read target file "${target}": ${err.message}`, 'NAVIGATION_FAILED');
+        }
+        this.ephemeralServer = new EphemeralServer(target, this.options.debug);
+        navigationUrl = await this.ephemeralServer.start();
       }
 
-      if (response && response.status() >= 400) {
-        throw new CustomEngineError(
-          `Navigation failed: server responded with HTTP status ${response.status()} (${response.statusText() || 'Error'}) for ${navigationUrl}`,
-          'NAVIGATION_FAILED'
-        );
-      }
+      // 2. Launch browser
+      await this.launchBrowser();
 
-      const targetFrame = await this.findArtifactFrame(page);
-      await this.waitForHydrationBarrier(page, targetFrame);
+      const outputAssetsDir = path.join(this.options.outputDir, 'assets', 'vectors');
+      const outputScreenshotsDir = path.join(this.options.outputDir, 'screenshots');
+      fs.mkdirSync(outputAssetsDir, { recursive: true });
+      fs.mkdirSync(outputScreenshotsDir, { recursive: true });
 
-      // Capture screenshots for this viewport
-      const screenshots = await this.screenshotter.captureViewport(page, targetFrame, {
-        name,
-        width,
-        height,
-        scale,
-        outputDir: outputScreenshotsDir
-      });
-      capturedScreenshots.push(...screenshots);
+      const capturedScreenshots = [];
 
-      return { context, page, targetFrame };
-    };
+      // Helper to extract for a specific viewport context
+      const processViewport = async ({ name, width, height, scale, isMobile }) => {
+        if (this.options.debug) console.log(`\n[INFO] Starting extraction for viewport: ${name} (${width}x${height}@${scale}x)`);
+        const context = await this.browser.newContext({
+          viewport: { width, height },
+          deviceScaleFactor: scale,
+          isMobile,
+          hasTouch: isMobile,
+          userAgent: isMobile
+            ? 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36'
+            : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+        });
 
-    let primaryContext = null;
-    let primaryPage = null;
-    let primaryFrame = null;
+        const page = await context.newPage();
+        page.setDefaultTimeout(this.options.timeout);
 
-    // Execute viewport captures according to configuration
-    if (this.options.viewport === 'mobile' || this.options.viewport === 'both') {
-      const res = await processViewport({
-        name: 'mobile',
-        width: this.options.mobileWidth,
-        height: this.options.mobileHeight,
-        scale: this.options.mobileScale,
-        isMobile: true
-      });
-      primaryContext = res.context;
-      primaryPage = res.page;
-      primaryFrame = res.targetFrame;
-    }
+        let response;
+        try {
+          response = await page.goto(navigationUrl, { waitUntil: 'load', timeout: this.options.timeout });
+        } catch (err) {
+          throw new CustomEngineError(`Failed to navigate to ${navigationUrl}: ${err.message}`, 'NAVIGATION_FAILED');
+        }
 
-    if (this.options.viewport === 'desktop' || this.options.viewport === 'both') {
-      const res = await processViewport({
-        name: 'desktop',
-        width: this.options.desktopWidth,
-        height: this.options.desktopHeight,
-        scale: this.options.desktopScale,
-        isMobile: false
-      });
-      if (!primaryFrame) {
+        if (response && response.status() >= 400) {
+          throw new CustomEngineError(
+            `Navigation failed: server responded with HTTP status ${response.status()} (${response.statusText() || 'Error'}) for ${navigationUrl}`,
+            'NAVIGATION_FAILED'
+          );
+        }
+
+        const targetFrame = await this.findArtifactFrame(page);
+        await this.waitForHydrationBarrier(page, targetFrame);
+
+        // Capture screenshots for this viewport
+        const screenshots = await this.screenshotter.captureViewport(page, targetFrame, {
+          name,
+          width,
+          height,
+          scale,
+          outputDir: outputScreenshotsDir
+        });
+        capturedScreenshots.push(...screenshots);
+
+        return { context, page, targetFrame };
+      };
+
+      let primaryContext = null;
+      let primaryPage = null;
+      let primaryFrame = null;
+
+      // Execute viewport captures according to configuration
+      if (this.options.viewport === 'mobile' || this.options.viewport === 'both') {
+        const res = await processViewport({
+          name: 'mobile',
+          width: this.options.mobileWidth,
+          height: this.options.mobileHeight,
+          scale: this.options.mobileScale,
+          isMobile: true
+        });
         primaryContext = res.context;
         primaryPage = res.page;
         primaryFrame = res.targetFrame;
       }
-    }
 
-    // 3. Coordinate DOM Walker & SVG Parser in primaryFrame
-    if (this.options.debug) console.log('[EXTRACT] Executing DOM Walker and SVG Parser...');
-    const domHierarchy = await walkDOM(primaryFrame, { debug: this.options.debug });
-    const vectorAssets = await extractSVGs(primaryFrame, {
-      outputDir: this.options.outputDir,
-      debug: this.options.debug
-    });
-
-    // 4. Assemble and validate design_spec.json
-    if (this.options.debug) console.log('[BUILD] Assembling and validating design_spec.json...');
-    const pageTitle = await primaryFrame.evaluate(() => document.title || 'Claude Design Artifact').catch(() => 'Claude Design Artifact');
-
-    const specResult = buildAndValidateSpec({
-      metadata: {
-        source: target,
-        timestamp: new Date().toISOString(),
-        generator: 'claude-to-compose-extractor/1.0.0',
-        title: pageTitle
-      },
-      viewports: {
-        mobile: {
-          width: this.options.mobileWidth,
-          height: this.options.mobileHeight,
-          deviceScaleFactor: this.options.mobileScale,
-          screenshotPath: 'screenshots/mobile_reference.png'
-        },
-        desktop: {
+      if (this.options.viewport === 'desktop' || this.options.viewport === 'both') {
+        const res = await processViewport({
+          name: 'desktop',
           width: this.options.desktopWidth,
           height: this.options.desktopHeight,
-          deviceScaleFactor: this.options.desktopScale,
-          screenshotPath: 'screenshots/desktop_reference.png'
+          scale: this.options.desktopScale,
+          isMobile: false
+        });
+        if (!primaryFrame) {
+          primaryContext = res.context;
+          primaryPage = res.page;
+          primaryFrame = res.targetFrame;
         }
-      },
-      domHierarchy,
-      vectorAssets,
-      outputDir: this.options.outputDir
-    });
-
-    if (!specResult.valid) {
-      throw new CustomEngineError(`design_spec.json failed schema validation: ${specResult.errors.join(', ')}`, 'SCHEMA_VALIDATION_FAILED');
-    }
-
-    // 5. Teardown
-    await this.cleanup();
-
-    function countNodes(node) {
-      if (!node) return 0;
-      let count = 1;
-      if (node.children && Array.isArray(node.children)) {
-        for (const child of node.children) count += countNodes(child);
       }
-      return count;
-    }
 
-    return {
-      success: true,
-      specPath: specResult.specPath,
-      screenshots: capturedScreenshots,
-      vectorCount: vectorAssets.length,
-      nodeCount: countNodes(domHierarchy)
-    };
+      // 3. Coordinate DOM Walker & SVG Parser in primaryFrame
+      if (this.options.debug) console.log('[EXTRACT] Executing DOM Walker and SVG Parser...');
+      const domHierarchy = await walkDOM(primaryFrame, { debug: this.options.debug });
+      const vectorAssets = await extractSVGs(primaryFrame, {
+        outputDir: this.options.outputDir,
+        debug: this.options.debug
+      });
+
+      // 4. Assemble and validate design_spec.json
+      if (this.options.debug) console.log('[BUILD] Assembling and validating design_spec.json...');
+      const pageTitle = await primaryFrame.evaluate(() => document.title || 'Claude Design Artifact').catch(() => 'Claude Design Artifact');
+
+      const specResult = buildAndValidateSpec({
+        metadata: {
+          source: target,
+          timestamp: new Date().toISOString(),
+          generator: 'claude-to-compose-extractor/1.0.0',
+          title: pageTitle
+        },
+        viewports: {
+          mobile: {
+            width: this.options.mobileWidth,
+            height: this.options.mobileHeight,
+            deviceScaleFactor: this.options.mobileScale,
+            screenshotPath: 'screenshots/mobile_reference.png'
+          },
+          desktop: {
+            width: this.options.desktopWidth,
+            height: this.options.desktopHeight,
+            deviceScaleFactor: this.options.desktopScale,
+            screenshotPath: 'screenshots/desktop_reference.png'
+          }
+        },
+        domHierarchy,
+        vectorAssets,
+        outputDir: this.options.outputDir
+      });
+
+      if (!specResult.valid) {
+        throw new CustomEngineError(`design_spec.json failed schema validation: ${specResult.errors.join(', ')}`, 'SCHEMA_VALIDATION_FAILED');
+      }
+
+      function countNodes(node) {
+        if (!node) return 0;
+        let count = 1;
+        if (node.children && Array.isArray(node.children)) {
+          for (const child of node.children) count += countNodes(child);
+        }
+        return count;
+      }
+
+      return {
+        success: true,
+        specPath: specResult.specPath,
+        screenshots: capturedScreenshots,
+        vectorCount: vectorAssets.length,
+        nodeCount: countNodes(domHierarchy)
+      };
+    } finally {
+      await this.cleanup();
+    }
   }
 
   async cleanup() {

@@ -7,11 +7,11 @@ import androidx.compose.ui.unit.dp
 
 val ClaudeShapes = Shapes(
     extraSmall = RoundedCornerShape(4.dp),
-    small = RoundedCornerShape(2.dp),
-    medium = RoundedCornerShape(10.dp),
-    large = RoundedCornerShape(20.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(48.dp),
+    large = RoundedCornerShape(100.dp),
     extraLarge = CircleShape
 )
 
-val CardShape = RoundedCornerShape(10.dp)
+val CardShape = RoundedCornerShape(48.dp)
 val PillShape = CircleShape

@@ -266,9 +266,9 @@ function evaluateRubric(scoresInput) {
         else if (criterion.id === 'touchTargets') val = scoresInput.touchTargets;
         else if (criterion.id === 'ripple') val = scoresInput.motion;
         else if (criterion.id === 'elevation') val = scoresInput.elevation;
-        else if (criterion.id === 'responsive') val = scoresInput.layout;
+        else if (criterion.id === 'responsive') val = scoresInput.vectors;
         else if (criterion.id === 'states') val = scoresInput.states;
-        else if (criterion.id === 'theme') val = scoresInput.color;
+        else if (criterion.id === 'theme') val = scoresInput.radii;
         else if (criterion.id === 'codeHygiene') val = scoresInput.accessibility;
         else val = scoresInput[keys[0]];
 
@@ -311,7 +311,15 @@ function evaluateRubric(scoresInput) {
   }
 
   const totalScore = scoreArray.reduce((sum, s) => sum + s, 0);
-  const hasVeto = scoreArray.some((s) => s < VETO_THRESHOLD);
+  const hasVeto =
+    scoreArray.some((s) => s < VETO_THRESHOLD) ||
+    Boolean(
+      customLegacyKeys &&
+        Object.values(customLegacyKeys).some((v) => {
+          const num = typeof v === 'number' ? v : v?.score;
+          return typeof num === 'number' && num < VETO_THRESHOLD;
+        })
+    );
   const passed = totalScore >= PASS_THRESHOLD && !hasVeto;
 
   const breakdown = {};
@@ -417,25 +425,35 @@ function auditSynthesizedCode(options = {}) {
   let touchTargetNotes = 'All buttons wrapped in minimumInteractiveComponentSize';
 
   const checkFileTouchTargets = (dirPath) => {
-    if (!fs.existsSync(dirPath)) return;
+    if (!fs.existsSync(dirPath) || hasTouchTargetVeto) return;
     const files = fs.readdirSync(dirPath).filter((f) => f.endsWith('.kt'));
     for (const file of files) {
       const content = fs.readFileSync(path.join(dirPath, file), 'utf8');
-      // Detect buttons with explicit undersized dimensions
-      const hasSmallSize =
-        /size\(\s*(?:1[0-9]|2[0-9]|3[0-9]|4[0-7])\.dp\s*\)/.test(content) ||
-        /width\(\s*(?:1[0-9]|2[0-9]|3[0-9]|4[0-7])\.dp\s*\)/.test(content) ||
-        /height\(\s*(?:1[0-9]|2[0-9]|3[0-9]|4[0-7])\.dp\s*\)/.test(content);
 
-      const hasMinModifier =
-        content.includes('minimumInteractiveComponentSize') ||
-        content.includes('defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)') ||
-        content.includes('minHeight = 48.dp');
+      // Check Button / IconButton / TextButton / OutlinedButton blocks
+      const buttonMatches = content.match(/(?:Button|IconButton|TextButton|OutlinedButton|Tab)\s*\([\s\S]*?\n\s*\)/g) || [];
+      for (const block of buttonMatches) {
+        const hasSmall =
+          /size\(\s*(?:[1-9]|[1-3][0-9]|4[0-7])\.dp\s*\)/.test(block) ||
+          /(?:width|height)\(\s*(?:[1-9]|[1-3][0-9]|4[0-7])\.dp\s*\)/.test(block);
+        const hasMin =
+          block.includes('minimumInteractiveComponentSize') ||
+          block.includes('minHeight = 48.dp') ||
+          block.includes('minWidth = 48.dp') ||
+          block.includes('defaultMinSize');
+        if (hasSmall && !hasMin) {
+          hasTouchTargetVeto = true;
+          touchTargetNotes = `Component ${file} contains button < 48dp without minimumInteractiveComponentSize modifier.`;
+          return;
+        }
+      }
 
-      if (hasSmallSize && !hasMinModifier) {
+      // Check standalone clickable modifiers with undersized dimensions
+      const smallClickablePattern = /(?:Modifier|\.then)\s*(?:\.[a-zA-Z0-9_]+\s*\([^)]*\))*\.clickable[\s\S]*?size\(\s*(?:[1-9]|[1-3][0-9]|4[0-7])\.dp\s*\)/;
+      if (smallClickablePattern.test(content) && !content.includes('minimumInteractiveComponentSize')) {
         hasTouchTargetVeto = true;
-        touchTargetNotes = `Component ${file} contains interactive element < 48dp without minimumInteractiveComponentSize modifier.`;
-        break;
+        touchTargetNotes = `Component ${file} contains clickable element < 48dp without minimumInteractiveComponentSize modifier.`;
+        return;
       }
     }
   };

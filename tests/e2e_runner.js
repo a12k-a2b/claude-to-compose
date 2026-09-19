@@ -76,14 +76,23 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 const FIXTURES_DIR = path.resolve(__dirname, 'fixtures');
 
 // Parse CLI arguments
-function parseArguments() {
-  const args = process.argv.slice(2);
+function parseArgs(customArgs) {
+  const args = customArgs || process.argv.slice(2);
   const options = {
     tier: null,
     filter: null,
     verbose: false,
     help: false
   };
+
+  function validateTier(val) {
+    const parsed = parseInt(val, 10);
+    if (![1, 2, 3, 4].includes(parsed) || String(parsed) !== String(val).trim()) {
+      console.error(`Error: Invalid tier "${val}". Valid tiers are 1, 2, 3, 4.`);
+      process.exit(2);
+    }
+    return parsed;
+  }
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -92,20 +101,25 @@ function parseArguments() {
     } else if (arg === '--verbose' || arg === '-v') {
       options.verbose = true;
     } else if (arg === '--tier' || arg === '-t') {
-      options.tier = parseInt(args[++i], 10);
+      const val = args[++i];
+      options.tier = validateTier(val);
     } else if (arg.startsWith('--tier=')) {
-      options.tier = parseInt(arg.split('=')[1], 10);
+      const val = arg.slice(arg.indexOf('=') + 1);
+      options.tier = validateTier(val);
     } else if (arg.startsWith('-t=')) {
-      options.tier = parseInt(arg.split('=')[1], 10);
+      const val = arg.slice(arg.indexOf('=') + 1);
+      options.tier = validateTier(val);
     } else if (arg === '--filter' || arg === '-f') {
       options.filter = new RegExp(args[++i], 'i');
     } else if (arg.startsWith('--filter=')) {
-      options.filter = new RegExp(arg.split('=')[1], 'i');
+      options.filter = new RegExp(arg.slice(arg.indexOf('=') + 1), 'i');
     }
   }
 
   return options;
 }
+
+const parseArguments = parseArgs;
 
 // Test Context passed to each test function
 function createTestContext(testId, testName) {
@@ -208,7 +222,7 @@ function discoverTestFiles(tier) {
   };
 
   const targetDir = tierDirs[tier];
-  if (!fs.existsSync(targetDir)) {
+  if (!targetDir || typeof targetDir !== 'string' || !fs.existsSync(targetDir)) {
     return [];
   }
 
@@ -296,7 +310,7 @@ Options:
     process.exit(0);
   }
 
-  const selectedTiers = options.tier ? [options.tier] : [1, 2, 3, 4];
+  const selectedTiers = options.tier !== null ? [options.tier] : [1, 2, 3, 4];
 
   console.log(c.bold('\n' + '='.repeat(80)));
   console.log(c.bold('  CLAUDE-TO-COMPOSE: OPAQUE-BOX E2E TEST RUNNER'));
@@ -318,19 +332,53 @@ Options:
   for (const tier of selectedTiers) {
     const tierStart = performance.now();
     const testFiles = discoverTestFiles(tier);
+    const tierMeta = tierResults[tier] || { name: `Tier ${tier}` };
 
-    console.log(c.bold(`─── ${tierResults[tier].name} (${testFiles.length} suites) ───`));
+    console.log(c.bold(`─── ${tierMeta.name} (${testFiles.length} suites) ───`));
 
     for (const file of testFiles) {
       let suite;
       try {
         suite = require(file);
       } catch (requireErr) {
-        console.log(`  ${c.red('✗')} Failed to load suite file: ${path.basename(file)}: ${requireErr.message}`);
+        const suiteBase = path.basename(file);
+        console.log(`  ${c.red('✗')} Failed to load suite file: ${suiteBase}: ${requireErr.message}`);
+        const failure = {
+          id: `LOAD_FAIL_${suiteBase}`,
+          name: `Failed to load suite file: ${suiteBase}`,
+          suiteName: suiteBase,
+          tier,
+          status: 'FAIL',
+          error: requireErr,
+          duration: 0
+        };
+        if (tierResults[tier]) {
+          tierResults[tier].total++;
+          tierResults[tier].failed++;
+          tierResults[tier].tests.push(failure);
+        }
+        allFailures.push(failure);
         continue;
       }
 
       if (!suite || !Array.isArray(suite.tests)) {
+        const suiteBase = path.basename(file);
+        console.log(`  ${c.red('✗')} Invalid suite file structure (missing tests array): ${suiteBase}`);
+        const failure = {
+          id: `INVALID_SUITE_${suiteBase}`,
+          name: `Invalid suite file structure (missing tests array): ${suiteBase}`,
+          suiteName: suiteBase,
+          tier,
+          status: 'FAIL',
+          error: new Error(`Suite file "${suiteBase}" does not export a tests array`),
+          duration: 0
+        };
+        if (tierResults[tier]) {
+          tierResults[tier].total++;
+          tierResults[tier].failed++;
+          tierResults[tier].tests.push(failure);
+        }
+        allFailures.push(failure);
         continue;
       }
 
@@ -432,6 +480,7 @@ Options:
 
   for (const tier of selectedTiers) {
     const tr = tierResults[tier];
+    if (!tr) continue;
     grandTotal += tr.total;
     grandPassed += tr.passed;
     grandUnimplemented += tr.unimplemented;
@@ -484,5 +533,8 @@ module.exports = {
   createTestContext,
   UnimplementedError,
   SkipTestError,
+  parseArgs,
+  parseArguments,
+  discoverTestFiles,
   main
 };

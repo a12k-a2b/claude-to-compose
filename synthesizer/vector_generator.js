@@ -41,14 +41,15 @@ class VectorGenerator {
    * @param {Object} dim - { width, height, viewBox }
    * @returns {{ width: number, height: number, viewportWidth: number, viewportHeight: number }}
    */
-  static getSafeVectorDimensions(dim = {}) {
-    let w = parseFloat(dim.width) || 0;
-    let h = parseFloat(dim.height) || 0;
+  static getSafeVectorDimensions(dim) {
+    const d = dim || {};
+    let w = parseFloat(d.width) || 0;
+    let h = parseFloat(d.height) || 0;
     let vw = w;
     let vh = h;
 
-    if (dim.viewBox && typeof dim.viewBox === 'string') {
-      const parts = dim.viewBox.trim().split(/[\s,]+/).map(Number);
+    if (d.viewBox && typeof d.viewBox === 'string') {
+      const parts = d.viewBox.trim().split(/[\s,]+/).map(Number);
       if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
         vw = parts[2];
         vh = parts[3];
@@ -318,8 +319,9 @@ class VectorGenerator {
    * @returns {string} Android XML VectorDrawable
    */
   static generateVectorDrawableXml(vector) {
-    const dim = VectorGenerator.getSafeVectorDimensions(vector);
-    const paths = vector.paths && vector.paths.length > 0 ? vector.paths : [];
+    const vec = vector || {};
+    const dim = VectorGenerator.getSafeVectorDimensions(vec);
+    const paths = (vec.paths || []).filter(p => p && typeof p === 'object');
 
     let xml = `<?xml version="1.0" encoding="utf-8"?>\n`;
     xml += `<vector xmlns:android="http://schemas.android.com/apk/res/android"\n`;
@@ -377,9 +379,10 @@ class VectorGenerator {
     code += `public object ${className}\n\n`;
 
     const generatedNames = new Set();
+    const safeVectors = (vectors || []).filter(v => v && typeof v === 'object');
 
-    for (let idx = 0; idx < vectors.length; idx++) {
-      const vec = vectors[idx];
+    for (let idx = 0; idx < safeVectors.length; idx++) {
+      const vec = safeVectors[idx];
       let baseName = VectorGenerator.toPascalCase(vec.name || `Icon_${idx + 1}`);
       if (!baseName.endsWith('Icon')) baseName += 'Icon';
 
@@ -390,11 +393,13 @@ class VectorGenerator {
       }
       generatedNames.add(propName);
 
-      const backingField = `_${propName.charAt(0).toLowerCase() + propName.slice(1)}`;
+      const safeProp = /^[0-9]/.test(propName) ? `\`${propName}\`` : propName;
+      const cleanPropForField = propName.replace(/`/g, '');
+      const backingField = `_${cleanPropForField.charAt(0).toLowerCase() + cleanPropForField.slice(1)}`;
       const dim = VectorGenerator.getSafeVectorDimensions(vec);
-      const paths = vec.paths && vec.paths.length > 0 ? vec.paths : [];
+      const paths = (vec.paths || []).filter(p => p && typeof p === 'object');
 
-      code += `public val ${className}.${propName}: ImageVector\n`;
+      code += `public val ${className}.${safeProp}: ImageVector\n`;
       code += `    get() {\n`;
       code += `        if (${backingField} != null) return ${backingField}!!\n`;
       code += `        ${backingField} = ImageVector.Builder(\n`;

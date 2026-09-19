@@ -19,11 +19,12 @@ const KOTLIN_KEYWORDS = new Set([
  */
 function sanitizeIdentifier(name) {
   if (!name || typeof name !== 'string') return 'item';
-  const clean = name.trim();
-  if (KOTLIN_KEYWORDS.has(clean.toLowerCase())) {
+  const clean = name.trim().replace(/[^a-zA-Z0-9_]/g, '');
+  if (!clean) return 'item';
+  if (KOTLIN_KEYWORDS.has(clean.toLowerCase()) || /^[0-9]/.test(clean)) {
     return `\`${clean}\``;
   }
-  return clean.replace(/[^a-zA-Z0-9_]/g, '') || 'item';
+  return clean;
 }
 
 /**

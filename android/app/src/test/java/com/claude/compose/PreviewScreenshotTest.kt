@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
+import com.claude.compose.screen.DaylightOnboardingScreen
 import com.claude.compose.screen.ClaudeDesignScreen
 import com.claude.compose.theme.AppTheme
 import org.junit.Assert.assertTrue
@@ -41,15 +42,7 @@ class PreviewScreenshotTest {
     @Test
     fun renderAndExportPreviewScreenshot() {
         composeTestRule.setContent {
-            AppTheme(darkTheme = false) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                ) {
-                    ClaudeDesignScreen()
-                }
-            }
+            DaylightOnboardingScreen()
         }
 
         // Wait for composition, layouts, and animations to stabilize

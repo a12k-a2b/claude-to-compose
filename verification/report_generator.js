@@ -103,7 +103,10 @@ function generateReportMarkdown(data = {}) {
   const auditPassed = audit.passed !== undefined ? audit.passed : auditScore >= 90 && !hasVeto;
 
   const diffSimilarity = diff.pixelSimilarityPercentage;
-  const diffPassed = diffSimilarity !== undefined ? diffSimilarity >= 90.0 : true;
+  const diffPassed =
+    typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)
+      ? diffSimilarity >= 90.0
+      : true;
 
   const overallPassed = buildPassed && auditPassed && diffPassed;
   const verdictBanner = generateVerdictBanner(overallPassed);
@@ -122,7 +125,7 @@ function generateReportMarkdown(data = {}) {
   md += `- **Target Application**: ${escapeMarkdown(appName)}\n`;
   md += `- **Overall Score**: ${auditScore} / 100 (Pass threshold: >= 90)\n`;
   md += `- **Build Status**: ${buildPassed ? 'PASSED' : 'FAILED'}\n`;
-  if (diffSimilarity !== undefined) {
+  if (typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)) {
     md += `- **Visual Similarity**: ${diffSimilarity.toFixed(1)}%\n`;
   }
   md += `\n`;
@@ -140,13 +143,13 @@ function generateReportMarkdown(data = {}) {
 
   // Section 3: Programmatic Visual Diff Analysis
   md += `## 3. Programmatic Visual Diff Analysis\n`;
-  if (diffSimilarity !== undefined) {
+  if (typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)) {
     md += `- Pixel Similarity: ${diffSimilarity.toFixed(1)}%\n`;
   }
-  if (diff.mssimScore !== undefined) {
+  if (typeof diff.mssimScore === 'number' && !Number.isNaN(diff.mssimScore)) {
     md += `- MSSIM Score: ${diff.mssimScore.toFixed(3)}\n`;
   }
-  if (diff.pixelMismatchCount !== undefined) {
+  if (typeof diff.pixelMismatchCount === 'number' && !Number.isNaN(diff.pixelMismatchCount)) {
     md += `- Pixel Mismatch Count: ${diff.pixelMismatchCount}\n`;
   }
   md += `\n`;

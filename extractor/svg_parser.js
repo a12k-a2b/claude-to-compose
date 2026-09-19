@@ -22,8 +22,10 @@ class SvgParser {
     const heightMatch = rawSvgText.match(/\bheight=["']([^"']+)["']/i);
 
     let viewBox = viewBoxMatch ? viewBoxMatch[1].trim() : null;
-    const width = widthMatch ? parseFloat(widthMatch[1]) : (computedContext.width || 24);
-    const height = heightMatch ? parseFloat(heightMatch[1]) : (computedContext.height || 24);
+    const parsedWidth = widthMatch ? parseFloat(widthMatch[1]) : NaN;
+    const parsedHeight = heightMatch ? parseFloat(heightMatch[1]) : NaN;
+    const width = Number.isFinite(parsedWidth) ? parsedWidth : (computedContext.width || 24);
+    const height = Number.isFinite(parsedHeight) ? parsedHeight : (computedContext.height || 24);
 
     if (!viewBox) {
       viewBox = `0 0 ${width} ${height}`;
@@ -85,8 +87,8 @@ class SvgParser {
       const y = parseFloat(attrs.match(/\by=["']([^"']+)["']/i)?.[1] || 0);
       const w = parseFloat(attrs.match(/\bwidth=["']([^"']+)["']/i)?.[1] || 0);
       const h = parseFloat(attrs.match(/\bheight=["']([^"']+)["']/i)?.[1] || 0);
-      let rx = parseFloat(attrs.match(/\brx=["']([^"']+)["']/i)?.[1] || 0);
-      let ry = parseFloat(attrs.match(/\bry=["']([^"']+)["']/i)?.[1] || 0);
+      let rx = Math.max(0, parseFloat(attrs.match(/\brx=["']([^"']+)["']/i)?.[1] || 0) || 0);
+      let ry = Math.max(0, parseFloat(attrs.match(/\bry=["']([^"']+)["']/i)?.[1] || 0) || 0);
       const fill = attrs.match(/\bfill=["']([^"']+)["']/i)?.[1];
       const stroke = attrs.match(/\bstroke=["']([^"']+)["']/i)?.[1];
       const strokeWidth = parseFloat(attrs.match(/\bstroke-width=["']([^"']+)["']/i)?.[1] || 1);
@@ -133,7 +135,7 @@ class SvgParser {
       const pts = (attrs.match(/\bpoints=["']([^"']+)["']/i)?.[1] || '').trim().split(/[\s,]+/).map(Number);
       if (pts.length >= 2) {
         let d = `M ${pts[0]},${pts[1]}`;
-        for (let i = 2; i < pts.length; i += 2) d += ` L ${pts[i]},${pts[i + 1]}`;
+        for (let i = 2; i + 1 < pts.length; i += 2) d += ` L ${pts[i]},${pts[i + 1]}`;
         if (isPolygon) d += ' Z';
 
         const fill = attrs.match(/\bfill=["']([^"']+)["']/i)?.[1];

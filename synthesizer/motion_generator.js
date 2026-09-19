@@ -33,11 +33,11 @@ class MotionGenerator {
    * @returns {string}
    */
   static resolveAnimationSpec(durationMs, easing = 'ease', delayMs = 0) {
-    if (typeof durationMs !== 'number' || durationMs <= 0) {
+    if (!Number.isFinite(durationMs) || durationMs <= 0) {
       return 'snap()';
     }
     const composeEasing = MotionGenerator.mapCssEasing(easing);
-    const delayParam = delayMs > 0 ? `, delayMillis = ${delayMs}` : '';
+    const delayParam = Number.isFinite(delayMs) && delayMs > 0 ? `, delayMillis = ${delayMs}` : '';
     return `tween(durationMillis = ${Math.round(durationMs)}${delayParam}, easing = ${composeEasing})`;
   }
 
@@ -49,7 +49,7 @@ class MotionGenerator {
    * @returns {boolean}
    */
   static validateSpringParams(damping, stiffness) {
-    if (typeof damping !== 'number' || damping <= 0 || typeof stiffness !== 'number' || stiffness <= 0) {
+    if (!Number.isFinite(damping) || damping <= 0 || !Number.isFinite(stiffness) || stiffness <= 0) {
       throw new Error('InvalidSpringParamsError: Damping and stiffness must be positive');
     }
     return true;
@@ -63,7 +63,7 @@ class MotionGenerator {
    * @returns {boolean}
    */
   static validateTargetDimensions(w, h) {
-    if (typeof w !== 'number' || w <= 0 || typeof h !== 'number' || h <= 0) {
+    if (!Number.isFinite(w) || w <= 0 || !Number.isFinite(h) || h <= 0) {
       throw new Error('ZeroDimensionTargetError: Interactive component cannot have 0 size');
     }
     return true;

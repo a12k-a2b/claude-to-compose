@@ -187,8 +187,9 @@ class VerificationPipeline {
       !pipelineResult.stages.audit?.veto;
 
     const diffSuccess =
-      !pipelineResult.stages.diff?.metrics ||
-      pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= 90.0;
+      pipelineResult.stages.diff?.success !== false &&
+      (!pipelineResult.stages.diff?.metrics ||
+        pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= 90.0);
 
     const overallPassed = buildSuccess && auditSuccess && diffSuccess;
     pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';

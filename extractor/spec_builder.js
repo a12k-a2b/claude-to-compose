@@ -131,28 +131,28 @@ class SpecBuilder {
           const r = node.style.borderRadius;
           if (typeof r === 'object') {
             if (r.isPill || r.isCircle) radii.add(9999);
-            if (r.topLeft && r.topLeft > 0) radii.add(Math.round(r.topLeft));
-            if (r.topRight && r.topRight > 0) radii.add(Math.round(r.topRight));
-            if (r.bottomRight && r.bottomRight > 0) radii.add(Math.round(r.bottomRight));
-            if (r.bottomLeft && r.bottomLeft > 0) radii.add(Math.round(r.bottomLeft));
-          } else if (typeof r === 'number' && r > 0) {
+            if (Number.isFinite(r.topLeft) && r.topLeft > 0) radii.add(Math.round(r.topLeft));
+            if (Number.isFinite(r.topRight) && r.topRight > 0) radii.add(Math.round(r.topRight));
+            if (Number.isFinite(r.bottomRight) && r.bottomRight > 0) radii.add(Math.round(r.bottomRight));
+            if (Number.isFinite(r.bottomLeft) && r.bottomLeft > 0) radii.add(Math.round(r.bottomLeft));
+          } else if (Number.isFinite(r) && r > 0) {
             radii.add(Math.round(r));
           }
         }
       }
 
       if (node.layout) {
-        if (typeof node.layout.gap === 'number' && node.layout.gap > 0) spacings.add(Math.round(node.layout.gap));
+        if (Number.isFinite(node.layout.gap) && node.layout.gap > 0) spacings.add(Math.round(node.layout.gap));
         if (node.layout.padding) {
           ['top', 'right', 'bottom', 'left'].forEach(k => {
             const v = node.layout.padding[k];
-            if (typeof v === 'number' && v > 0) spacings.add(Math.round(v));
+            if (Number.isFinite(v) && v > 0) spacings.add(Math.round(v));
           });
         }
         if (node.layout.margin) {
           ['top', 'right', 'bottom', 'left'].forEach(k => {
             const v = node.layout.margin[k];
-            if (typeof v === 'number' && v > 0) spacings.add(Math.round(v));
+            if (Number.isFinite(v) && v > 0) spacings.add(Math.round(v));
           });
         }
       }
@@ -298,7 +298,7 @@ class SpecBuilder {
     };
 
     // 3. Dynamic Radii Synthesis
-    const extractedRadii = Array.from(radii).filter(r => typeof r === 'number' && r > 0 && r < 999).sort((a, b) => a - b);
+    const extractedRadii = Array.from(radii).filter(r => Number.isFinite(r) && r > 0 && r < 999).sort((a, b) => a - b);
     let small = 4, medium = 8, large = 16;
     if (extractedRadii.length === 1) {
       medium = extractedRadii[0];
@@ -396,9 +396,55 @@ class SpecBuilder {
   }
 
   /**
+   * Sanitizes hierarchy nodes, removing non-finite numeric properties that break JSON schema.
+   */
+  sanitizeHierarchy(node) {
+    if (!node || typeof node !== 'object') return;
+    if (node.layout && typeof node.layout === 'object') {
+      for (const [k, v] of Object.entries(node.layout)) {
+        if (typeof v === 'number' && !Number.isFinite(v)) {
+          delete node.layout[k];
+        } else if (v && typeof v === 'object') {
+          for (const [subK, subV] of Object.entries(v)) {
+            if (typeof subV === 'number' && !Number.isFinite(subV)) {
+              delete v[subK];
+            }
+          }
+        }
+      }
+    }
+    if (node.style && typeof node.style === 'object') {
+      for (const [k, v] of Object.entries(node.style)) {
+        if (typeof v === 'number' && !Number.isFinite(v)) {
+          delete node.style[k];
+        } else if (v && typeof v === 'object') {
+          for (const [subK, subV] of Object.entries(v)) {
+            if (typeof subV === 'number' && !Number.isFinite(subV)) {
+              delete v[subK];
+            }
+          }
+        }
+      }
+    }
+    if (node.children && Array.isArray(node.children)) {
+      for (const child of node.children) {
+        this.sanitizeHierarchy(child);
+      }
+    }
+  }
+
+  /**
    * Builds the complete design specification object
    */
-  buildSpec({ metadata = {}, viewports = {}, domHierarchy, vectorAssets = [] }) {
+  buildSpec({ metadata = {}, viewports = {}, domHierarchy, vectorAssets = [] } = {}) {
+    const meta = metadata || {};
+    const vports = viewports || {};
+    const vectors = vectorAssets || [];
+
+    if (domHierarchy) {
+      this.sanitizeHierarchy(domHierarchy);
+    }
+
     const tokens = this.collectTokens(domHierarchy);
     const theme = this.synthesizeTheme(tokens);
 
@@ -410,30 +456,30 @@ class SpecBuilder {
       $schema: 'https://json-schema.org/draft/2020-12/schema',
       version: '1.0.0',
       metadata: {
-        title: metadata.title || 'Claude Design Artifact',
-        source: metadata.source || 'inline',
-        timestamp: metadata.timestamp || new Date().toISOString(),
-        generator: metadata.generator || 'claude-to-compose-extractor/1.0.0'
+        title: meta.title || 'Claude Design Artifact',
+        source: meta.source || 'inline',
+        timestamp: meta.timestamp || new Date().toISOString(),
+        generator: meta.generator || 'claude-to-compose-extractor/1.0.0'
       },
       viewports: {
         mobile: {
-          width: Math.round(viewports.mobile?.width || 390),
-          height: Math.round(viewports.mobile?.height || 844),
-          deviceScaleFactor: viewports.mobile?.deviceScaleFactor || 3.0,
-          scale: viewports.mobile?.deviceScaleFactor || 3.0,
-          screenshotPath: viewports.mobile?.screenshotPath || 'screenshots/mobile_reference.png'
+          width: Math.round(vports.mobile?.width || 390),
+          height: Math.round(vports.mobile?.height || 844),
+          deviceScaleFactor: vports.mobile?.deviceScaleFactor || 3.0,
+          scale: vports.mobile?.deviceScaleFactor || 3.0,
+          screenshotPath: vports.mobile?.screenshotPath || 'screenshots/mobile_reference.png'
         },
         desktop: {
-          width: Math.round(viewports.desktop?.width || 1440),
-          height: Math.round(viewports.desktop?.height || 900),
-          deviceScaleFactor: viewports.desktop?.deviceScaleFactor || 2.0,
-          scale: viewports.desktop?.deviceScaleFactor || 2.0,
-          screenshotPath: viewports.desktop?.screenshotPath || 'screenshots/desktop_reference.png'
+          width: Math.round(vports.desktop?.width || 1440),
+          height: Math.round(vports.desktop?.height || 900),
+          deviceScaleFactor: vports.desktop?.deviceScaleFactor || 2.0,
+          scale: vports.desktop?.deviceScaleFactor || 2.0,
+          screenshotPath: vports.desktop?.screenshotPath || 'screenshots/desktop_reference.png'
         }
       },
       theme,
       hierarchy: domHierarchy,
-      vectors: vectorAssets
+      vectors
     };
 
     return spec;

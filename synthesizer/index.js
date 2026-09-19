@@ -113,7 +113,7 @@ class SynthesizerOrchestrator {
     const emittedFiles = [];
 
     // 1. Tokens Synthesis
-    const tokenFiles = TokenGenerator.generateTokens(spec.theme, {
+    const tokenFiles = TokenGenerator.generateTokens(spec.theme || {}, {
       outputDir: themeDir,
       packageName: `${basePackage}.theme`
     });
@@ -122,7 +122,7 @@ class SynthesizerOrchestrator {
     }
 
     // 2. Vector Graphics Synthesis
-    const vectors = spec.vectors || [];
+    const vectors = (spec.vectors || []).filter(v => v && typeof v === 'object');
     if (vectorTarget === 'compose' || vectorTarget === 'both') {
       const imageVectorCode = VectorGenerator.generateImageVectorFile(vectors, {
         packageName: `${basePackage}.icons`,

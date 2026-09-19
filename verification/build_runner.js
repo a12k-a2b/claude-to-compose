@@ -49,8 +49,8 @@ class BuildRunner {
    * @returns {string|null}
    */
   static resolveAndroidSdk(localPropContent, envVar) {
-    if (localPropContent && localPropContent.includes('sdk.dir=')) {
-      const match = localPropContent.match(/sdk\.dir=(.*)/);
+    if (localPropContent) {
+      const match = localPropContent.match(/^\s*sdk\.dir\s*=\s*(.*)$/m);
       if (match && match[1].trim()) return match[1].trim();
     }
     if (envVar && envVar.trim()) return envVar.trim();

@@ -24,16 +24,16 @@ function cssColorToCompose(cssColor) {
   // Handle Hex
   if (str.startsWith('#')) {
     const clean = str.replace('#', '');
-    if (clean.length === 3) {
+    if (clean.length === 3 && /^[0-9a-f]{3}$/i.test(clean)) {
       const r = clean[0] + clean[0];
       const g = clean[1] + clean[1];
       const b = clean[2] + clean[2];
       return `Color(0xFF${(r + g + b).toUpperCase()})`;
     }
-    if (clean.length === 6) {
+    if (clean.length === 6 && /^[0-9a-f]{6}$/i.test(clean)) {
       return `Color(0xFF${clean.toUpperCase()})`;
     }
-    if (clean.length === 8) {
+    if (clean.length === 8 && /^[0-9a-f]{8}$/i.test(clean)) {
       // CSS hex8 is #RRGGBBAA -> Convert to ARGB for Kotlin Color (0xAARRGGBB)
       const rr = clean.slice(0, 2);
       const gg = clean.slice(2, 4);
@@ -41,16 +41,18 @@ function cssColorToCompose(cssColor) {
       const aa = clean.slice(6, 8);
       return `Color(0x${(aa + rr + gg + bb).toUpperCase()})`;
     }
+    return 'Color(0xFF000000)';
   }
 
   // Handle rgba(r, g, b, a) or rgb(r, g, b)
   const rgbaMatch = str.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)/);
   if (rgbaMatch) {
-    const r = parseInt(rgbaMatch[1], 10).toString(16).padStart(2, '0');
-    const g = parseInt(rgbaMatch[2], 10).toString(16).padStart(2, '0');
-    const b = parseInt(rgbaMatch[3], 10).toString(16).padStart(2, '0');
+    const clamp = (v) => Math.max(0, Math.min(255, v));
+    const r = clamp(parseInt(rgbaMatch[1], 10)).toString(16).padStart(2, '0');
+    const g = clamp(parseInt(rgbaMatch[2], 10)).toString(16).padStart(2, '0');
+    const b = clamp(parseInt(rgbaMatch[3], 10)).toString(16).padStart(2, '0');
     const alphaVal = rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1.0;
-    const a = Math.round(alphaVal * 255).toString(16).padStart(2, '0');
+    const a = clamp(Math.round((Number.isFinite(alphaVal) ? alphaVal : 1.0) * 255)).toString(16).padStart(2, '0');
     return `Color(0x${(a + r + g + b).toUpperCase()})`;
   }
 
@@ -82,7 +84,7 @@ function normalizeFontWeight(weight) {
  * @returns {string} e.g. "24.sp" or "(-0.5).sp"
  */
 function formatSp(value) {
-  if (typeof value !== 'number' || isNaN(value)) return '0.sp';
+  if (!Number.isFinite(value)) return '0.sp';
   if (value < 0) {
     return `(-${Math.abs(value)}).sp`;
   }
@@ -93,12 +95,13 @@ function formatSp(value) {
  * Generates Color.kt
  */
 function generateColorFile(theme, packageName) {
-  const light = (theme && theme.colors && theme.colors.light) || {};
-  const dark = (theme && theme.colors && theme.colors.dark) || {};
+  const colors = (theme && theme.colors) || {};
+  const light = colors.light || {};
+  const dark = colors.dark || {};
 
-  const primaryColor = light.primary || theme.colors?.primary || '#4F46E5';
-  const backgroundColor = light.background || theme.colors?.background || '#FFFFFF';
-  const surfaceColor = light.surface || theme.colors?.surface || '#FFFFFF';
+  const primaryColor = light.primary || colors.primary || '#4F46E5';
+  const backgroundColor = light.background || colors.background || '#FFFFFF';
+  const surfaceColor = light.surface || colors.surface || '#FFFFFF';
 
   return `package ${packageName}.theme
 
@@ -106,11 +109,11 @@ import androidx.compose.ui.graphics.Color
 
 // Primary & Brand Tokens
 val PrimaryIndigo = ${cssColorToCompose(primaryColor)}
-val PrimaryHover = ${cssColorToCompose(theme.colors?.primaryHover || '#4338CA')}
+val PrimaryHover = ${cssColorToCompose(colors.primaryHover || '#4338CA')}
 val SecondaryEmerald = ${cssColorToCompose(light.secondary || '#10B981')}
 val TertiaryAmber = ${cssColorToCompose(light.tertiary || '#F59E0B')}
 val ErrorRed = ${cssColorToCompose(light.error || '#EF4444')}
-val SuccessGreen = ${cssColorToCompose(theme.colors?.success || '#10B981')}
+val SuccessGreen = ${cssColorToCompose(colors.success || '#10B981')}
 
 // Named Surface Tokens
 val PageBackground = ${cssColorToCompose(backgroundColor)}
