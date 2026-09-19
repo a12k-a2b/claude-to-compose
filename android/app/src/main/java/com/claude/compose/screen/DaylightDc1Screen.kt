@@ -210,8 +210,8 @@ fun DaylightDc1Screen(
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
                     .minimumInteractiveComponentSize()
-                    .height(46.dp)
-                    .width(146.dp)
+                    .height(48.dp)
+                    .width(138.dp)
             ) {
                 Text(
                     text = "Get started",
