@@ -47,8 +47,13 @@ async function verifyPreview(targetPath) {
   console.log(`[INFO] Dimensions: ${metadata.width} x ${metadata.height}`);
   console.log(`[INFO] Format: ${metadata.format} (channels: ${metadata.channels})`);
 
-  if (metadata.width !== 1080 || metadata.height !== 2400) {
-    console.warn(`[WARN] Dimensions are ${metadata.width}x${metadata.height}, expected standard 1080x2400.`);
+  const isDc1 = (metadata.width === 1184 && metadata.height === 1584);
+  const isPhone = (metadata.width === 1080 && metadata.height === 2400);
+
+  if (!isDc1 && !isPhone) {
+    console.warn(`[WARN] Dimensions are ${metadata.width}x${metadata.height}, expected 1184x1584 (DC1) or 1080x2400 (Phone).`);
+  } else if (isDc1) {
+    console.log(`[PASS] Dimensions match Daylight DC1 hardware specification (1184 x 1584).`);
   }
 
   const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });

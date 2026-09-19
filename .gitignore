@@ -29,5 +29,8 @@ android/.kotlin/
 .agents/
 
 # Scratch & test artifacts
-daylight_*
+/daylight_*.html
+/daylight_script_*.js
 scripts/*.png
+!android/app/src/main/res/drawable-nodpi/daylight_logo.png
+!daylight_dc1_screen_reference.png

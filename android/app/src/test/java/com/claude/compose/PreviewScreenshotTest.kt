@@ -5,18 +5,11 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
-import com.claude.compose.screen.DaylightOnboardingScreen
-import com.claude.compose.screen.ClaudeDesignScreen
-import com.claude.compose.theme.AppTheme
+import com.claude.compose.screen.DaylightDc1Screen
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +23,7 @@ import java.io.FileOutputStream
 @RunWith(RobolectricTestRunner::class)
 @Config(
     sdk = [34],
-    qualifiers = "w360dp-h800dp-xxhdpi" // 360x800dp @ 3x density = 1080x2400px
+    qualifiers = "w592dp-h792dp-xhdpi" // 592x792dp @ 2x density = 1184x1584px (Daylight DC1 10.5in 4:3 native)
 )
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class PreviewScreenshotTest {
@@ -42,7 +35,7 @@ class PreviewScreenshotTest {
     @Test
     fun renderAndExportPreviewScreenshot() {
         composeTestRule.setContent {
-            DaylightOnboardingScreen()
+            DaylightDc1Screen()
         }
 
         // Wait for composition, layouts, and animations to stabilize
@@ -56,14 +49,14 @@ class PreviewScreenshotTest {
             captureComposeViewViaSkia()
         }
 
-        // Validate exact 1080x2400 dimensions required by visual diff pipeline
-        val scaledBitmap = if (androidBitmap.width != 1080 || androidBitmap.height != 2400) {
-            Bitmap.createScaledBitmap(androidBitmap, 1080, 2400, true)
+        // Validate exact 1184x1584 dimensions required by Daylight DC1 visual diff pipeline
+        val scaledBitmap = if (androidBitmap.width != 1184 || androidBitmap.height != 1584) {
+            Bitmap.createScaledBitmap(androidBitmap, 1184, 1584, true)
         } else {
             androidBitmap
         }
 
-        // Validate that rendered preview actually contains rendered Compose UI elements (non-white pixels)
+        // Validate that rendered preview contains rendered Compose UI elements (non-white pixels)
         var nonWhitePixels = 0
         for (y in 0 until scaledBitmap.height) {
             for (x in 0 until scaledBitmap.width) {
@@ -108,13 +101,13 @@ class PreviewScreenshotTest {
     }
 
     /**
-     * Fallback headless renderer executing direct Skia layout and canvas drawing.
+     * Fallback headless renderer executing direct Skia layout and canvas drawing at DC1 resolution.
      */
     private fun captureComposeViewViaSkia(): Bitmap {
         val activity = composeTestRule.activity
         val rootLayout = activity.findViewById<ViewGroup>(android.R.id.content)
-        val width = 1080
-        val height = 2400
+        val width = 1184
+        val height = 1584
 
         rootLayout.measure(
             View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),

@@ -93,19 +93,18 @@ fun ClaudeDesignScreen(
             }
 
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start
             ) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 5.dp),
-                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
                         modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(7.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
@@ -115,14 +114,288 @@ fun ClaudeDesignScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Made with Claude Design",
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "Nexus Analytics",
+                            style = MaterialTheme.typography.titleLarge
                         )
                     }
-                    AppIconButton(
-                        onClick = { /* Icon Action */ }
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(imageVector = ClaudeIcons.Icon1Icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Row(
+                            modifier = Modifier.weight(1f).padding(horizontal = 4.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            PrimaryActionButton(
+                                text = "7D",
+                                onClick = { /* Action */ },
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                            PrimaryActionButton(
+                                text = "30D",
+                                onClick = { /* Action */ },
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                            PrimaryActionButton(
+                                text = "90D",
+                                onClick = { /* Action */ },
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                        PrimaryActionButton(
+                            text = "Action",
+                            onClick = { /* Action */ },
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+                }
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        AppCard(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                            onClick = { /* Card Action */ }
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Monthly Recurring Revenue",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    StatusBadge(
+                                        text = "Status",
+                                        modifier = Modifier.padding(2.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "$124,592",
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "+14.2%",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        text = "vs last month",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                        AppCard(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                            onClick = { /* Card Action */ }
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Active Workspaces",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    StatusBadge(
+                                        text = "Status",
+                                        modifier = Modifier.padding(2.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "3,842",
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "+8.7%",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        text = "vs last month",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                        AppCard(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                            onClick = { /* Card Action */ }
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Churn Rate",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    StatusBadge(
+                                        text = "Status",
+                                        modifier = Modifier.padding(2.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "1.18%",
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "-0.3%",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                    Text(
+                                        text = "improvement",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    AppCard(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+                        onClick = { /* Card Action */ }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.Top
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.Top,
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Text(
+                                        text = "Performance Over Time",
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                    Text(
+                                        text = "Real-time throughput and user engagement velocity",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                    }
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                    }
+                                }
+                            }
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.Start
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Mon",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Tue",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Wed",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Thu",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Fri",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Sat",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = "Sun",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
