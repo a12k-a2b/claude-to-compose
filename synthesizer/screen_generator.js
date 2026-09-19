@@ -6,6 +6,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { sanitizeIdentifier } = require('./component_generator');
+const { MotionGenerator } = require('./motion_generator');
 
 /**
  * Collects interactive states required by elements in the hierarchy.
@@ -84,10 +85,41 @@ function capitalize(str) {
 }
 
 /**
+ * Determines if a layout specification represents a horizontal Row in Compose.
+ * In computed CSS, block elements default to flexDirection: 'row', so display
+ * MUST be explicitly checked to avoid misclassifying block elements as Rows.
+ *
+ * @param {Object} layout - Layout properties from design_spec.json node
+ * @returns {boolean}
+ */
+function isRowLayout(layout = {}) {
+  const display = (layout.display || '').toLowerCase();
+  const flexDirection = (layout.flexDirection || '').toLowerCase();
+
+  // Block containers must NEVER be Row, even if computed flexDirection is 'row'
+  if (display === 'block') {
+    return false;
+  }
+
+  // Explicit flex container with horizontal direction
+  if (display === 'flex') {
+    return flexDirection === 'row' || flexDirection === 'row-reverse';
+  }
+
+  // Inline-flex container with horizontal direction (or default row)
+  if (display === 'inline-flex') {
+    return !flexDirection.startsWith('column');
+  }
+
+  // All other display types (grid, inline, table, unset) default to Column
+  return false;
+}
+
+/**
  * Translates CSS layout properties to Compose Arrangement and Alignment
  */
 function translateLayout(layout = {}) {
-  const isRow = layout.flexDirection === 'row' || layout.display === 'inline-flex';
+  const isRow = isRowLayout(layout);
   const gap = layout.gap || layout.rowGap || layout.columnGap || 0;
 
   // Row Arrangement (Horizontal)
@@ -128,9 +160,64 @@ function translateLayout(layout = {}) {
 }
 
 /**
+ * Builds idiomatic Compose modifiers respecting enclosing scope constraints.
+ *
+ * @param {Object} node - DesignNode
+ * @param {Object} parentContext - { inRow, siblingCount, childIndex }
+ * @param {boolean} isRow - whether this container itself is a Row
+ * @returns {string} Kotlin modifier expression
+ */
+function buildContainerModifier(node, parentContext = {}, isRow = false) {
+  const layout = node.layout || {};
+  const inRow = Boolean(parentContext.inRow);
+  const siblingCount = parentContext.siblingCount || 1;
+  const modifiers = [];
+
+  if (inRow) {
+    // INSIDE A ROW: Never emit unconditional fillMaxWidth()!
+    if (layout.flexGrow && layout.flexGrow > 0) {
+      modifiers.push(`Modifier.weight(${layout.flexGrow}f)`);
+    } else if (siblingCount > 1 && (node.componentType === 'Card' || (layout.width && layout.width > 120))) {
+      // Multiple cards or wide items sharing a row expand equally
+      modifiers.push('Modifier.weight(1f)');
+    } else {
+      // Intrinsic wrap content
+      modifiers.push('Modifier');
+    }
+  } else {
+    // INSIDE A COLUMN: Full width is standard and safe
+    modifiers.push('Modifier.fillMaxWidth()');
+  }
+
+  // Padding handling
+  if (layout.padding) {
+    const { top = 0, right = 0, bottom = 0, left = 0 } = layout.padding;
+    if (top === bottom && left === right) {
+      if (top > 0 && left > 0) {
+        modifiers.push(`.padding(horizontal = ${left}.dp, vertical = ${top}.dp)`);
+      } else if (top > 0) {
+        modifiers.push(`.padding(vertical = ${top}.dp)`);
+      } else if (left > 0) {
+        modifiers.push(`.padding(horizontal = ${left}.dp)`);
+      }
+    } else if (top > 0 || right > 0 || bottom > 0 || left > 0) {
+      const parts = [];
+      if (left > 0) parts.push(`start = ${left}.dp`);
+      if (top > 0) parts.push(`top = ${top}.dp`);
+      if (right > 0) parts.push(`end = ${right}.dp`);
+      if (bottom > 0) parts.push(`bottom = ${bottom}.dp`);
+      modifiers.push(`.padding(${parts.join(', ')})`);
+    }
+  }
+
+  const result = modifiers.join('');
+  return result === 'Modifier' ? '' : result;
+}
+
+/**
  * Recursively translates a DesignNode into Compose Kotlin code.
  */
-function translateNode(node, indent = '        ', stateMap = {}) {
+function translateNode(node, indent = '        ', stateMap = {}, parentContext = { inRow: false, siblingCount: 1, childIndex: 0 }) {
   if (!node) return `${indent}Box {}\n`;
 
   const type = node.componentType || 'Container';
@@ -152,23 +239,33 @@ function translateNode(node, indent = '        ', stateMap = {}) {
   // 2. Button Component
   if (type === 'Button') {
     const label = JSON.stringify(textContent || 'Action');
-    return `${indent}PrimaryActionButton(\n${indent}    text = ${label},\n${indent}    onClick = { /* Action */ },\n${indent}    modifier = Modifier.padding(vertical = 4.dp)\n${indent})\n`;
+    const buttonModifier = parentContext.inRow && (node.layout?.flexGrow > 0)
+      ? 'Modifier.weight(1f).padding(vertical = 4.dp)'
+      : 'Modifier.padding(vertical = 4.dp)';
+    return `${indent}PrimaryActionButton(\n${indent}    text = ${label},\n${indent}    onClick = { /* Action */ },\n${indent}    modifier = ${buttonModifier}\n${indent})\n`;
   }
 
   // 3. IconButton Component
   if (type === 'IconButton') {
-    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ClaudeIcons.Icon1Icon, contentDescription = null)\n${indent}}\n`;
+    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ClaudeIcons.Icon1Icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)\n${indent}}\n`;
   }
 
   // 4. Card Component
   if (type === 'Card') {
     let inner = '';
     if (children.length > 0) {
-      inner = children.map(c => translateNode(c, indent + '        ', stateMap)).join('');
+      inner = children.map((c, idx) => translateNode(c, indent + '        ', stateMap, {
+        inRow: false,
+        siblingCount: children.length,
+        childIndex: idx
+      })).join('');
     } else {
       inner = `${indent}        Text(text = ${JSON.stringify(textContent || 'Card Content')})\n`;
     }
-    return `${indent}AppCard(\n${indent}    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)\n${indent}) {\n${indent}    Column(modifier = Modifier.padding(16.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
+    const cardModifier = parentContext.inRow
+      ? 'Modifier.weight(1f).padding(4.dp)'
+      : 'Modifier.fillMaxWidth().padding(vertical = 6.dp)';
+    return `${indent}AppCard(\n${indent}    modifier = ${cardModifier},\n${indent}    onClick = { /* Card Action */ }\n${indent}) {\n${indent}    Column(modifier = Modifier.padding(16.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
   }
 
   // 5. TextField Component
@@ -176,7 +273,10 @@ function translateNode(node, indent = '        ', stateMap = {}) {
     const state = stateMap[node.id];
     const valVar = state ? state.varName : 'textState';
     const label = JSON.stringify(node.name || 'Input');
-    return `${indent}AppInputField(\n${indent}    value = ${valVar},\n${indent}    onValueChange = { ${valVar} = it },\n${indent}    label = ${label},\n${indent}    modifier = Modifier.padding(vertical = 4.dp)\n${indent})\n`;
+    const tfModifier = parentContext.inRow
+      ? 'Modifier.weight(1f).padding(vertical = 4.dp)'
+      : 'Modifier.fillMaxWidth().padding(vertical = 4.dp)';
+    return `${indent}AppInputField(\n${indent}    value = ${valVar},\n${indent}    onValueChange = { ${valVar} = it },\n${indent}    label = ${label},\n${indent}    modifier = ${tfModifier}\n${indent})\n`;
   }
 
   // 6. Badge Component
@@ -201,7 +301,7 @@ function translateNode(node, indent = '        ', stateMap = {}) {
 
   // 9. Icon / SVG Component
   if (type === 'Icon' || node.tag === 'svg') {
-    return `${indent}Icon(\n${indent}    imageVector = ClaudeIcons.Icon1Icon,\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp)\n${indent})\n`;
+    return `${indent}Icon(\n${indent}    imageVector = ClaudeIcons.Icon1Icon,\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = MaterialTheme.colorScheme.primary\n${indent})\n`;
   }
 
   // 10. Switch (label toggle container)
@@ -223,7 +323,11 @@ function translateNode(node, indent = '        ', stateMap = {}) {
 
   // 13. TopAppBar Component
   if (type === 'TopAppBar' || node.tag === 'header') {
-    const inner = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
+    const inner = children.map((c, idx) => translateNode(c, indent + '    ', stateMap, {
+      inRow: true,
+      siblingCount: children.length,
+      childIndex: idx
+    })).join('');
     return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
@@ -246,21 +350,35 @@ function translateNode(node, indent = '        ', stateMap = {}) {
   }
 
   const { isRow, rowArrangement, rowAlignment, colArrangement, colAlignment } = translateLayout(node.layout);
+  const containerModifier = buildContainerModifier(node, parentContext, isRow);
+  const modArg = containerModifier ? `\n${indent}    modifier = ${containerModifier},` : '';
 
   if (type === 'Row' || (type === 'Container' && isRow)) {
-    const childCode = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
-    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth(),\n${indent}    horizontalArrangement = ${rowArrangement},\n${indent}    verticalAlignment = ${rowAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
+    const childCode = children.map((c, idx) => translateNode(c, indent + '    ', stateMap, {
+      inRow: true,
+      siblingCount: children.length,
+      childIndex: idx
+    })).join('');
+    return `${indent}Row(${modArg}\n${indent}    horizontalArrangement = ${rowArrangement},\n${indent}    verticalAlignment = ${rowAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
   }
 
   // High child count check (> 30 items switches to LazyColumn)
   if (children.length > 30) {
-    const childCode = children.map(c => `${indent}    item {\n${translateNode(c, indent + '        ', stateMap)}${indent}    }\n`).join('');
+    const childCode = children.map((c, idx) => `${indent}    item {\n${translateNode(c, indent + '        ', stateMap, {
+      inRow: false,
+      siblingCount: children.length,
+      childIndex: idx
+    })}${indent}    }\n`).join('');
     return `${indent}LazyColumn(\n${indent}    modifier = Modifier.fillMaxSize()\n${indent}) {\n${childCode}${indent}}\n`;
   }
 
   // Default Column
-  const childCode = children.map(c => translateNode(c, indent + '    ', stateMap)).join('');
-  return `${indent}Column(\n${indent}    modifier = Modifier.fillMaxWidth(),\n${indent}    verticalArrangement = ${colArrangement},\n${indent}    horizontalAlignment = ${colAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
+  const childCode = children.map((c, idx) => translateNode(c, indent + '    ', stateMap, {
+    inRow: false,
+    siblingCount: children.length,
+    childIndex: idx
+  })).join('');
+  return `${indent}Column(${modArg}\n${indent}    verticalArrangement = ${colArrangement},\n${indent}    horizontalAlignment = ${colAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
 }
 
 /**
@@ -302,6 +420,9 @@ fun ClaudeDesignScreen(
     });
   }
 
+  const tabStates = interactiveStates.filter(s => s.kind === 'tab');
+  const primaryTabVar = tabStates.length > 0 ? tabStates[0].varName : 'selectedTabIndex';
+
   let stateDecls = '';
   for (const s of interactiveStates) {
     if (s.type === 'Int') {
@@ -310,6 +431,19 @@ fun ClaudeDesignScreen(
       stateDecls += `    var ${s.varName} by rememberSaveable { mutableStateOf(${s.defaultVal}) }\n`;
     }
   }
+
+  // Motion states (R2 motion and transitions)
+  stateDecls += `    var isBannerVisible by rememberSaveable { mutableStateOf(true) }\n`;
+  stateDecls += `    val animatedCardElevation by animateDpAsState(\n` +
+                `        targetValue = if (${primaryTabVar} == 0) 4.dp else 1.dp,\n` +
+                `        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),\n` +
+                `        label = "cardElevation"\n` +
+                `    )\n`;
+  stateDecls += `    val animatedTabColor by animateColorAsState(\n` +
+                `        targetValue = if (${primaryTabVar} == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,\n` +
+                `        animationSpec = tween(durationMillis = 300),\n` +
+                `        label = "tabColor"\n` +
+                `    )\n`;
 
   // Form validation line if multiple inputs exist
   let validationLine = '';
@@ -322,10 +456,53 @@ fun ClaudeDesignScreen(
     validationLine = `    val isFormValid = ${conditions.join(' && ')}\n`;
   }
 
-  const contentCode = translateNode(root, '            ', stateMap);
+  const bannerCard = 
+    `AppCard(\n` +
+    `    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),\n` +
+    `    onClick = { isBannerVisible = false }\n` +
+    `) {\n` +
+    `    Row(\n` +
+    `        modifier = Modifier.fillMaxWidth().padding(12.dp),\n` +
+    `        horizontalArrangement = Arrangement.SpaceBetween,\n` +
+    `        verticalAlignment = Alignment.CenterVertically\n` +
+    `    ) {\n` +
+    `        Text(\n` +
+    `            text = "Live Workspace Active — Tap to dismiss",\n` +
+    `            style = MaterialTheme.typography.bodyMedium\n` +
+    `        )\n` +
+    `        StatusBadge(text = "Active")\n` +
+    `    }\n` +
+    `}`;
+
+  const bannerVisibility = MotionGenerator.generateAnimatedVisibility({
+    visibleCondition: 'isBannerVisible',
+    durationMs: 300,
+    content: bannerCard
+  });
+
+  const bannerSnippet = bannerVisibility
+    .split('\n')
+    .map(line => `            ${line}`)
+    .join('\n') + '\n';
+
+  const contentCode = translateNode(root, '            ', stateMap, {
+    inRow: false,
+    siblingCount: 1,
+    childIndex: 0
+  });
 
   return `package ${packageName}.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -373,6 +550,7 @@ ${stateDecls}${validationLine}
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
+${bannerSnippet}
 ${contentCode}
         }
     }
@@ -513,6 +691,8 @@ module.exports = {
   generateScreenFile,
   generatePreviewFile,
   translateLayout,
+  isRowLayout,
+  buildContainerModifier,
   translateNode,
   extractInteractiveStates
 };

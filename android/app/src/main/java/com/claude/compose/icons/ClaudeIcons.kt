@@ -16,66 +16,30 @@ public val ClaudeIcons.Icon1Icon: ImageVector
         if (_icon1Icon != null) return _icon1Icon!!
         _icon1Icon = ImageVector.Builder(
             name = "Icon1Icon",
-            defaultWidth = 22.dp,
-            defaultHeight = 22.dp,
+            defaultWidth = 28.dp,
+            defaultHeight = 28.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
             path(
                 fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
+                stroke = SolidColor(Color(0xFF4F46E5)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(15f, 5f)
-                arcToRelative(3f, 3f, 0f, true, false, 6f, 0f)
-                arcToRelative(3f, 3f, 0f, true, false, -6f, 0f)
+                moveTo(12f, 2f)
+                lineTo(2f, 7f)
+                lineToRelative(10f, 5f)
+                lineToRelative(10f, -5f)
+                lineToRelative(-10f, -5f)
                 close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(3f, 12f)
-                arcToRelative(3f, 3f, 0f, true, false, 6f, 0f)
-                arcToRelative(3f, 3f, 0f, true, false, -6f, 0f)
-                close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(15f, 19f)
-                arcToRelative(3f, 3f, 0f, true, false, 6f, 0f)
-                arcToRelative(3f, 3f, 0f, true, false, -6f, 0f)
-                close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(8.59f, 13.51f)
-                lineTo(15.42f, 17.49f)
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(15.41f, 6.51f)
-                lineTo(8.59f, 10.49f)
+                moveTo(2f, 17f)
+                lineToRelative(10f, 5f)
+                lineToRelative(10f, -5f)
+                moveTo(2f, 12f)
+                lineToRelative(10f, 5f)
+                lineToRelative(10f, -5f)
             }
         }.build()
         return _icon1Icon!!
@@ -88,36 +52,27 @@ public val ClaudeIcons.Icon2Icon: ImageVector
         if (_icon2Icon != null) return _icon2Icon!!
         _icon2Icon = ImageVector.Builder(
             name = "Icon2Icon",
-            defaultWidth = 40.dp,
-            defaultHeight = 40.dp,
+            defaultWidth = 18.dp,
+            defaultHeight = 18.dp,
             viewportWidth = 24f,
             viewportHeight = 24f
         ).apply {
             path(
-                fill = SolidColor(Color(0xFF6366F1)),
-                stroke = null,
-                strokeLineWidth = 1f,
+                fill = null,
+                stroke = SolidColor(Color(0xFFFFFFFF)),
+                strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(12f, 2f)
-                curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
-                reflectiveCurveToRelative(4.48f, 10f, 10f, 10f)
-                reflectiveCurveToRelative(10f, -4.48f, 10f, -10f)
-                reflectiveCurveTo(17.52f, 2f, 12f, 2f)
-                close()
-                moveToRelative(0f, 3f)
-                curveToRelative(1.66f, 0f, 3f, 1.34f, 3f, 3f)
-                reflectiveCurveToRelative(-1.34f, 3f, -3f, 3f)
-                reflectiveCurveToRelative(-3f, -1.34f, -3f, -3f)
-                reflectiveCurveToRelative(1.34f, -3f, 3f, -3f)
-                close()
-                moveToRelative(0f, 14.2f)
-                curveToRelative(-2.5f, 0f, -4.71f, -1.28f, -6f, -3.22f)
-                curveToRelative(0.03f, -1.99f, 4f, -3.08f, 6f, -3.08f)
-                curveToRelative(1.99f, 0f, 5.97f, 1.09f, 6f, 3.08f)
-                curveToRelative(-1.29f, 1.94f, -3.5f, 3.22f, -6f, 3.22f)
-                close()
+                moveTo(21f, 15f)
+                verticalLineToRelative(4f)
+                horizontalLineTo(5f)
+                verticalLineToRelative(-4f)
+                moveTo(7f, 10f)
+                lineToRelative(5f, 5f)
+                lineToRelative(5f, -5f)
+                moveTo(12f, 15f)
+                verticalLineTo(3f)
             }
         }.build()
         return _icon2Icon!!
@@ -137,55 +92,17 @@ public val ClaudeIcons.Icon3Icon: ImageVector
         ).apply {
             path(
                 fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
+                stroke = SolidColor(Color(0xFF10B981)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(3f, 3f)
-                horizontalLineToRelative(7f)
-                verticalLineToRelative(7f)
-                horizontalLineToRelative(-7f)
-                close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(14f, 3f)
-                horizontalLineToRelative(7f)
-                verticalLineToRelative(7f)
-                horizontalLineToRelative(-7f)
-                close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(14f, 14f)
-                horizontalLineToRelative(7f)
-                verticalLineToRelative(7f)
-                horizontalLineToRelative(-7f)
-                close()
-            }
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFFF8FAFC)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(3f, 14f)
-                horizontalLineToRelative(7f)
-                verticalLineToRelative(7f)
-                horizontalLineToRelative(-7f)
-                close()
+                moveTo(12f, 1f)
+                verticalLineToRelative(22f)
+                moveTo(17f, 5f)
+                horizontalLineTo(9.5f)
+                horizontalLineToRelative(5f)
+                horizontalLineTo(6f)
             }
         }.build()
         return _icon3Icon!!
@@ -205,19 +122,38 @@ public val ClaudeIcons.Icon4Icon: ImageVector
         ).apply {
             path(
                 fill = null,
-                stroke = SolidColor(Color(0xFF94A3B8)),
+                stroke = SolidColor(Color(0xFF6B7280)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(19f, 21f)
-                lineToRelative(-7f, -5f)
-                lineToRelative(-7f, 5f)
-                verticalLineTo(5f)
-                arcToRelative(2f, 2f, 0f, false, true, 2f, -2f)
-                horizontalLineToRelative(10f)
-                arcToRelative(2f, 2f, 0f, false, true, 2f, 2f)
+                moveTo(17f, 21f)
+                verticalLineToRelative(-2f)
+                horizontalLineTo(5f)
+                verticalLineToRelative(2f)
+            }
+            path(
+                fill = null,
+                stroke = SolidColor(Color(0xFF6B7280)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(5f, 7f)
+                arcToRelative(4f, 4f, 0f, true, false, 8f, 0f)
+                arcToRelative(4f, 4f, 0f, true, false, -8f, 0f)
                 close()
+            }
+            path(
+                fill = null,
+                stroke = SolidColor(Color(0xFF6B7280)),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(23f, 21f)
+                verticalLineToRelative(-2f)
+                moveTo(16f, 3.13f)
             }
         }.build()
         return _icon4Icon!!
@@ -237,60 +173,21 @@ public val ClaudeIcons.Icon5Icon: ImageVector
         ).apply {
             path(
                 fill = null,
-                stroke = SolidColor(Color(0xFF94A3B8)),
+                stroke = SolidColor(Color(0xFFEF4444)),
                 strokeLineWidth = 2f,
                 strokeLineCap = StrokeCap.Round,
                 strokeLineJoin = StrokeJoin.Round
             ) {
-                moveTo(20.84f, 4.61f)
-                lineTo(12f, 5.67f)
-                lineToRelative(-1.06f, -1.06f)
-                lineToRelative(1.06f, 1.06f)
-                lineTo(12f, 21.23f)
-                lineToRelative(7.78f, -7.78f)
-                lineToRelative(1.06f, -1.06f)
-                close()
+                moveTo(22f, 12f)
+                horizontalLineToRelative(-4f)
+                lineToRelative(-3f, 9f)
+                lineTo(9f, 3f)
+                lineToRelative(-3f, 9f)
+                horizontalLineTo(2f)
             }
         }.build()
         return _icon5Icon!!
     }
 
 private var _icon5Icon: ImageVector? = null
-
-public val ClaudeIcons.Icon6Icon: ImageVector
-    get() {
-        if (_icon6Icon != null) return _icon6Icon!!
-        _icon6Icon = ImageVector.Builder(
-            name = "Icon6Icon",
-            defaultWidth = 20.dp,
-            defaultHeight = 20.dp,
-            viewportWidth = 24f,
-            viewportHeight = 24f
-        ).apply {
-            path(
-                fill = null,
-                stroke = SolidColor(Color(0xFF94A3B8)),
-                strokeLineWidth = 2f,
-                strokeLineCap = StrokeCap.Round,
-                strokeLineJoin = StrokeJoin.Round
-            ) {
-                moveTo(21f, 11.5f)
-                arcToRelative(8.38f, 8.38f, 0f, false, true, -0.9f, 3.8f)
-                arcToRelative(8.5f, 8.5f, 0f, false, true, -7.6f, 4.7f)
-                arcToRelative(8.38f, 8.38f, 0f, false, true, -3.8f, -0.9f)
-                lineTo(3f, 21f)
-                lineToRelative(1.9f, -5.7f)
-                arcToRelative(8.38f, 8.38f, 0f, false, true, -0.9f, -3.8f)
-                arcToRelative(8.5f, 8.5f, 0f, false, true, 4.7f, -7.6f)
-                arcToRelative(8.38f, 8.38f, 0f, false, true, 3.8f, -0.9f)
-                horizontalLineToRelative(0.5f)
-                arcToRelative(8.48f, 8.48f, 0f, false, true, 8f, 8f)
-                verticalLineToRelative(0.5f)
-                close()
-            }
-        }.build()
-        return _icon6Icon!!
-    }
-
-private var _icon6Icon: ImageVector? = null
 

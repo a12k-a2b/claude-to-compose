@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="22dp"
-    android:height="22dp"
+    android:width="28dp"
+    android:height="28dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:strokeColor="#FFF8FAFC"
+        android:strokeColor="#FF4F46E5"
         android:strokeWidth="2"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M 15,5 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z" />
-    <path
-        android:strokeColor="#FFF8FAFC"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M 3,12 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z" />
-    <path
-        android:strokeColor="#FFF8FAFC"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M 15,19 a 3,3 0 1,0 6,0 a 3,3 0 1,0 -6,0 Z" />
-    <path
-        android:strokeColor="#FFF8FAFC"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M 8.59,13.51 L 15.42,17.49" />
-    <path
-        android:strokeColor="#FFF8FAFC"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M 15.41,6.51 L 8.59,10.49" />
+        android:pathData="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
 </vector>

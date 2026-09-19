@@ -10,13 +10,13 @@ val ClaudeTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
+        fontSize = 32.sp,
         lineHeight = 44.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp
@@ -24,7 +24,7 @@ val ClaudeTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 20.sp,
+        fontSize = 18.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
@@ -45,7 +45,7 @@ val ClaudeTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.3333.sp,
+        fontSize = 13.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),

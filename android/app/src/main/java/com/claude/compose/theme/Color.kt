@@ -3,7 +3,7 @@ package com.claude.compose.theme
 import androidx.compose.ui.graphics.Color
 
 // Primary & Brand Tokens
-val PrimaryIndigo = Color(0xFFE11D48)
+val PrimaryIndigo = Color(0xFF4F46E5)
 val PrimaryHover = Color(0xFF4338CA)
 val SecondaryEmerald = Color(0xFF10B981)
 val TertiaryAmber = Color(0xFFF59E0B)
@@ -11,14 +11,14 @@ val ErrorRed = Color(0xFFEF4444)
 val SuccessGreen = Color(0xFF10B981)
 
 // Named Surface Tokens
-val PageBackground = Color(0xFFF8FAFC)
-val CardSurface = Color(0xFFFFFFFF)
+val PageBackground = Color(0xFFFFFFFF)
+val CardSurface = Color(0xFFE0E7FF)
 
 // Light Mode Surface & Neutral Tokens
-val LightBackground = Color(0xFFF8FAFC)
-val LightOnBackground = Color(0xFF334155)
-val LightSurface = Color(0xFFFFFFFF)
-val LightOnSurface = Color(0xFF334155)
+val LightBackground = Color(0xFFFFFFFF)
+val LightOnBackground = Color(0xFF111827)
+val LightSurface = Color(0xFFE0E7FF)
+val LightOnSurface = Color(0xFF111827)
 val LightSurfaceVariant = Color(0xFFF1F5F9)
 val LightOnSurfaceVariant = Color(0xFF64748B)
 val LightOutline = Color(0xFFCBD5E1)

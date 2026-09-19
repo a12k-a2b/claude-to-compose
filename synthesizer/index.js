@@ -17,6 +17,51 @@ const { ScreenGenerator } = require('./screen_generator');
 const { VectorGenerator } = require('./vector_generator');
 const { MotionGenerator } = require('./motion_generator');
 
+/**
+ * Resolves and normalizes output directory and package directory paths
+ * to avoid duplicate package segments (e.g. java/com/claude/compose/java/com/claude/compose).
+ *
+ * @param {string} rawOutput - Provided --output option or default
+ * @param {string} basePackage - e.g. "com.claude.compose"
+ * @returns {{ packageDir: string, drawableDir: string, srcMainDir: string }}
+ */
+function normalizeOutputPaths(rawOutput, basePackage = 'com.claude.compose') {
+  const resolved = path.resolve(rawOutput || 'android/app/src/main');
+  const pkgParts = basePackage.split('.').filter(Boolean);
+  const pkgRelPath = path.join(...pkgParts);
+  const javaPkgRelPath = path.join('java', pkgRelPath);
+
+  let packageDir;
+  let srcMainDir;
+
+  if (resolved.endsWith(javaPkgRelPath)) {
+    // User passed .../java/com/claude/compose
+    packageDir = resolved;
+    srcMainDir = resolved.slice(0, -(javaPkgRelPath.length + 1));
+  } else if (resolved.endsWith(pkgRelPath)) {
+    // User passed .../com/claude/compose
+    packageDir = resolved;
+    const parent = path.dirname(resolved);
+    srcMainDir = path.basename(parent) === 'java' ? path.dirname(parent) : parent;
+  } else if (path.basename(resolved) === 'java') {
+    // User passed .../src/main/java
+    packageDir = path.join(resolved, ...pkgParts);
+    srcMainDir = path.dirname(resolved);
+  } else {
+    // Default: User passed .../src/main or arbitrary target directory
+    packageDir = path.join(resolved, 'java', ...pkgParts);
+    srcMainDir = resolved;
+  }
+
+  const drawableDir = path.join(srcMainDir, 'res', 'drawable');
+
+  return {
+    packageDir,
+    drawableDir,
+    srcMainDir
+  };
+}
+
 class SynthesizerOrchestrator {
   /**
    * Executes the full synthesis pipeline.
@@ -41,17 +86,17 @@ class SynthesizerOrchestrator {
       throw new Error(`DesignSpecParseError: Failed to parse JSON spec: ${err.message}`);
     }
 
-    const outputDir = path.resolve(options.output || 'android/app/src/main');
     const basePackage = options.package || 'com.claude.compose';
     const vectorTarget = options.vectorTarget || 'both'; // 'both', 'compose', 'xml'
 
-    const packageDir = path.join(outputDir, 'java', ...basePackage.split('.'));
+    const { packageDir, drawableDir, srcMainDir } = normalizeOutputPaths(options.output, basePackage);
+    const outputDir = srcMainDir;
+
     const themeDir = path.join(packageDir, 'theme');
     const iconsDir = path.join(packageDir, 'icons');
     const motionDir = path.join(packageDir, 'motion');
     const componentsDir = path.join(packageDir, 'components');
     const screenDir = path.join(packageDir, 'screen');
-    const drawableDir = path.join(outputDir, 'res', 'drawable');
 
     // Clean if requested
     if (options.clean) {
@@ -174,5 +219,6 @@ if (require.main === module) {
 
 module.exports = {
   SynthesizerOrchestrator,
-  synthesize: SynthesizerOrchestrator.synthesize
+  synthesize: SynthesizerOrchestrator.synthesize,
+  normalizeOutputPaths
 };
