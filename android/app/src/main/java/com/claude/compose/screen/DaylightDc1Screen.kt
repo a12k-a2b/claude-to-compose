@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -39,10 +38,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -91,19 +92,27 @@ fun DaylightDc1Screen(
         // 1. Background Cartesian Grid, Building Lots, and Footprint Lanes
         DaylightDc1BackgroundCanvas(modifier = Modifier.fillMaxSize())
 
-        // 2. Outer Hairline Inset Frame
+        // 2a. Outer Hairline Frame (starts at y = 18dp, matching reference y = 36px)
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 26.dp, vertical = 26.dp)
-                .border(1.dp, Os100, RoundedCornerShape(14.dp))
+                .padding(horizontal = 26.dp, vertical = 18.dp)
+                .border(1.dp, Os100, RoundedCornerShape(4.dp))
         )
 
-        // 3. Top-Right "Skip" Pill (overlapping top-right border corner)
+        // 2b. Inner Hairline Frame (inset by 8dp, matching reference y = 56px)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 34.dp, vertical = 28.dp)
+                .border(1.dp, Os100.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
+        )
+
+        // 3. Top-Right "Skip" Pill (nested on top-right of outer frame)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 20.dp, end = 20.dp)
+                .padding(top = 10.dp, end = 20.dp)
                 .clip(RoundedCornerShape(18.dp))
                 .background(Os0)
                 .border(1.dp, Os100, RoundedCornerShape(18.dp))
@@ -126,7 +135,7 @@ fun DaylightDc1Screen(
                 .size(68.dp)
         )
 
-        // 5. Central Hero Content Stack
+        // 5. Central Hero Content Stack (starts at 403dp for baseline alignment)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,8 +207,7 @@ fun DaylightDc1Screen(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
-                    .minimumInteractiveComponentSize()
-                    .height(48.dp)
+                    .height(46.dp)
                     .width(138.dp)
             ) {
                 Text(
@@ -291,13 +299,9 @@ private fun PaperMotionChip(
 
 /**
  * Background Canvas rendering:
- * 1. Cartesian coordinate grid.
+ * 1. Cartesian coordinate grid (vertical lines start at y = 90dp, keeping header clean).
  * 2. Rectangular plot/lot outlines.
- * 3. 4 Footprint lanes:
- *    - Lane 1: Diagonal curve from top-center sweeping right down to bottom.
- *    - Lane 2: Horizontal curve across upper middle.
- *    - Lane 3: Vertical curve on left.
- *    - Lane 4: Lower subtle curve passing behind text.
+ * 3. 4 Footprint lanes with closed endcaps and alternating footprints.
  */
 @Composable
 fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
@@ -305,29 +309,31 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         val w = size.width
         val h = size.height
 
-        // 1. Cartesian Grid Lines (exact ~81px horizontal step, ~100px vertical step)
+        // 1. Cartesian Grid Lines
+        // Note: In the Claude reference, the top 90dp is a clean open header with no grid!
         val xStep = 40.5.dp.toPx()
         val yStep = 50.dp.toPx()
         val startX = 34.dp.toPx()
-        val startY = 33.5.dp.toPx()
+        val gridTopY = 90.dp.toPx() // Vertical lines start at 90dp (180px)
 
         var gx = startX
-        while (gx < w - 20.dp.toPx()) {
+        while (gx < w - 24.dp.toPx()) {
             drawLine(
                 color = Os100,
-                start = Offset(gx, 26.dp.toPx()),
-                end = Offset(gx, h - 26.dp.toPx()),
+                start = Offset(gx, gridTopY),
+                end = Offset(gx, h - 28.dp.toPx()),
                 strokeWidth = 1f
             )
             gx += xStep
         }
 
-        var gy = startY
-        while (gy < h - 20.dp.toPx()) {
+        // Horizontal grid lines start at 100dp (200px)
+        var gy = 100.dp.toPx()
+        while (gy < h - 24.dp.toPx()) {
             drawLine(
                 color = Os100,
-                start = Offset(26.dp.toPx(), gy),
-                end = Offset(w - 26.dp.toPx(), gy),
+                start = Offset(34.dp.toPx(), gy),
+                end = Offset(w - 34.dp.toPx(), gy),
                 strokeWidth = 1f
             )
             gy += yStep
@@ -365,7 +371,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
             )
         }
 
-        // 3. Lane 1: Diagonal curve with double rails & alternating footprints
+        // 3. Lane 1: Diagonal curve with double rails, closed cap, and alternating footprints
         val lane1 = Path().apply {
             moveTo(280.dp.toPx(), 70.dp.toPx())
             cubicTo(
@@ -384,7 +390,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
                 325.dp.toPx(), 700.dp.toPx()
             )
         }
-        drawLaneWithFootprints(lane1, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx())
+        drawLaneWithFootprints(lane1, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
 
         // 4. Lane 2: Horizontal curve across middle
         val lane2 = Path().apply {
@@ -400,9 +406,9 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
                 560.dp.toPx(), 220.dp.toPx()
             )
         }
-        drawLaneWithFootprints(lane2, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx())
+        drawLaneWithFootprints(lane2, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
 
-        // 5. Lane 3: Left vertical/diagonal curve
+        // 5. Lane 3: Left vertical/diagonal curve with rounded dome top cap
         val lane3 = Path().apply {
             moveTo(209.dp.toPx(), 92.dp.toPx())
             cubicTo(
@@ -416,7 +422,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
                 30.dp.toPx(), 670.dp.toPx()
             )
         }
-        drawTwoRailLane(lane3, railSpacing = 3.5.dp.toPx())
+        drawTwoRailLane(lane3, railSpacing = 3.5.dp.toPx(), roundedStartCap = true)
 
         // 6. Lane 4: Lower subtle curve passing behind text
         val lane4 = Path().apply {
@@ -432,21 +438,24 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 }
 
 /**
- * Draws a two-rail lane (two parallel strokes with white in between).
+ * Draws a two-rail lane (two parallel strokes with white in between and optional end cap).
  */
-private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float) {
+private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float, roundedStartCap: Boolean = false) {
     val measure = PathMeasure()
     measure.setPath(path, forceClosed = false)
     val length = measure.length
     val halfSpace = railSpacing / 2f
 
     // Thick white fill underneath to mask grid lines
-    drawPath(path, color = Os0, style = Stroke(width = railSpacing + 2f))
+    drawPath(path, color = Os0, style = Stroke(width = railSpacing + 2f, cap = if (roundedStartCap) StrokeCap.Round else StrokeCap.Square))
 
     val leftRail = Path()
     val rightRail = Path()
     var isFirst = true
     var curD = 0f
+
+    var startP = Offset.Zero
+    var startT = Offset.Zero
 
     while (curD <= length) {
         val p = measure.getPosition(curD)
@@ -454,6 +463,8 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float) {
         val nx = -t.y * halfSpace
         val ny = t.x * halfSpace
         if (isFirst) {
+            startP = p
+            startT = t
             leftRail.moveTo(p.x + nx, p.y + ny)
             rightRail.moveTo(p.x - nx, p.y - ny)
             isFirst = false
@@ -465,6 +476,27 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float) {
     }
     drawPath(leftRail, color = Os800, style = Stroke(width = 1.2f))
     drawPath(rightRail, color = Os800, style = Stroke(width = 1.2f))
+
+    // Closed top cap
+    val nx = -startT.y * halfSpace
+    val ny = startT.x * halfSpace
+    if (roundedStartCap) {
+        // Dome cap connecting left and right rail
+        val dome = Path().apply {
+            moveTo(startP.x + nx, startP.y + ny)
+            val topDome = Offset(startP.x - startT.x * halfSpace, startP.y - startT.y * halfSpace)
+            quadraticBezierTo(topDome.x, topDome.y, startP.x - nx, startP.y - ny)
+        }
+        drawPath(dome, color = Os800, style = Stroke(width = 1.2f))
+    } else {
+        // Flat cap connecting left and right rail
+        drawLine(
+            color = Os800,
+            start = Offset(startP.x + nx, startP.y + ny),
+            end = Offset(startP.x - nx, startP.y - ny),
+            strokeWidth = 1.2f
+        )
+    }
 }
 
 /**
@@ -473,10 +505,11 @@ private fun DrawScope.drawTwoRailLane(path: Path, railSpacing: Float) {
 private fun DrawScope.drawLaneWithFootprints(
     path: Path,
     railSpacing: Float,
-    footprintStep: Float
+    footprintStep: Float,
+    roundedStartCap: Boolean = false
 ) {
     // 1. Base two-rail lane
-    drawTwoRailLane(path, railSpacing)
+    drawTwoRailLane(path, railSpacing, roundedStartCap)
 
     // 2. Alternating footprints along the sides
     val measure = PathMeasure()
@@ -485,14 +518,13 @@ private fun DrawScope.drawLaneWithFootprints(
     val halfSpace = railSpacing / 2f
 
     var d = footprintStep / 2f
-    var side = 1 // 1 for right, -1 for left
+    var side = 1
 
     while (d < length - footprintStep / 2f) {
         val p = measure.getPosition(d)
         val t = measure.getTangent(d)
         val angle = Math.toDegrees(Math.atan2(t.y.toDouble(), t.x.toDouble())).toFloat()
 
-        // Offset footprint outside the rail
         val normalX = -t.y * (halfSpace + 3.5.dp.toPx()) * side
         val normalY = t.x * (halfSpace + 3.5.dp.toPx()) * side
         val footCenter = Offset(p.x + normalX, p.y + normalY)
@@ -607,7 +639,7 @@ fun CompassRoseGraphic(modifier: Modifier = Modifier) {
         }
         val eastBottom = Path().apply {
             moveTo(c.x, c.y)
-            lineTo(c.x, c.y + baseW)
+            lineTo(c.x + baseW, c.y)
             lineTo(c.x + spikeLen, c.y)
             close()
         }
