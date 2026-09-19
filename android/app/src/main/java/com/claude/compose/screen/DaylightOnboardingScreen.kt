@@ -223,7 +223,7 @@ fun DaylightOnboardingScreen(
                         shape = RoundedCornerShape(24.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                         modifier = Modifier
-                            .height(46.dp)
+                            .height(48.dp)
                             .width(140.dp)
                     ) {
                         Text(
