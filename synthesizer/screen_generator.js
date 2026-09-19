@@ -25,17 +25,16 @@ function extractInteractiveStates(rootNode) {
     const type = (node.componentType || '').toLowerCase();
     const tag = (node.tag || '').toLowerCase();
 
-    if (type === 'textfield' || tag === 'input' && node.layout?.type !== 'checkbox' || tag === 'textarea') {
-      inputIndex++;
-      const name = sanitizeIdentifier(node.name || `field_${inputIndex}`);
-      states.push({
-        varName: `${name}Text`,
-        type: 'String',
-        defaultVal: '""',
-        kind: 'text',
-        nodeId: node.id
-      });
-    } else if (type === 'checkbox' || (tag === 'input' && node.layout?.type === 'checkbox')) {
+    const isCheckbox = type === 'checkbox' || 
+                       node.type?.toLowerCase() === 'checkbox' || 
+                       node.componentType?.toLowerCase() === 'checkbox' || 
+                       node.attributes?.type === 'checkbox';
+    const isRadio = type === 'radiobutton' || 
+                    node.type?.toLowerCase() === 'radio' || 
+                    node.componentType?.toLowerCase() === 'radiobutton' || 
+                    node.attributes?.type === 'radio';
+
+    if (isCheckbox) {
       checkIndex++;
       const name = sanitizeIdentifier(node.name || `consent_${checkIndex}`);
       states.push({
@@ -43,6 +42,18 @@ function extractInteractiveStates(rootNode) {
         type: 'Boolean',
         defaultVal: 'false',
         kind: 'checkbox',
+        nodeId: node.id
+      });
+    } else if (isRadio) {
+      // Radio button handling
+    } else if (!isCheckbox && !isRadio && (type === 'textfield' || tag === 'input' || tag === 'textarea')) {
+      inputIndex++;
+      const name = sanitizeIdentifier(node.name || `field_${inputIndex}`);
+      states.push({
+        varName: `${name}Text`,
+        type: 'String',
+        defaultVal: '""',
+        kind: 'text',
         nodeId: node.id
       });
     } else if (type === 'navigationbar' || tag === 'nav') {
@@ -449,11 +460,13 @@ fun ClaudeDesignScreen(
   let validationLine = '';
   const textStates = interactiveStates.filter(s => s.kind === 'text');
   const checkStates = interactiveStates.filter(s => s.kind === 'checkbox');
-  if (textStates.length > 0) {
+  if (textStates.length > 0 || checkStates.length > 0) {
     const conditions = [];
-    for (const ts of textStates) conditions.push(`${ts.varName}.isNotBlank()`);
-    for (const cs of checkStates) conditions.push(`${cs.varName}`);
-    validationLine = `    val isFormValid = ${conditions.join(' && ')}\n`;
+    for (const it of textStates) conditions.push(`${it.varName}.isNotBlank()`);
+    for (const it of checkStates) conditions.push(`${it.varName}`);
+    if (conditions.length > 0) {
+      validationLine = `    val isFormValid = ${conditions.join(' && ')}\n`;
+    }
   }
 
   const bannerCard = 
