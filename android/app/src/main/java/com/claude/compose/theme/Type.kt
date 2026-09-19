@@ -2,9 +2,17 @@ package com.claude.compose.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.claude.compose.R
+
+val AbcArizonaFlare = FontFamily(
+    Font(R.font.abc_arizona_flare, FontWeight.Normal),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold)
+)
 
 val ClaudeTypography = Typography(
     displayLarge = TextStyle(

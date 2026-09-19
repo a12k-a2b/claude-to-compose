@@ -128,6 +128,12 @@ function generateReportMarkdown(data = {}) {
   if (typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)) {
     md += `- **Visual Similarity**: ${diffSimilarity.toFixed(1)}%\n`;
   }
+  if (typeof diff.inkIou === 'number' && !Number.isNaN(diff.inkIou)) {
+    md += `- **Ink IoU (Non-White Ink)**: ${diff.inkIou.toFixed(2)}%\n`;
+  }
+  if (typeof diff.inkDice === 'number' && !Number.isNaN(diff.inkDice)) {
+    md += `- **Ink Dice Coefficient**: ${diff.inkDice.toFixed(2)}%\n`;
+  }
   md += `\n`;
 
   // Section 2: Programmatic Build & Unit Test Results
@@ -145,6 +151,12 @@ function generateReportMarkdown(data = {}) {
   md += `## 3. Programmatic Visual Diff Analysis\n`;
   if (typeof diffSimilarity === 'number' && !Number.isNaN(diffSimilarity)) {
     md += `- Pixel Similarity: ${diffSimilarity.toFixed(1)}%\n`;
+  }
+  if (typeof diff.inkIou === 'number' && !Number.isNaN(diff.inkIou)) {
+    md += `- Ink IoU: ${diff.inkIou.toFixed(2)}%\n`;
+  }
+  if (typeof diff.inkDice === 'number' && !Number.isNaN(diff.inkDice)) {
+    md += `- Ink Dice: ${diff.inkDice.toFixed(2)}%\n`;
   }
   if (typeof diff.mssimScore === 'number' && !Number.isNaN(diff.mssimScore)) {
     md += `- MSSIM Score: ${diff.mssimScore.toFixed(3)}\n`;
@@ -172,12 +184,14 @@ function generateReportMarkdown(data = {}) {
   const zonalData = data.zonalDiff || diff.zonalDiff;
   if (zonalData && Array.isArray(zonalData.zones) && zonalData.zones.length > 0) {
     md += `### Multi-Zone Perceptual Breakdown (Daylight DC1 1184 × 1584)\n\n`;
-    md += `| Zone | Y Range (px) | Similarity | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |\n`;
-    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
+    md += `| Zone | Y Range (px) | Similarity | Ink IoU | Ink Dice | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |\n`;
+    md += `| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n`;
     for (const z of zonalData.zones) {
       const driftPx = `${z.centroidDrift?.deltaX ?? 0}, ${z.centroidDrift?.deltaY ?? 0}`;
       const driftDp = `${z.centroidDrift?.deltaXDp ?? 0}dp, ${z.centroidDrift?.deltaYDp ?? 0}dp`;
-      md += `| **${escapeMarkdown(z.name)}** | ${z.yStart}-${z.yEnd} | ${z.similarity}% | ${z.ssimScore} | ${z.mismatchCount} | \`${driftPx}\` | \`${driftDp}\` |\n`;
+      const inkIouStr = z.inkIou !== undefined ? `${z.inkIou}%` : 'N/A';
+      const inkDiceStr = z.inkDice !== undefined ? `${z.inkDice}%` : 'N/A';
+      md += `| **${escapeMarkdown(z.name)}** | ${z.yStart}-${z.yEnd} | ${z.similarity}% | ${inkIouStr} | ${inkDiceStr} | ${z.ssimScore} | ${z.mismatchCount} | \`${driftPx}\` | \`${driftDp}\` |\n`;
     }
     md += `\n`;
     if (zonalData.zonalDiffOverlay) {

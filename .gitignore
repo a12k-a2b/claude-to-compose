@@ -29,6 +29,7 @@ android/.kotlin/
 .agents/
 
 # Scratch & test artifacts
+scratch/
 /daylight_*.html
 /daylight_script_*.js
 scripts/*.png

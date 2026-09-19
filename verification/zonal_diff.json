@@ -4,8 +4,14 @@
     "height": 1584
   },
   "totalPixels": 1875456,
-  "totalMismatches": 230353,
-  "globalSimilarity": 87.72,
+  "totalMismatches": 234216,
+  "globalSimilarity": 87.51,
+  "globalInkIou": 25.51,
+  "globalInkDice": 40.65,
+  "globalRefInkCount": 277564,
+  "globalRenderedInkCount": 182654,
+  "globalInkIntersection": 93543,
+  "globalInkUnion": 366675,
   "zones": [
     {
       "id": "zone_navigation",
@@ -20,6 +26,10 @@
       "ssimScore": 0.788,
       "refInkCount": 11300,
       "renderedInkCount": 6609,
+      "inkIou": 4.52,
+      "inkDice": 8.65,
+      "inkIntersection": 775,
+      "inkUnion": 17134,
       "centroidDrift": {
         "deltaX": 43.32,
         "deltaY": -4.62,
@@ -34,17 +44,21 @@
       "yStart": 180,
       "yEnd": 800,
       "height": 620,
-      "similarity": 86.45,
-      "mismatchCount": 99494,
+      "similarity": 84.42,
+      "mismatchCount": 114342,
       "totalPixels": 734080,
-      "ssimScore": 0.4082,
+      "ssimScore": 0.4417,
       "refInkCount": 106186,
-      "renderedInkCount": 60931,
+      "renderedInkCount": 55545,
+      "inkIou": 15.16,
+      "inkDice": 26.33,
+      "inkIntersection": 21294,
+      "inkUnion": 140437,
       "centroidDrift": {
-        "deltaX": 12.54,
-        "deltaY": -0.77,
-        "deltaXDp": 6.27,
-        "deltaYDp": -0.39
+        "deltaX": 41.45,
+        "deltaY": -17.79,
+        "deltaXDp": 20.73,
+        "deltaYDp": -8.89
       }
     },
     {
@@ -54,17 +68,21 @@
       "yStart": 800,
       "yEnd": 1350,
       "height": 550,
-      "similarity": 84.22,
-      "mismatchCount": 102731,
+      "similarity": 85.82,
+      "mismatchCount": 92320,
       "totalPixels": 651200,
-      "ssimScore": 0.4256,
+      "ssimScore": 0.4961,
       "refInkCount": 116841,
-      "renderedInkCount": 97690,
+      "renderedInkCount": 71247,
+      "inkIou": 27.84,
+      "inkDice": 43.56,
+      "inkIntersection": 40966,
+      "inkUnion": 147122,
       "centroidDrift": {
-        "deltaX": -1.44,
-        "deltaY": 31.11,
-        "deltaXDp": -0.72,
-        "deltaYDp": 15.55
+        "deltaX": 2.07,
+        "deltaY": 52.34,
+        "deltaXDp": 1.03,
+        "deltaYDp": 26.17
       }
     },
     {
@@ -74,17 +92,21 @@
       "yStart": 1350,
       "yEnd": 1584,
       "height": 234,
-      "similarity": 93.58,
-      "mismatchCount": 17789,
+      "similarity": 93.79,
+      "mismatchCount": 17215,
       "totalPixels": 277056,
-      "ssimScore": 0.7361,
+      "ssimScore": 0.7796,
       "refInkCount": 43237,
-      "renderedInkCount": 53508,
+      "renderedInkCount": 49253,
+      "inkIou": 49.22,
+      "inkDice": 65.97,
+      "inkIntersection": 30508,
+      "inkUnion": 61982,
       "centroidDrift": {
-        "deltaX": 10.88,
-        "deltaY": 19.5,
-        "deltaXDp": 5.44,
-        "deltaYDp": 9.75
+        "deltaX": 18.35,
+        "deltaY": 12.2,
+        "deltaXDp": 9.18,
+        "deltaYDp": 6.1
       }
     }
   ],

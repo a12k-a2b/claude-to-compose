@@ -4,11 +4,13 @@
 ## Verdict: FAILED
 Verdict: FAILED
 
-- **Execution Date**: 2026-09-19T07:11:03.207Z
+- **Execution Date**: 2026-09-19T09:12:08.426Z
 - **Target Application**: Claude to Compose
 - **Overall Score**: 100 / 100 (Pass threshold: >= 90)
 - **Build Status**: PASSED
-- **Visual Similarity**: 87.7%
+- **Visual Similarity**: 87.5%
+- **Ink IoU (Non-White Ink)**: 25.51%
+- **Ink Dice Coefficient**: 40.65%
 
 ## 2. Programmatic Build & Unit Test Results
 - Gradle Compilation: 0 errors
@@ -16,9 +18,11 @@ Verdict: FAILED
 - Headless Preview Capture: Captured successfully to `android/app/build/outputs/preview/rendered_preview.png`
 
 ## 3. Programmatic Visual Diff Analysis
-- Pixel Similarity: 87.7%
-- MSSIM Score: 0.395
-- Pixel Mismatch Count: 230353
+- Pixel Similarity: 87.5%
+- Ink IoU: 25.51%
+- Ink Dice: 40.65%
+- MSSIM Score: 0.458
+- Pixel Mismatch Count: 234216
 
 ### Visual Diff Artifacts
 - **Reference Web Viewport**: ![Reference Web Viewport](daylight_dc1_screen_reference.png)
@@ -28,12 +32,12 @@ Verdict: FAILED
 
 ### Multi-Zone Perceptual Breakdown (Daylight DC1 1184 × 1584)
 
-| Zone | Y Range (px) | Similarity | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Navigation & Header Frame** | 0-180 | 95.15% | 0.788 | 10339 | `43.32, -4.62` | `21.66dp, -2.31dp` |
-| **Hero Map & Tracks Canvas** | 180-800 | 86.45% | 0.4082 | 99494 | `12.54, -0.77` | `6.27dp, -0.39dp` |
-| **Headline & Subtitle Typography** | 800-1350 | 84.22% | 0.4256 | 102731 | `-1.44, 31.11` | `-0.72dp, 15.55dp` |
-| **Action Controls & Motion Chips** | 1350-1584 | 93.58% | 0.7361 | 17789 | `10.88, 19.5` | `5.44dp, 9.75dp` |
+| Zone | Y Range (px) | Similarity | Ink IoU | Ink Dice | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Navigation & Header Frame** | 0-180 | 95.15% | 4.52% | 8.65% | 0.788 | 10339 | `43.32, -4.62` | `21.66dp, -2.31dp` |
+| **Hero Map & Tracks Canvas** | 180-800 | 84.42% | 15.16% | 26.33% | 0.4417 | 114342 | `41.45, -17.79` | `20.73dp, -8.89dp` |
+| **Headline & Subtitle Typography** | 800-1350 | 85.82% | 27.84% | 43.56% | 0.4961 | 92320 | `2.07, 52.34` | `1.03dp, 26.17dp` |
+| **Action Controls & Motion Chips** | 1350-1584 | 93.79% | 49.22% | 65.97% | 0.7796 | 17215 | `18.35, 12.2` | `9.18dp, 6.1dp` |
 
 ![Multi-Zone Heatmap Overlay](/Users/anjan/.gemini/antigravity/scratch/claude_to_compose/verification/zonal_diff_overlay.png)
 
@@ -42,9 +46,9 @@ Verdict: FAILED
 | Zone | Measured Drift (dp) | Match | Recommended Action |
 | :--- | :--- | :--- | :--- |
 | **Navigation & Header Frame** | `Δx: 21.66dp, Δy: -2.31dp` | 95.15% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 2.31dp (element rendered 2.31dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 21.66dp (rendered 21.66dp too far right) |
-| **Hero Map & Tracks Canvas** | `Δx: 6.27dp, Δy: -0.39dp` | 86.45% | • **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 6.27dp (rendered 6.27dp too far right) |
-| **Headline & Subtitle Typography** | `Δx: -0.72dp, Δy: 15.55dp` | 84.22% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 15.55dp (element rendered 15.55dp too low) |
-| **Action Controls & Motion Chips** | `Δx: 5.44dp, Δy: 9.75dp` | 93.58% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 9.75dp (element rendered 9.75dp too low)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 5.44dp (rendered 5.44dp too far right) |
+| **Hero Map & Tracks Canvas** | `Δx: 20.73dp, Δy: -8.89dp` | 84.42% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 8.89dp (element rendered 8.89dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 20.73dp (rendered 20.73dp too far right) |
+| **Headline & Subtitle Typography** | `Δx: 1.03dp, Δy: 26.17dp` | 85.82% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 26.17dp (element rendered 26.17dp too low) |
+| **Action Controls & Motion Chips** | `Δx: 9.18dp, Δy: 6.1dp` | 93.79% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 6.1dp (element rendered 6.1dp too low)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 9.18dp (rendered 9.18dp too far right) |
 
 ## 4. Agent-as-Judge 10-Point Audit Rubric
 | Dimension | Score (0-10) | Notes |
@@ -65,4 +69,4 @@ Verdict: FAILED
 ## 5. Refinement Loop Guidance & Action Items
 - **Verdict Code**: TRIGGER_REFINEMENT
 - **Action**: Iterative refinement required before release publication. Address the following items:
-  - Improve visual fidelity (current similarity: 87.7%, threshold: 90.0%).
+  - Improve visual fidelity (current similarity: 87.5%, threshold: 90.0%).

@@ -15,7 +15,8 @@ const { getCanvasInterceptionScript } = require('../../extractor/canvas_intercep
 const { transpileCanvasToCompose, mapStrokeCap, mapStrokeJoin, mapColorToCompose } = require('../../synthesizer/canvas_transpiler');
 const { sanitizeAndroidFontName, FontExtractor } = require('../../extractor/font_extractor');
 const { VectorGenerator } = require('../../synthesizer/vector_generator');
-const { computeInkCentroid, DEFAULT_DC1_ZONES } = require('../../verification/zonal_diff');
+const { computeInkCentroid, computeZonalInkMetrics, DEFAULT_DC1_ZONES } = require('../../verification/zonal_diff');
+const { computeInkMetrics } = require('../../verification/run_diff');
 const { AutoTuner } = require('../../verification/auto_tuner');
 
 describe('Subsystem 1: HTML5 Canvas 2D Interceptor & Transpiler', () => {
@@ -149,5 +150,57 @@ describe('Subsystem 4: Localized Multi-Zone Perceptual Diffing & Auto-Tuner', ()
     const directives = tuner.generateTuningDirectives();
     assert.equal(directives.length, 1);
     assert.ok(directives[0].recommendedCorrections[0].action.includes('Reduce top padding'));
+  });
+
+  it('computes Ink IoU and Ink Dice strictly for non-white ink pixels', () => {
+    // 10x10 mock images:
+    // Image A has black pixels at (0, 0), (1, 1), (2, 2) [3 ink pixels]
+    // Image B has black pixels at (1, 1), (2, 2), (3, 3) [3 ink pixels]
+    // Intersection: (1, 1), (2, 2) -> 2 pixels
+    // Union: (0, 0), (1, 1), (2, 2), (3, 3) -> 4 pixels
+    // IoU: 2 / 4 = 50.0%
+    // Dice: 2 * 2 / (3 + 3) = 4 / 6 = 66.67%
+    const mockPngA = {
+      width: 10,
+      height: 10,
+      data: Buffer.alloc(10 * 10 * 4, 255)
+    };
+    const mockPngB = {
+      width: 10,
+      height: 10,
+      data: Buffer.alloc(10 * 10 * 4, 255)
+    };
+
+    const setInk = (png, x, y) => {
+      const idx = (10 * y + x) * 4;
+      png.data[idx] = 0;
+      png.data[idx + 1] = 0;
+      png.data[idx + 2] = 0;
+      png.data[idx + 3] = 255;
+    };
+
+    setInk(mockPngA, 0, 0);
+    setInk(mockPngA, 1, 1);
+    setInk(mockPngA, 2, 2);
+
+    setInk(mockPngB, 1, 1);
+    setInk(mockPngB, 2, 2);
+    setInk(mockPngB, 3, 3);
+
+    const metricsGlobal = computeInkMetrics(mockPngA, mockPngB, 10, 10);
+    assert.equal(metricsGlobal.inkRefPixels, 3);
+    assert.equal(metricsGlobal.inkRenderedPixels, 3);
+    assert.equal(metricsGlobal.inkIntersectionPixels, 2);
+    assert.equal(metricsGlobal.inkUnionPixels, 4);
+    assert.equal(metricsGlobal.inkIou, 50.0);
+    assert.equal(metricsGlobal.inkDice, 66.67);
+
+    const metricsZonal = computeZonalInkMetrics(mockPngA, mockPngB, 10, 10);
+    assert.equal(metricsZonal.refInkCount, 3);
+    assert.equal(metricsZonal.renderedInkCount, 3);
+    assert.equal(metricsZonal.inkIntersection, 2);
+    assert.equal(metricsZonal.inkUnion, 4);
+    assert.equal(metricsZonal.inkIou, 50.0);
+    assert.equal(metricsZonal.inkDice, 66.67);
   });
 });

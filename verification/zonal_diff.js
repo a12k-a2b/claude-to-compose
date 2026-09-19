@@ -91,6 +91,56 @@ function computeInkCentroid(png, width, height) {
 }
 
 /**
+ * Computes Ink IoU and Ink Dice strictly for non-white ink pixels (luminance < 245).
+ */
+function computeZonalInkMetrics(refPng, renderedPng, width, height) {
+  let refInk = 0;
+  let renderedInk = 0;
+  let intersection = 0;
+  let union = 0;
+
+  const totalPixels = width * height;
+  for (let i = 0; i < totalPixels; i++) {
+    const idx = i * 4;
+    const rA = refPng.data[idx];
+    const gA = refPng.data[idx + 1];
+    const bA = refPng.data[idx + 2];
+    const aA = refPng.data[idx + 3];
+
+    const rB = renderedPng.data[idx];
+    const gB = renderedPng.data[idx + 1];
+    const bB = renderedPng.data[idx + 2];
+    const aB = renderedPng.data[idx + 3];
+
+    const lumA = 0.299 * rA + 0.587 * gA + 0.114 * bA;
+    const lumB = 0.299 * rB + 0.587 * gB + 0.114 * bB;
+
+    const isInkA = aA > 50 && lumA < 245;
+    const isInkB = aB > 50 && lumB < 245;
+
+    if (isInkA) refInk++;
+    if (isInkB) renderedInk++;
+    if (isInkA && isInkB) intersection++;
+    if (isInkA || isInkB) union++;
+  }
+
+  const inkIou = union > 0 ? parseFloat(((intersection / union) * 100).toFixed(2)) : 100.0;
+  const inkDice =
+    refInk + renderedInk > 0
+      ? parseFloat(((2 * intersection / (refInk + renderedInk)) * 100).toFixed(2))
+      : 100.0;
+
+  return {
+    inkIou,
+    inkDice,
+    refInkCount: refInk,
+    renderedInkCount: renderedInk,
+    inkIntersection: intersection,
+    inkUnion: union
+  };
+}
+
+/**
  * Runs localized multi-zone diff analysis between reference and rendered images.
  *
  * @param {string} refPath
@@ -192,8 +242,10 @@ async function runZonalDiff(refPath, renderedPath, options = {}) {
     } catch (_) {}
 
     // Centroid drift
+    // Centroid drift & ink metrics
     const refCentroid = computeInkCentroid(refZonePng, width, zoneHeight);
     const renderedCentroid = computeInkCentroid(renderedZonePng, width, zoneHeight);
+    const zoneInkMetrics = computeZonalInkMetrics(refZonePng, renderedZonePng, width, zoneHeight);
 
     const deltaX = parseFloat((renderedCentroid.centroidX - refCentroid.centroidX).toFixed(2));
     const deltaY = parseFloat((renderedCentroid.centroidY - refCentroid.centroidY).toFixed(2));
@@ -211,6 +263,10 @@ async function runZonalDiff(refPath, renderedPath, options = {}) {
       ssimScore: zoneSsim,
       refInkCount: refCentroid.inkPixelCount,
       renderedInkCount: renderedCentroid.inkPixelCount,
+      inkIou: zoneInkMetrics.inkIou,
+      inkDice: zoneInkMetrics.inkDice,
+      inkIntersection: zoneInkMetrics.inkIntersection,
+      inkUnion: zoneInkMetrics.inkUnion,
       centroidDrift: {
         deltaX,
         deltaY,
@@ -243,11 +299,19 @@ async function runZonalDiff(refPath, renderedPath, options = {}) {
   const zonalDiffPath = path.join(outputDir, 'zonal_diff_overlay.png');
   fs.writeFileSync(zonalDiffPath, PNG.sync.write(annotatedDiffPng));
 
+  const globalInkMetrics = computeZonalInkMetrics(normRefPng, normRenderedPng, width, height);
+
   const report = {
     canvas: { width, height },
     totalPixels: width * height,
     totalMismatches,
     globalSimilarity: parseFloat((((width * height - totalMismatches) / (width * height)) * 100).toFixed(2)),
+    globalInkIou: globalInkMetrics.inkIou,
+    globalInkDice: globalInkMetrics.inkDice,
+    globalRefInkCount: globalInkMetrics.refInkCount,
+    globalRenderedInkCount: globalInkMetrics.renderedInkCount,
+    globalInkIntersection: globalInkMetrics.inkIntersection,
+    globalInkUnion: globalInkMetrics.inkUnion,
     zones: zoneResults,
     zonalDiffOverlay: zonalDiffPath
   };
@@ -280,12 +344,15 @@ if (require.main === module) {
         console.log(JSON.stringify(res, null, 2));
       } else {
         console.log('\n=== Multi-Zone Perceptual Diffing Report ===');
-        console.log(`Global Canvas: ${res.canvas.width} x ${res.canvas.height} px | Overall Similarity: ${res.globalSimilarity}%\n`);
+        console.log(`Global Canvas: ${res.canvas.width} x ${res.canvas.height} px | Overall Similarity: ${res.globalSimilarity}%`);
+        console.log(`Global Ink IoU: ${res.globalInkIou}% | Global Ink Dice: ${res.globalInkDice}%\n`);
         console.table(
           res.zones.map(z => ({
             'Zone Name': z.name,
             'Y Range (px)': `${z.yStart}-${z.yEnd}`,
             'Similarity': `${z.similarity}%`,
+            'Ink IoU': `${z.inkIou}%`,
+            'Ink Dice': `${z.inkDice}%`,
             'SSIM': z.ssimScore,
             'Mismatches': z.mismatchCount,
             'Drift (Δx, Δy px)': `${z.centroidDrift.deltaX}, ${z.centroidDrift.deltaY}`,
@@ -305,5 +372,6 @@ if (require.main === module) {
 module.exports = {
   runZonalDiff,
   DEFAULT_DC1_ZONES,
-  computeInkCentroid
+  computeInkCentroid,
+  computeZonalInkMetrics
 };

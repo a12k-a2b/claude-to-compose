@@ -137,22 +137,22 @@ fun DaylightDc1Screen(
                 .size(68.dp)
         )
 
-        // 5. Central Hero Content Stack (tuned baseline alignment at y = 394dp / 788px)
+        // 5. Central Hero Content Stack (tuned baseline alignment at y = 411dp / 822px)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .padding(top = 394.dp, start = 24.dp, end = 24.dp),
+                .padding(top = 411.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Daylight DC1 Brand Glyph
             Image(
                 painter = painterResource(id = R.drawable.daylight_logo),
                 contentDescription = "Daylight DC1 Logo",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(42.dp)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(19.dp))
 
             // Subtitle Label
             Text(
@@ -165,7 +165,7 @@ fun DaylightDc1Screen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(9.dp))
 
             // Headline in Serif
             Text(
@@ -179,7 +179,7 @@ fun DaylightDc1Screen(
                 lineHeight = 48.sp
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(9.dp))
 
             // Description Body Text
             Text(
@@ -191,7 +191,7 @@ fun DaylightDc1Screen(
                 lineHeight = 21.sp
             )
 
-            Spacer(modifier = Modifier.height(34.dp))
+            Spacer(modifier = Modifier.height(17.dp))
 
             // "Get started" Solid Black Pill CTA
             val interactionSource = remember { MutableInteractionSource() }
@@ -221,7 +221,7 @@ fun DaylightDc1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // "PAPER MOTION" Row 1 Chips
             Row(
@@ -314,29 +314,32 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 1. Cartesian Grid Lines
         // Note: In the Claude reference, the top 90dp is a clean open header with no grid!
+        // The grid covers the hero illustration map and terminates above the central content stack (y <= 365dp)
         val xStep = 40.5.dp.toPx()
         val yStep = 50.dp.toPx()
-        val startX = 18.dp.toPx()
+        val startX = 69.dp.toPx()
         val gridTopY = 90.dp.toPx() // Vertical lines start at 90dp (180px)
+        val gridBottomY = 365.dp.toPx() // Vertical lines terminate at 365dp (730px)
+        val gridRightX = w - 34.5.dp.toPx()
 
         var gx = startX
-        while (gx < w - 24.dp.toPx()) {
+        while (gx <= gridRightX) {
             drawLine(
-                color = Os100,
+                color = Os400,
                 start = Offset(gx, gridTopY),
-                end = Offset(gx, h - 28.dp.toPx()),
+                end = Offset(gx, gridBottomY),
                 strokeWidth = 1f
             )
             gx += xStep
         }
 
-        // Horizontal grid lines start at 100dp (200px)
+        // Horizontal grid lines start at 100dp (200px) and terminate at 350dp (700px)
         var gy = 100.dp.toPx()
-        while (gy < h - 24.dp.toPx()) {
+        while (gy <= 360.dp.toPx()) {
             drawLine(
-                color = Os100,
+                color = Os400,
                 start = Offset(startX, gy),
-                end = Offset(w - startX, gy),
+                end = Offset(gridRightX, gy),
                 strokeWidth = 1f
             )
             gy += yStep
@@ -344,12 +347,12 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         // 2. Rectangular Building / Lot Outlines
         val lotOutlines = listOf(
-            Offset(75.dp.toPx(), 170.dp.toPx()) to Size(45.dp.toPx(), 30.dp.toPx()),
-            Offset(210.dp.toPx(), 150.dp.toPx()) to Size(32.dp.toPx(), 32.dp.toPx()),
-            Offset(268.dp.toPx(), 172.dp.toPx()) to Size(42.dp.toPx(), 25.dp.toPx()),
-            Offset(340.dp.toPx(), 132.dp.toPx()) to Size(25.dp.toPx(), 25.dp.toPx()),
-            Offset(380.dp.toPx(), 220.dp.toPx()) to Size(48.dp.toPx(), 32.dp.toPx()),
-            Offset(502.dp.toPx(), 172.dp.toPx()) to Size(42.dp.toPx(), 28.dp.toPx()),
+            Offset(76.dp.toPx(), 177.dp.toPx()) to Size(44.dp.toPx(), 31.dp.toPx()),
+            Offset(207.dp.toPx(), 156.5.dp.toPx()) to Size(32.5.dp.toPx(), 30.dp.toPx()),
+            Offset(269.dp.toPx(), 176.dp.toPx()) to Size(42.dp.toPx(), 22.dp.toPx()),
+            Offset(325.dp.toPx(), 140.dp.toPx()) to Size(20.dp.toPx(), 18.5.dp.toPx()),
+            Offset(380.dp.toPx(), 220.dp.toPx()) to Size(48.dp.toPx(), 30.dp.toPx()),
+            Offset(503.dp.toPx(), 173.dp.toPx()) to Size(41.dp.toPx(), 28.dp.toPx()),
             Offset(85.dp.toPx(), 340.dp.toPx()) to Size(40.dp.toPx(), 25.dp.toPx()),
             Offset(185.dp.toPx(), 335.dp.toPx()) to Size(42.dp.toPx(), 22.dp.toPx()),
             Offset(150.dp.toPx(), 390.dp.toPx()) to Size(28.dp.toPx(), 28.dp.toPx()),
@@ -366,7 +369,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
 
         lotOutlines.forEach { (pos, size) ->
             drawRoundRect(
-                color = Os200,
+                color = Os800,
                 topLeft = pos,
                 size = size,
                 cornerRadius = CornerRadius(2f, 2f),
@@ -436,7 +439,7 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
                 532.dp.toPx(), 505.dp.toPx()
             )
         }
-        drawPath(lane4, color = Os100, style = Stroke(width = 1.5.dp.toPx()))
+        drawPath(lane4, color = Os400, style = Stroke(width = 1.5.dp.toPx()))
     }
 }
 

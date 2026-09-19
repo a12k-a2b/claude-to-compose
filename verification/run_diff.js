@@ -168,6 +168,70 @@ async function generateCompositeImage(refBuffer, renderedBuffer, diffBuffer, wid
 }
 
 /**
+ * Calculates Ink IoU and Ink Dice metrics strictly for non-white ink pixels (luminance < 245).
+ * Prevents white background pixels from inflating visual fidelity scores.
+ *
+ * @param {PNG} normRefPng
+ * @param {PNG} normRenderedPng
+ * @param {number} width
+ * @param {number} height
+ * @returns {{
+ *   inkIou: number,
+ *   inkDice: number,
+ *   inkRefPixels: number,
+ *   inkRenderedPixels: number,
+ *   inkIntersectionPixels: number,
+ *   inkUnionPixels: number
+ * }}
+ */
+function computeInkMetrics(normRefPng, normRenderedPng, width, height) {
+  let refInk = 0;
+  let renderedInk = 0;
+  let intersection = 0;
+  let union = 0;
+
+  const totalPixels = width * height;
+  for (let i = 0; i < totalPixels; i++) {
+    const idx = i * 4;
+    const rA = normRefPng.data[idx];
+    const gA = normRefPng.data[idx + 1];
+    const bA = normRefPng.data[idx + 2];
+    const aA = normRefPng.data[idx + 3];
+
+    const rB = normRenderedPng.data[idx];
+    const gB = normRenderedPng.data[idx + 1];
+    const bB = normRenderedPng.data[idx + 2];
+    const aB = normRenderedPng.data[idx + 3];
+
+    const lumA = 0.299 * rA + 0.587 * gA + 0.114 * bA;
+    const lumB = 0.299 * rB + 0.587 * gB + 0.114 * bB;
+
+    const isInkA = aA > 50 && lumA < 245;
+    const isInkB = aB > 50 && lumB < 245;
+
+    if (isInkA) refInk++;
+    if (isInkB) renderedInk++;
+    if (isInkA && isInkB) intersection++;
+    if (isInkA || isInkB) union++;
+  }
+
+  const inkIou = union > 0 ? parseFloat(((intersection / union) * 100).toFixed(2)) : 100.0;
+  const inkDice =
+    refInk + renderedInk > 0
+      ? parseFloat(((2 * intersection / (refInk + renderedInk)) * 100).toFixed(2))
+      : 100.0;
+
+  return {
+    inkIou,
+    inkDice,
+    inkRefPixels: refInk,
+    inkRenderedPixels: renderedInk,
+    inkIntersectionPixels: intersection,
+    inkUnionPixels: union
+  };
+}
+
+/**
  * Compares reference screenshot with rendered preview screenshot.
  *
  * @param {string} refPath
@@ -178,6 +242,12 @@ async function generateCompositeImage(refBuffer, renderedBuffer, diffBuffer, wid
  *   pixelMismatchCount: number,
  *   pixelSimilarityPercentage: number,
  *   mssimScore: number,
+ *   inkIou: number,
+ *   inkDice: number,
+ *   inkRefPixels: number,
+ *   inkRenderedPixels: number,
+ *   inkIntersectionPixels: number,
+ *   inkUnionPixels: number,
  *   diffOverlayPath: string,
  *   compositePath: string
  * }>}
@@ -232,6 +302,9 @@ async function compareImages(refPath, renderedPath, outputDir = 'verification', 
   const pixelSimilarityPercentage = parseFloat(
     (((totalPixels - pixelMismatchCount) / totalPixels) * 100).toFixed(2)
   );
+
+  // Compute Ink IoU & Ink Dice strictly on non-white ink pixels (luminance < 245)
+  const inkMetrics = computeInkMetrics(normRefPng, normRenderedPng, width, height);
 
   // Compute SSIM
   let mssimScore = 1.0;
@@ -289,6 +362,12 @@ async function compareImages(refPath, renderedPath, outputDir = 'verification', 
     pixelMismatchCount,
     pixelSimilarityPercentage,
     mssimScore,
+    inkIou: inkMetrics.inkIou,
+    inkDice: inkMetrics.inkDice,
+    inkRefPixels: inkMetrics.inkRefPixels,
+    inkRenderedPixels: inkMetrics.inkRenderedPixels,
+    inkIntersectionPixels: inkMetrics.inkIntersectionPixels,
+    inkUnionPixels: inkMetrics.inkUnionPixels,
     diffOverlayPath,
     compositePath
   };
@@ -334,6 +413,8 @@ if (require.main === module) {
         console.log(`  Pixel Mismatch Count:       ${metrics.pixelMismatchCount}`);
         console.log(`  Pixel Similarity:           ${metrics.pixelSimilarityPercentage}%`);
         console.log(`  MSSIM Structural Score:     ${metrics.mssimScore}`);
+        console.log(`  Ink IoU (Non-White Ink):    ${metrics.inkIou}%`);
+        console.log(`  Ink Dice Coefficient:       ${metrics.inkDice}%`);
         console.log(`  Diff Overlay Artifact:      ${metrics.diffOverlayPath}`);
         console.log(`  3-Way Composite Artifact:   ${metrics.compositePath}\n`);
       }
@@ -348,6 +429,7 @@ if (require.main === module) {
 module.exports = {
   runDiff,
   compareImages,
+  computeInkMetrics,
   validatePngHeader,
   clampDiffThreshold,
   calculateUnifiedCanvas,
