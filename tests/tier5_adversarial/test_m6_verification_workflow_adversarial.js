@@ -958,6 +958,7 @@ Build successful with warnings
         setupTmpDir();
         const outDir = path.join(TMP_TEST_DIR, 'pipe_out');
         const pipeline = new VerificationPipeline({
+          projectRoot: TMP_TEST_DIR,
           outputDir: outDir,
           skipBuild: true,
           report: path.join(outDir, 'verification_report.md')

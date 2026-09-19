@@ -26,6 +26,7 @@ const { generateVerificationReport } = require('./report_generator');
 
 class VerificationPipeline {
   constructor(options = {}) {
+    this.options = options;
     this.projectRoot = options.projectRoot || path.resolve(__dirname, '..');
     this.androidDir = options.androidDir || path.join(this.projectRoot, 'android');
     this.outputDir = options.outputDir || path.join(this.projectRoot, 'verification');
@@ -178,8 +179,9 @@ class VerificationPipeline {
 
     generateVerificationReport(reportData, this.reportPath);
     // Also save copy to root directory if requested or standard
+    const options = this.options || {};
     const rootReportPath = path.join(this.projectRoot, 'verification_report.md');
-    if (this.reportPath !== rootReportPath) {
+    if (!options.report && options.copyToRoot !== false && this.reportPath !== rootReportPath) {
       try {
         fs.copyFileSync(this.reportPath, rootReportPath);
       } catch (_) {}
