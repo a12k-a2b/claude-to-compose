@@ -239,7 +239,7 @@ class BuildRunner {
     const res = await this.runGradle(
       ['testDebugUnitTest'],
       {
-        extraArgs: ['--tests', 'com.claude.compose.PreviewScreenshotTest'],
+        extraArgs: ['--tests', 'com.claude.compose.PreviewScreenshotTest', '--rerun-tasks'],
         timeout: options.timeout || this.testTimeoutMs,
         ...options
       }

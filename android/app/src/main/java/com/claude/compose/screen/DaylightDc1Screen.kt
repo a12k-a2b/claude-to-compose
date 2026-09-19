@@ -94,55 +94,77 @@ fun DaylightDc1Screen(
         // 1. Background Cartesian Grid, Building Lots, and Footprint Lanes
         DaylightDc1BackgroundCanvas(modifier = Modifier.fillMaxSize())
 
-        // 2a. Outer Hairline Frame (starts at y = 18dp, matching reference y = 36px)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 26.dp, vertical = 18.dp)
-                .border(1.dp, Os100, RoundedCornerShape(4.dp))
-        )
+        // 2a & 2b. Hairline Frames (matching authentic open-bottom reference layout)
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val outerColor = Color(0xFFA8A8A0)
+            val innerColor = Os100.copy(alpha = 0.6f)
 
-        // 2b. Inner Hairline Frame (inset by 8dp, matching reference y = 56px)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 34.dp, vertical = 28.dp)
-                .border(1.dp, Os100.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
-        )
+            val outerLeft = 27.5.dp.toPx()
+            val outerRight = size.width - 27.5.dp.toPx()
+            val outerTop = 26.5.dp.toPx()
+            val outerBottom = 680.dp.toPx()
 
-        // 3. Top-Right "Skip" Pill (nested on top-right of outer frame)
+            val innerLeft = 34.dp.toPx()
+            val innerRight = size.width - 34.dp.toPx()
+            val innerTop = 34.dp.toPx()
+            val innerBottom = 650.dp.toPx()
+
+            // Outer Frame (top + sides with rounded top corners)
+            val outerPath = Path().apply {
+                moveTo(outerLeft, outerBottom)
+                lineTo(outerLeft, outerTop + 4.dp.toPx())
+                quadraticTo(outerLeft, outerTop, outerLeft + 4.dp.toPx(), outerTop)
+                lineTo(outerRight - 4.dp.toPx(), outerTop)
+                quadraticTo(outerRight, outerTop, outerRight, outerTop + 4.dp.toPx())
+                lineTo(outerRight, outerBottom)
+            }
+            drawPath(outerPath, color = outerColor, style = Stroke(width = 1.dp.toPx()))
+
+            // Inner Frame (top + sides with rounded top corners)
+            val innerPath = Path().apply {
+                moveTo(innerLeft, innerBottom)
+                lineTo(innerLeft, innerTop + 2.dp.toPx())
+                quadraticTo(innerLeft, innerTop, innerLeft + 2.dp.toPx(), innerTop)
+                lineTo(innerRight - 2.dp.toPx(), innerTop)
+                quadraticTo(innerRight, innerTop, innerRight, innerTop + 2.dp.toPx())
+                lineTo(innerRight, innerBottom)
+            }
+            drawPath(innerPath, color = innerColor, style = Stroke(width = 1.dp.toPx()))
+        }
+
+        // 3. Top-Right "Skip" Pill (anchored on reference coordinates cx ~ 1100px, cy ~ 63px)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 10.dp, end = 20.dp)
-                .clip(RoundedCornerShape(18.dp))
+                .padding(top = 21.dp, end = 20.5.dp)
+                .clip(RoundedCornerShape(11.dp))
                 .background(Os0)
-                .border(1.dp, Os100, RoundedCornerShape(18.dp))
+                .border(1.dp, Os100, RoundedCornerShape(11.dp))
                 .clickable(onClick = onSkipClick)
-                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .padding(horizontal = 14.dp, vertical = 4.dp)
         ) {
             Text(
                 text = "Skip",
-                fontSize = 13.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 color = Os900
             )
         }
 
-        // 4. Upper-Right Compass Rose Graphic
+        // 4. Upper-Right Compass Rose Graphic (anchored on reference cx = 1010px, cy = 272px)
         CompassRoseGraphic(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 96.dp, end = 50.dp)
+                .padding(top = 102.dp, end = 53.dp)
                 .size(68.dp)
         )
 
-        // 5. Central Hero Content Stack (tuned baseline alignment at y = 411dp / 822px)
+        // 5. Central Hero Content Stack (calibrated alignment to match reference coordinates)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .padding(top = 411.dp, start = 24.dp, end = 24.dp),
+                .padding(top = 410.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Daylight DC1 Brand Glyph
@@ -152,34 +174,34 @@ fun DaylightDc1Screen(
                 modifier = Modifier.size(42.dp)
             )
 
-            Spacer(modifier = Modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Subtitle Label
+            // Subtitle Label (matching reference "Daylight DC1 · the living page")
             Text(
-                text = "DAYLIGHT DC1 · THE LIVING PAGE",
-                fontSize = 11.5.sp,
-                fontWeight = FontWeight.SemiBold,
+                text = "Daylight DC1 · the living page",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
                 fontFamily = FontFamily.Monospace,
-                letterSpacing = 2.2.sp,
-                color = Os300,
+                letterSpacing = 1.1.sp,
+                color = Os400,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(9.dp))
+            Spacer(modifier = Modifier.height(11.dp))
 
             // Headline in Serif
             Text(
                 text = "Step into daylight",
                 fontSize = 44.sp,
-                fontWeight = FontWeight.Normal,
+                fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily.Serif,
-                letterSpacing = (-1.2).sp,
+                letterSpacing = (-3.2).sp,
                 color = Os1000,
                 textAlign = TextAlign.Center,
                 lineHeight = 48.sp
             )
 
-            Spacer(modifier = Modifier.height(9.dp))
+            Spacer(modifier = Modifier.height(5.dp))
 
             // Description Body Text
             Text(
@@ -188,30 +210,30 @@ fun DaylightDc1Screen(
                 fontWeight = FontWeight.Normal,
                 color = Os800,
                 textAlign = TextAlign.Center,
-                lineHeight = 21.sp
+                lineHeight = 20.sp
             )
 
-            Spacer(modifier = Modifier.height(17.dp))
+            Spacer(modifier = Modifier.height(23.dp))
 
             // "Get started" Solid Black Pill CTA
             val interactionSource = remember { MutableInteractionSource() }
             val isPressed by interactionSource.collectIsPressedAsState()
-            val elevation by animateDpAsState(
-                targetValue = if (isPressed) 2.dp else 4.dp,
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                label = "btnElev"
-            )
 
             Button(
                 onClick = onGetStartedClick,
                 interactionSource = interactionSource,
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = elevation),
-                shape = RoundedCornerShape(24.dp),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(22.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Os1000),
                 modifier = Modifier
                     .minimumInteractiveComponentSize()
-                    .height(48.dp)
-                    .width(138.dp)
+                    .height(44.dp)
+                    .width(126.dp)
             ) {
                 Text(
                     text = "Get started",
@@ -221,23 +243,21 @@ fun DaylightDc1Screen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(21.dp))
 
             // "PAPER MOTION" Row 1 Chips
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text = "PAPER MOTION",
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = FontFamily.Monospace,
-                    letterSpacing = 1.2.sp,
-                    color = Os300,
-                    modifier = Modifier.padding(end = 4.dp)
+                    letterSpacing = 1.6.sp,
+                    color = Os400
                 )
-
                 row1Chips.forEachIndexed { index, name ->
                     PaperMotionChip(
                         text = name,
@@ -249,10 +269,10 @@ fun DaylightDc1Screen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Row 2 Chips (centered under row 1)
+            // Row 2 Chips
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 row2Chips.forEachIndexed { index, name ->
                     val chipIndex = row1Chips.size + index
@@ -289,7 +309,7 @@ private fun PaperMotionChip(
             .clip(RoundedCornerShape(13.dp))
             .background(bg)
             .clickable(onClick = onClick)
-            .padding(horizontal = 11.dp, vertical = 5.dp)
+            .padding(horizontal = 4.5.dp, vertical = 5.dp)
     ) {
         Text(
             text = text,
@@ -313,133 +333,70 @@ fun DaylightDc1BackgroundCanvas(modifier: Modifier = Modifier) {
         val h = size.height
 
         // 1. Cartesian Grid Lines
-        // Note: In the Claude reference, the top 90dp is a clean open header with no grid!
-        // The grid covers the hero illustration map and terminates above the central content stack (y <= 365dp)
-        val xStep = 40.5.dp.toPx()
-        val yStep = 50.dp.toPx()
-        val startX = 69.dp.toPx()
-        val gridTopY = 90.dp.toPx() // Vertical lines start at 90dp (180px)
-        val gridBottomY = 365.dp.toPx() // Vertical lines terminate at 365dp (730px)
-        val gridRightX = w - 34.5.dp.toPx()
-
-        var gx = startX
-        while (gx <= gridRightX) {
-            drawLine(
-                color = Os400,
-                start = Offset(gx, gridTopY),
-                end = Offset(gx, gridBottomY),
-                strokeWidth = 1f
-            )
-            gx += xStep
-        }
-
-        // Horizontal grid lines start at 100dp (200px) and terminate at 350dp (700px)
-        var gy = 100.dp.toPx()
-        while (gy <= 360.dp.toPx()) {
-            drawLine(
-                color = Os400,
-                start = Offset(startX, gy),
-                end = Offset(gridRightX, gy),
-                strokeWidth = 1f
-            )
-            gy += yStep
-        }
-
-        // 2. Rectangular Building / Lot Outlines
-        val lotOutlines = listOf(
-            Offset(76.dp.toPx(), 177.dp.toPx()) to Size(44.dp.toPx(), 31.dp.toPx()),
-            Offset(207.dp.toPx(), 156.5.dp.toPx()) to Size(32.5.dp.toPx(), 30.dp.toPx()),
-            Offset(269.dp.toPx(), 176.dp.toPx()) to Size(42.dp.toPx(), 22.dp.toPx()),
-            Offset(325.dp.toPx(), 140.dp.toPx()) to Size(20.dp.toPx(), 18.5.dp.toPx()),
-            Offset(380.dp.toPx(), 220.dp.toPx()) to Size(48.dp.toPx(), 30.dp.toPx()),
-            Offset(503.dp.toPx(), 173.dp.toPx()) to Size(41.dp.toPx(), 28.dp.toPx()),
-            Offset(85.dp.toPx(), 340.dp.toPx()) to Size(40.dp.toPx(), 25.dp.toPx()),
-            Offset(185.dp.toPx(), 335.dp.toPx()) to Size(42.dp.toPx(), 22.dp.toPx()),
-            Offset(150.dp.toPx(), 390.dp.toPx()) to Size(28.dp.toPx(), 28.dp.toPx()),
-            Offset(390.dp.toPx(), 320.dp.toPx()) to Size(38.dp.toPx(), 22.dp.toPx()),
-            Offset(375.dp.toPx(), 375.dp.toPx()) to Size(32.dp.toPx(), 25.dp.toPx()),
-            Offset(300.dp.toPx(), 375.dp.toPx()) to Size(40.dp.toPx(), 22.dp.toPx()),
-            Offset(255.dp.toPx(), 424.dp.toPx()) to Size(34.dp.toPx(), 25.dp.toPx()),
-            Offset(270.dp.toPx(), 458.dp.toPx()) to Size(32.dp.toPx(), 18.dp.toPx()),
-            Offset(410.dp.toPx(), 470.dp.toPx()) to Size(42.dp.toPx(), 25.dp.toPx()),
-            Offset(495.dp.toPx(), 390.dp.toPx()) to Size(38.dp.toPx(), 20.dp.toPx()),
-            Offset(108.dp.toPx(), 540.dp.toPx()) to Size(30.dp.toPx(), 28.dp.toPx()),
-            Offset(440.dp.toPx(), 590.dp.toPx()) to Size(40.dp.toPx(), 22.dp.toPx())
+        // Bound vertical and horizontal lines to authentic reference grid tracks
+        val vertGridSegments = listOf(
+            Triple(69.5.dp, 100.5.dp, 221.0.dp),
+            Triple(69.5.dp, 249.0.dp, 255.5.dp),
+            Triple(110.5.dp, 127.0.dp, 226.0.dp),
+            Triple(110.5.dp, 259.0.dp, 265.5.dp),
+            Triple(150.0.dp, 90.0.dp, 264.0.dp),
+            Triple(150.0.dp, 265.0.dp, 296.5.dp),
+            Triple(150.0.dp, 299.5.dp, 365.0.dp),
+            Triple(188.5.dp, 179.0.dp, 209.5.dp),
+            Triple(188.5.dp, 213.5.dp, 267.0.dp),
+            Triple(188.5.dp, 268.5.dp, 309.5.dp),
+            Triple(229.0.dp, 182.5.dp, 264.0.dp),
+            Triple(271.0.dp, 103.5.dp, 273.0.dp),
+            Triple(271.0.dp, 274.5.dp, 365.0.dp),
+            Triple(314.0.dp, 111.0.dp, 119.5.dp),
+            Triple(314.0.dp, 135.0.dp, 277.5.dp),
+            Triple(314.0.dp, 279.0.dp, 289.5.dp),
+            Triple(355.5.dp, 149.0.dp, 155.5.dp),
+            Triple(355.5.dp, 170.0.dp, 272.5.dp),
+            Triple(395.0.dp, 110.0.dp, 204.5.dp),
+            Triple(395.0.dp, 207.0.dp, 283.0.dp),
+            Triple(395.0.dp, 284.0.dp, 352.0.dp),
+            Triple(433.5.dp, 146.0.dp, 265.0.dp),
+            Triple(433.5.dp, 268.0.dp, 279.5.dp),
+            Triple(433.5.dp, 281.0.dp, 292.0.dp),
+            Triple(473.0.dp, 188.5.dp, 259.0.dp),
+            Triple(514.5.dp, 132.0.dp, 137.5.dp),
+            Triple(514.5.dp, 175.0.dp, 252.0.dp),
+            Triple(514.5.dp, 253.5.dp, 313.0.dp),
+            Triple(557.5.dp, 90.5.dp, 226.5.dp),
+            Triple(557.5.dp, 228.0.dp, 288.0.dp),
         )
-
-        lotOutlines.forEach { (pos, size) ->
-            drawRoundRect(
-                color = Os800,
-                topLeft = pos,
-                size = size,
-                cornerRadius = CornerRadius(2f, 2f),
-                style = Stroke(width = 1.2f)
+        for ((xDp, startYDp, endYDp) in vertGridSegments) {
+            drawLine(
+                color = Os100,
+                start = Offset(xDp.toPx(), startYDp.toPx()),
+                end = Offset(xDp.toPx(), endYDp.toPx()),
+                strokeWidth = 1f
             )
         }
 
-        // 3. Lane 1: Diagonal curve with double rails, closed cap, and alternating footprints
-        val lane1 = Path().apply {
-            moveTo(311.dp.toPx(), 70.dp.toPx())
-            cubicTo(
-                395.dp.toPx(), 130.dp.toPx(),
-                435.dp.toPx(), 195.dp.toPx(),
-                462.dp.toPx(), 280.dp.toPx()
-            )
-            cubicTo(
-                465.dp.toPx(), 390.dp.toPx(),
-                440.dp.toPx(), 480.dp.toPx(),
-                385.dp.toPx(), 560.dp.toPx()
-            )
-            cubicTo(
-                350.dp.toPx(), 610.dp.toPx(),
-                330.dp.toPx(), 655.dp.toPx(),
-                325.dp.toPx(), 700.dp.toPx()
+        val horizGridSegments = listOf(
+            Triple(98.5.dp, 34.0.dp, 112.5.dp),
+            Triple(98.5.dp, 305.0.dp, 314.0.dp),
+            Triple(149.0.dp, 34.0.dp, 146.0.dp),
+            Triple(149.0.dp, 350.5.dp, 357.0.dp),
+            Triple(200.0.dp, 34.0.dp, 104.0.dp),
+            Triple(200.0.dp, 384.0.dp, 390.5.dp),
+            Triple(250.5.dp, 34.0.dp, 76.5.dp),
+            Triple(250.5.dp, 80.5.dp, 103.5.dp),
+            Triple(301.5.dp, 34.0.dp, 140.5.dp),
+            Triple(353.0.dp, 34.0.dp, 120.0.dp),
+            Triple(353.0.dp, 121.5.dp, 221.5.dp),
+        )
+        for ((yDp, startXDp, endXDp) in horizGridSegments) {
+            drawLine(
+                color = Os100,
+                start = Offset(startXDp.toPx(), yDp.toPx()),
+                end = Offset(endXDp.toPx(), yDp.toPx()),
+                strokeWidth = 1f
             )
         }
-        drawLaneWithFootprints(lane1, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
 
-        // 4. Lane 2: Horizontal curve across middle
-        val lane2 = Path().apply {
-            moveTo(18.dp.toPx(), 215.dp.toPx())
-            cubicTo(
-                150.dp.toPx(), 255.dp.toPx(),
-                300.dp.toPx(), 275.dp.toPx(),
-                425.dp.toPx(), 270.dp.toPx()
-            )
-            cubicTo(
-                490.dp.toPx(), 265.dp.toPx(),
-                530.dp.toPx(), 245.dp.toPx(),
-                560.dp.toPx(), 220.dp.toPx()
-            )
-        }
-        drawLaneWithFootprints(lane2, railSpacing = 4.dp.toPx(), footprintStep = 18.dp.toPx(), roundedStartCap = false)
-
-        // 5. Lane 3: Left vertical/diagonal curve with rounded dome top cap
-        val lane3 = Path().apply {
-            moveTo(65.dp.toPx(), 70.dp.toPx())
-            cubicTo(
-                95.dp.toPx(), 160.dp.toPx(),
-                125.dp.toPx(), 255.dp.toPx(),
-                110.dp.toPx(), 360.dp.toPx()
-            )
-            cubicTo(
-                75.dp.toPx(), 480.dp.toPx(),
-                45.dp.toPx(), 580.dp.toPx(),
-                30.dp.toPx(), 670.dp.toPx()
-            )
-        }
-        drawTwoRailLane(lane3, railSpacing = 3.5.dp.toPx(), roundedStartCap = true)
-
-        // 6. Lane 4: Lower subtle curve passing behind text
-        val lane4 = Path().apply {
-            moveTo(45.dp.toPx(), 517.dp.toPx())
-            cubicTo(
-                225.dp.toPx(), 580.dp.toPx(),
-                375.dp.toPx(), 575.dp.toPx(),
-                532.dp.toPx(), 505.dp.toPx()
-            )
-        }
-        drawPath(lane4, color = Os400, style = Stroke(width = 1.5.dp.toPx()))
     }
 }
 
