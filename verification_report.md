@@ -4,51 +4,50 @@
 ## Verdict: PASSED
 Verdict: PASSED
 
-- **Execution Date**: 2026-09-19T10:40:36.029Z
+- **Execution Date**: 2026-09-20T18:06:16.940Z
 - **Target Application**: Claude to Compose
 - **Overall Score**: 100 / 100 (Pass threshold: >= 90)
 - **Build Status**: PASSED
-- **Visual Similarity**: 90.7%
-- **Ink IoU (Non-White Ink)**: 34.38%
-- **Ink Dice Coefficient**: 51.17%
+- **Visual Similarity**: 95.4%
+- **Ink IoU (Non-White Ink)**: 72.44%
+- **Ink Dice Coefficient**: 84.02%
 
 ## 2. Programmatic Build & Unit Test Results
 - Gradle Compilation: 0 errors
 - Unit Tests: 100% pass (1 passed, 0 failed)
-- Headless Preview Capture: Captured successfully to `android/app/build/outputs/preview/rendered_preview.png`
+- Headless Preview Capture: Captured successfully to `output/test_e34f/rendered_compose.png`
 
 ## 3. Programmatic Visual Diff Analysis
-- Pixel Similarity: 90.7%
-- Ink IoU: 34.38%
-- Ink Dice: 51.17%
-- MSSIM Score: 0.631
-- Pixel Mismatch Count: 174690
+- Pixel Similarity: 95.4%
+- Ink IoU: 72.44%
+- Ink Dice: 84.02%
+- MSSIM Score: 0.942
+- Pixel Mismatch Count: 228019
 
 ### Visual Diff Artifacts
-- **Reference Web Viewport**: ![Reference Web Viewport](daylight_dc1_screen_reference.png)
-- **Synthesized Compose Preview**: ![Synthesized Compose Preview](android/app/build/outputs/preview/rendered_preview.png)
+- **Reference Web Viewport**: ![Reference Web Viewport](output/test_e34f/screenshots/desktop_reference.png)
+- **Synthesized Compose Preview**: ![Synthesized Compose Preview](output/test_e34f/rendered_compose.png)
 
-![Visual Diff Composite](/Users/anjan/.gemini/antigravity/scratch/claude_to_compose/verification/composite.png)
+![Visual Diff Composite](output/test_e34f/diff/composite.png)
 
 ### Multi-Zone Perceptual Breakdown (Daylight DC1 1184 × 1584)
 
 | Zone | Y Range (px) | Similarity | Ink IoU | Ink Dice | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Navigation & Header Frame** | 0-180 | 97.87% | 48.35% | 65.19% | 0.9402 | 4549 | `32.17, -1.75` | `16.09dp, -0.88dp` |
-| **Hero Map & Tracks Canvas** | 180-800 | 89.02% | 25.36% | 40.46% | 0.6181 | 80629 | `29.43, -13.67` | `14.71dp, -6.83dp` |
-| **Headline & Subtitle Typography** | 800-1350 | 87.76% | 32.03% | 48.52% | 0.5556 | 79689 | `8.47, 42.75` | `4.24dp, 21.38dp` |
-| **Action Controls & Motion Chips** | 1350-1584 | 96.45% | 59.72% | 74.78% | 0.8935 | 9823 | `18.23, 5.17` | `9.12dp, 2.58dp` |
+| **Navigation & Header Frame** | 0-180 | 99.25% | 50.05% | 66.71% | 0.9833 | 3907 | `0.94, -0.85` | `0.47dp, -0.42dp` |
+| **Hero Map & Tracks Canvas** | 180-800 | 91.97% | 43.87% | 60.99% | 0.8272 | 143329 | `-15.19, -16.26` | `-7.59dp, -8.13dp` |
+| **Headline & Subtitle Typography** | 800-1350 | 96.31% | 94.54% | 97.19% | 0.9139 | 58506 | `-171.95, -109.94` | `-85.97dp, -54.97dp` |
+| **Action Controls & Motion Chips** | 1350-1584 | 98.91% | 93.76% | 96.78% | 0.9753 | 7360 | `7.16, -0.26` | `3.58dp, -0.13dp` |
 
-![Multi-Zone Heatmap Overlay](/Users/anjan/.gemini/antigravity/scratch/claude_to_compose/verification/zonal_diff_overlay.png)
+![Multi-Zone Heatmap Overlay](output/test_e34f/diff/zonal_diff_overlay.png)
 
 ### Auto-Tuner Layout Compensations
 
 | Zone | Measured Drift (dp) | Match | Recommended Action |
 | :--- | :--- | :--- | :--- |
-| **Navigation & Header Frame** | `Δx: 16.09dp, Δy: -0.88dp` | 97.87% | • **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 16.09dp (rendered 16.09dp too far right) |
-| **Hero Map & Tracks Canvas** | `Δx: 14.71dp, Δy: -6.83dp` | 89.02% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 6.83dp (element rendered 6.83dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 14.71dp (rendered 14.71dp too far right) |
-| **Headline & Subtitle Typography** | `Δx: 4.24dp, Δy: 21.38dp` | 87.76% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 21.38dp (element rendered 21.38dp too low)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 4.24dp (rendered 4.24dp too far right) |
-| **Action Controls & Motion Chips** | `Δx: 9.12dp, Δy: 2.58dp` | 96.45% | • **Vertical Alignment / Padding**: Reduce top padding or Spacer height by 2.58dp (element rendered 2.58dp too low)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 9.12dp (rendered 9.12dp too far right) |
+| **Hero Map & Tracks Canvas** | `Δx: -7.59dp, Δy: -8.13dp` | 91.97% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 8.13dp (element rendered 8.13dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or increase start padding by 7.59dp (rendered 7.59dp too far left) |
+| **Headline & Subtitle Typography** | `Δx: -85.97dp, Δy: -54.97dp` | 96.31% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 54.97dp (element rendered 54.97dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or increase start padding by 85.97dp (rendered 85.97dp too far left) |
+| **Action Controls & Motion Chips** | `Δx: 3.58dp, Δy: -0.13dp` | 98.91% | • **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 3.58dp (rendered 3.58dp too far right) |
 
 ## 4. Agent-as-Judge 10-Point Audit Rubric
 | Dimension | Score (0-10) | Notes |

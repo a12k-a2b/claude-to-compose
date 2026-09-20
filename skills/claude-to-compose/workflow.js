@@ -50,6 +50,23 @@ try {
   }
 }
 
+let ClosedLoopAutoTuner = null;
+let autoTuneScreen = null;
+try {
+  const tunerMod = require(path.join(PROJECT_ROOT, 'verification', 'auto_tuner'));
+  ClosedLoopAutoTuner = tunerMod.ClosedLoopAutoTuner;
+  autoTuneScreen = tunerMod.autoTuneScreen;
+} catch (e) {
+  try {
+    const tunerMod = require('../../verification/auto_tuner');
+    ClosedLoopAutoTuner = tunerMod.ClosedLoopAutoTuner;
+    autoTuneScreen = tunerMod.autoTuneScreen;
+  } catch (_) {
+    ClosedLoopAutoTuner = null;
+    autoTuneScreen = null;
+  }
+}
+
 const EXIT_CODES = {
   SUCCESS: 0,
   GENERAL_ERROR: 1,
@@ -112,13 +129,39 @@ class ClaudeToComposeWorkflow {
       throw new Error('InputError: No target URL or local HTML file path provided.');
     }
     const trimmed = input.trim();
+    let id = 'artifact';
+    let screenName = 'DesignScreen';
+
+    const checkIdentifier = (str) => {
+      const lower = str.toLowerCase();
+      if (lower.includes('da63')) {
+        return { id: 'da63', screenName: 'Da63DesignScreen' };
+      }
+      if (lower.includes('e34f')) {
+        return { id: 'e34f', screenName: 'E34fDesignScreen' };
+      }
+      const match = str.match(/(?:artifacts\/|artifact\/|fixtures\/|test_)?([a-zA-Z0-9_-]+?)(?:\/index\.html|\.html|\/)?$/i);
+      if (match && match[1]) {
+        const parsedId = match[1].toLowerCase();
+        const pascal = parsedId.split(/[-_]/).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
+        return { id: parsedId, screenName: `${pascal}Screen` };
+      }
+      return null;
+    };
+
+    const identified = checkIdentifier(trimmed) || (this.options && this.options.outputDir ? checkIdentifier(this.options.outputDir) : null);
+    if (identified) {
+      id = identified.id;
+      screenName = identified.screenName;
+    }
+
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
       try {
         new URL(trimmed);
       } catch (err) {
         throw new Error(`InputError: Invalid URL format "${trimmed}": ${err.message}`);
       }
-      return { target: trimmed, isFile: false };
+      return { target: trimmed, isFile: false, id, screenName };
     }
 
     const resolvedPath = path.resolve(process.cwd(), trimmed);
@@ -137,7 +180,7 @@ class ClaudeToComposeWorkflow {
       }
     }
 
-    return { target: targetFile, isFile: true };
+    return { target: targetFile, isFile: true, id, screenName };
   }
 
   /**
@@ -437,16 +480,53 @@ class ClaudeToComposeWorkflow {
     // Phase 2: Synthesis
     await this.runSynthesis();
 
-    // Phase 3 & Refinement Loop: Verification
+    // Phase 3 & Refinement Loop: Verification & Closed-Loop Auto-Tuning
     let iteration = 1;
     let verification = await this.runVerification(iteration);
 
     while (!verification.passed && iteration < this.options.maxIterations) {
       iteration++;
       this.log(`[REFINEMENT LOOP] Total score ${verification.totalScore} < ${this.options.minScore}. Starting refinement cycle ${iteration}/${this.options.maxIterations}...`);
-      
-      // Re-run synthesis with refinement hints
-      await this.runSynthesis();
+
+      let autoTunerExecuted = false;
+      if (ClosedLoopAutoTuner) {
+        try {
+          this.log(`[AUTO-TUNER] Executing closed-loop visual auto-tuner for cycle ${iteration}...`);
+          const screenName = targetInfo.screenName || (targetInfo.id ? `${targetInfo.id}DesignScreen` : 'DesignScreen');
+          const screenFilePath = path.join(
+            this.options.androidDir,
+            'app/src/main/java/com/claude/compose/screen',
+            `${screenName}.kt`
+          );
+          const tuner = new ClosedLoopAutoTuner({
+            projectRoot: PROJECT_ROOT,
+            androidDir: this.options.androidDir,
+            outputDir: this.options.outputDir,
+            specPath: this.artifacts.specPath,
+            refScreenshot: this.artifacts.desktopReferenceScreenshot,
+            desktopReferenceScreenshot: this.artifacts.desktopReferenceScreenshot,
+            renderedScreenshot: this.artifacts.renderedPreviewScreenshot,
+            renderedPreviewScreenshot: this.artifacts.renderedPreviewScreenshot,
+            screenName: screenName,
+            artifactId: targetInfo.id,
+            screenFilePath: screenFilePath,
+            maxIterations: 1,
+            damping: 0.70,
+            dryRun: false
+          });
+          const tunerRes = await tuner.run();
+          this.log(`[AUTO-TUNER] Cycle complete: converged=${tunerRes ? tunerRes.converged : false}`);
+          autoTunerExecuted = true;
+        } catch (tunerErr) {
+          this.log(`[AUTO-TUNER WARN] Auto-tuner iteration encountered error: ${tunerErr.message}. Falling back to synthesis.`);
+        }
+      }
+
+      if (!autoTunerExecuted) {
+        // Re-run synthesis with refinement hints
+        await this.runSynthesis();
+      }
+
       verification = await this.runVerification(iteration);
     }
 

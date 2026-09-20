@@ -9,6 +9,8 @@
   "scripts": {
     "extract": "node bin/claude-extract.js",
     "test": "node tests/e2e_runner.js",
+    "test:e2e": "node test/e2e/run_all.js",
+    "test:overhaul": "node test/e2e/run_all.js",
     "test:tier1": "node tests/e2e_runner.js --tier 1",
     "test:tier2": "node tests/e2e_runner.js --tier 2",
     "test:tier3": "node tests/e2e_runner.js --tier 3",

@@ -1,0 +1,20 @@
+{
+  "canvas": { "width": 2880, "height": 1720 },
+  "driftVectors": [
+    {
+      "elementId": "node_2",
+      "name": "A sheet of glass",
+      "category": "heading",
+      "priority": "primary",
+      "text": "A sheet of glass",
+      "refBounds": { "x": 144, "y": 244, "width": 492, "height": 310 },
+      "dx": 12,
+      "dy": 6,
+      "dxDp": 6,
+      "dyDp": 3,
+      "shiftMagnitude": 13.42,
+      "status": "DRIFTED",
+      "passed": false
+    }
+  ]
+}

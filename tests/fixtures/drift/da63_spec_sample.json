@@ -1,0 +1,10 @@
+{
+  "typography": {
+    "headings": [{ "id": "node_1", "fontSize": "34sp", "letterSpacing": "-1.36sp" }]
+  },
+  "hierarchy": {
+    "id": "node_1",
+    "componentType": "Text",
+    "text": { "content": "The Meridian", "fontSize": 34, "letterSpacing": -1.36 }
+  }
+}

@@ -29,7 +29,7 @@ class VerificationPipeline {
     this.options = options;
     this.projectRoot = options.projectRoot || path.resolve(__dirname, '..');
     this.androidDir = options.androidDir || path.join(this.projectRoot, 'android');
-    this.outputDir = options.outputDir || path.join(this.projectRoot, 'verification');
+    this.outputDir = options.diffDir || options['diff-dir'] || options.outputDir || options.output || path.join(this.projectRoot, 'verification');
     const defaultRef = fs.existsSync(path.join(this.projectRoot, 'screenshots/mobile_reference.png'))
       ? path.join(this.projectRoot, 'screenshots/mobile_reference.png')
       : path.join(this.projectRoot, 'daylight_dc1_screen_reference.png');
@@ -44,7 +44,11 @@ class VerificationPipeline {
     this.specPath = options.spec || options.specPath || path.join(this.projectRoot, 'design_spec.json');
     this.threshold = options.threshold !== undefined ? options.threshold : 0.12;
     this.minSimilarity = options.minSimilarity !== undefined ? options.minSimilarity : 90.0;
-    this.minInkIou = options.minInkIou !== undefined ? options.minInkIou : 0.0;
+    this.minInkIou = options.minInkIou !== undefined ? options.minInkIou : 55.0;
+    this.minContourScore = options.minContourScore !== undefined ? options.minContourScore : (options.minEdgeContour !== undefined ? options.minEdgeContour : 90.0);
+    this.minElementIou = options.minElementIou !== undefined ? options.minElementIou : 90.0;
+    this.maxSpatialShiftPx = options.maxSpatialShiftPx !== undefined ? options.maxSpatialShiftPx : (options.maxShiftPx !== undefined ? options.maxShiftPx : 3.0);
+    this.priorityFilter = options.priorityFilter !== undefined ? options.priorityFilter : 'all';
     this.skipBuild = Boolean(options.skipBuild);
     this.reportPath = options.report || path.join(this.outputDir, 'verification_report.md');
   }
@@ -115,7 +119,7 @@ class VerificationPipeline {
           this.refScreenshotPath,
           renderedPath,
           this.outputDir,
-          { threshold: this.threshold }
+          { threshold: this.threshold, ...this.options }
         );
         diffMetrics.refImagePath = this.refScreenshotPath;
         diffMetrics.renderedImagePath = renderedPath;
@@ -124,14 +128,29 @@ class VerificationPipeline {
           `✓ Visual diff completed: Similarity: ${diffMetrics.pixelSimilarityPercentage}%, MSSIM: ${diffMetrics.mssimScore}`
         );
 
-        // Run Localized Multi-Zone Perceptual Diffing
+        // Run Localized Multi-Zone Perceptual Diffing & Dynamic Element Analysis
         zonalReport = await runZonalDiff(this.refScreenshotPath, renderedPath, {
           outputDir: this.outputDir,
-          threshold: this.threshold
+          threshold: this.threshold,
+          specPath: this.specPath,
+          priorityFilter: this.priorityFilter
         });
+        diffMetrics.zonal = zonalReport;
+        if (zonalReport.globalInkIou !== undefined) {
+          diffMetrics.inkIou = zonalReport.globalInkIou;
+          diffMetrics.inkDice = zonalReport.globalInkDice;
+        }
+        pipelineResult.stages.diff = {
+          success: true,
+          metrics: diffMetrics,
+          zonal: zonalReport
+        };
         const tuner = new AutoTuner(zonalReport);
         autoTunerDirectives = tuner.generateTuningDirectives();
         console.log(`✓ Multi-zone analysis completed across ${zonalReport.zones.length} functional zones.`);
+        if (zonalReport.elementsEvaluatedCount > 0) {
+          console.log(`✓ Element-level drift analysis completed across ${zonalReport.elementsEvaluatedCount} semantic elements.`);
+        }
       } catch (err) {
         console.error(`✗ Visual diff error: ${err.message}`);
         pipelineResult.stages.diff = { success: false, error: err.message };
@@ -199,6 +218,12 @@ class VerificationPipeline {
   }
 
   concludePipeline(pipelineResult) {
+    const minSimilarity = this.minSimilarity !== undefined ? this.minSimilarity : 90.0;
+    const minElementIou = this.minElementIou !== undefined ? this.minElementIou : 90.0;
+    const maxShiftPxLimit = this.maxSpatialShiftPx !== undefined ? this.maxSpatialShiftPx : 3.0;
+    const minInkIou = this.minInkIou !== undefined ? this.minInkIou : 55.0;
+    const minContourScore = this.minContourScore !== undefined ? this.minContourScore : 90.0;
+
     const buildSuccess =
       pipelineResult.stages.compile?.success !== false &&
       pipelineResult.stages.previewTest?.success !== false;
@@ -208,19 +233,94 @@ class VerificationPipeline {
       !pipelineResult.stages.audit?.hasVeto &&
       !pipelineResult.stages.audit?.veto;
 
+    const diffMetrics = pipelineResult.stages.diff?.metrics || {};
+    const zonal = pipelineResult.stages.diff?.zonal || pipelineResult.stages.zonal || {};
+
+    const deceptionViolations = [];
+
+    // VETO 1: Glyph Edge & Contour Alignment (Sobel/Canny)
+    if (diffMetrics.edgeContourScore !== undefined) {
+      if (diffMetrics.edgeContourScore === 0.0) {
+        deceptionViolations.push(
+          `Edge contour alignment score (0.00%) indicates complete content dropout (no matching contours detected)`
+        );
+      } else if (minContourScore !== undefined && diffMetrics.edgeContourScore < minContourScore) {
+        deceptionViolations.push(
+          `Edge contour alignment score (${diffMetrics.edgeContourScore}%) is below required ${minContourScore}% threshold ` +
+          `(text double-vision or displaced icon contours detected)`
+        );
+      }
+    }
+
+    if (
+      diffMetrics.edgeRenderedPixels !== undefined &&
+      diffMetrics.edgeRefPixels !== undefined &&
+      diffMetrics.edgeRefPixels > 0 &&
+      diffMetrics.edgeRenderedPixels > diffMetrics.edgeRefPixels * 2
+    ) {
+      deceptionViolations.push(
+        `Spurious edge explosion detected (${diffMetrics.edgeRenderedPixels} rendered edges > 2x reference ${diffMetrics.edgeRefPixels} edges; high-frequency noise or artifacting detected)`
+      );
+    }
+
+    // VETO 2: Element-Level Bounding Box IoU
+    if (zonal.elementIouScore !== undefined) {
+      if (zonal.elementIouScore < minElementIou) {
+        deceptionViolations.push(
+          `Element bounding box IoU (${zonal.elementIouScore}%) is below required ${minElementIou}% threshold ` +
+          `(structural component misalignment)`
+        );
+      }
+    }
+
+    // VETO 3: Hard Spatial Drift Limit (3px Max Shift)
+    if (zonal.maxSpatialShiftPx !== undefined) {
+      if (zonal.maxSpatialShiftPx > maxShiftPxLimit) {
+        const offending = zonal.worstDriftElement
+          ? ` for "${zonal.worstDriftElement.name}" (${zonal.worstDriftElement.elementId})`
+          : '';
+        deceptionViolations.push(
+          `Maximum spatial drift (${zonal.maxSpatialShiftPx}px)${offending} exceeds hard ${maxShiftPxLimit}px limit ` +
+          `(${parseFloat((maxShiftPxLimit / 2).toFixed(1))}dp in Compose layout)`
+        );
+      }
+    }
+
+    // VETO 4: Dynamic Foreground Ink IoU
+    if (diffMetrics.inkIou !== undefined) {
+      if (diffMetrics.inkIou === 0.0) {
+        deceptionViolations.push(
+          `Dynamic Ink IoU (0.00%) indicates empty/missing foreground ink (blank frame evasion detected)`
+        );
+      } else if (minInkIou > 0.0 && diffMetrics.inkIou < minInkIou) {
+        deceptionViolations.push(
+          `Dynamic Ink IoU (${diffMetrics.inkIou}%) is below required ${minInkIou}% threshold ` +
+          `(ink distribution mismatch after background subtraction)`
+        );
+      }
+    }
+
+    const antiDeceptionPassed = deceptionViolations.length === 0;
+
     const diffSuccess =
       pipelineResult.stages.diff?.success !== false &&
-      (!pipelineResult.stages.diff?.metrics ||
-        (pipelineResult.stages.diff.metrics.pixelSimilarityPercentage >= this.minSimilarity &&
-         (pipelineResult.stages.diff.metrics.inkIou === undefined || pipelineResult.stages.diff.metrics.inkIou > this.minInkIou)));
+      antiDeceptionPassed &&
+      (!diffMetrics.pixelSimilarityPercentage || diffMetrics.pixelSimilarityPercentage >= minSimilarity);
 
     const overallPassed = buildSuccess && auditSuccess && diffSuccess;
     pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';
     pipelineResult.gateAction = overallPassed ? 'PROCEED_PUBLISH' : 'TRIGGER_REFINEMENT';
+    pipelineResult.antiDeceptionPassed = antiDeceptionPassed;
+    pipelineResult.deceptionViolations = deceptionViolations;
 
     console.log('\n============================================================');
     console.log(`  VERIFICATION VERDICT: ${pipelineResult.verdict}`);
     console.log(`  GATE ACTION:         ${pipelineResult.gateAction}`);
+    console.log(`  ANTI-DECEPTION:      ${antiDeceptionPassed ? 'PASSED' : 'FAILED'}`);
+    if (deceptionViolations.length > 0) {
+      console.log('  VIOLATIONS:');
+      deceptionViolations.forEach((v, i) => console.log(`    ${i + 1}. ✗ ${v}`));
+    }
     console.log('============================================================\n');
 
     return pipelineResult;
@@ -243,10 +343,15 @@ if (require.main === module) {
     .option('--rendered <path>', 'Path to rendered Compose preview screenshot')
     .option('--spec <path>', 'Path to design_spec.json')
     .option('--android-dir <path>', 'Android project directory', 'android')
-    .option('--output <dir>', 'Output directory for verification artifacts', 'verification')
+    .option('--output <dir>', 'Output directory for verification artifacts')
+    .option('--diff-dir <dir>', 'Output directory for diff and verification artifacts')
     .option('--threshold <number>', 'Pixelmatch diff threshold', parseFloat, 0.12)
     .option('--min-similarity <number>', 'Minimum pixel similarity percentage required to pass', parseFloat, 90.0)
-    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat, 0.0)
+    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat, 55.0)
+    .option('--min-contour-score <number>', 'Minimum edge contour alignment percentage required to pass', parseFloat, 90.0)
+    .option('--min-element-iou <number>', 'Minimum element bounding box IoU required to pass', parseFloat, 90.0)
+    .option('--max-shift-px <number>', 'Maximum spatial drift in pixels allowed to pass', parseFloat, 3.0)
+    .option('--priority-filter <string>', 'Filter elements by priority (all, primary, secondary)', 'all')
     .option('--report <path>', 'Output path for verification report')
     .option('--skip-build', 'Skip Gradle compilation and preview capture', false)
     .option('--json', 'Output result JSON to stdout', false)

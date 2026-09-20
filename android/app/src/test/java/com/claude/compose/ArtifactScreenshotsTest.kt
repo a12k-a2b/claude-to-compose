@@ -15,6 +15,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onRoot
 import com.claude.compose.screen.Da63DesignScreen
 import com.claude.compose.screen.E34fDesignScreen
+import com.claude.compose.theme.ClaudeTypography
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -46,7 +47,8 @@ class ArtifactScreenshotsTest {
                     onBackground = Color(0xFF1A1A1A),
                     surface = Color(0xFFE5E5E5),
                     onSurface = Color(0xFF1A1A1A)
-                )
+                ),
+                typography = ClaudeTypography
             ) {
                 Da63DesignScreen()
             }
@@ -55,8 +57,11 @@ class ArtifactScreenshotsTest {
         composeTestRule.waitForIdle()
 
         val bitmap: Bitmap = try {
-            composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+            val img = composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+            println("Da63 captured via onRoot().captureToImage() size: ${img.width}x${img.height}")
+            img
         } catch (t: Throwable) {
+            println("Da63 captureToImage failed: ${t.message}, falling back to captureComposeViewViaSkia")
             captureComposeViewViaSkia(2880, 1720)
         }
 
@@ -84,7 +89,8 @@ class ArtifactScreenshotsTest {
                     onBackground = Color(0xFF1A1A1A),
                     surface = Color(0xFFFFFFFF),
                     onSurface = Color(0xFF1A1A1A)
-                )
+                ),
+                typography = ClaudeTypography
             ) {
                 E34fDesignScreen()
             }

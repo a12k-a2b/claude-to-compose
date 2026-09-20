@@ -1,0 +1,10 @@
+{
+  "typography": {
+    "headings": [{ "id": "node_2", "fontSize": "76sp", "letterSpacing": "-3.8sp" }]
+  },
+  "hierarchy": {
+    "id": "node_2",
+    "componentType": "Text",
+    "text": { "content": "A sheet of glass", "fontSize": 76, "letterSpacing": -3.8 }
+  }
+}

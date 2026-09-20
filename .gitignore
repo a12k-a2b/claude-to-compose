@@ -7,6 +7,8 @@ yarn-error.log*
 # Build outputs & caches
 output/
 dist/
+build/
+test_scratch/
 
 # OS Artifacts
 .DS_Store
@@ -35,3 +37,6 @@ scratch/
 scripts/*.png
 !android/app/src/main/res/drawable-nodpi/daylight_logo.png
 !daylight_dc1_screen_reference.png
+verification/iter_*/
+tests/adversarial/*.png
+*.bak

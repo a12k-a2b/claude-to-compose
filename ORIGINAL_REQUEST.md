@@ -70,3 +70,74 @@ An automated verification harness providing objective validation:
 ## 2026-09-19T03:56:12Z
 
 Server restart completed. Please resume execution of the remaining teamwork milestones (M3 Antigravity Skill, M4 Verification diff suite, M5 GitHub push).
+
+## 2026-09-20T02:12:26Z
+
+Overhaul `claude-to-compose` into a truly accurate, self-correcting synthesis and verification system that eliminates deceptive metric reporting, detects real visual discrepancies (font metrics, kerning, line heights, spatial drift, and icon geometries), and iteratively tunes Jetpack Compose code in a closed loop until the red ghosting and double-vision diffs are completely eliminated across Claude Design artifacts.
+
+Working directory: /Users/anjan/.gemini/antigravity/scratch/claude_to_compose
+Integrity mode: development
+
+## Requirements
+
+### R1. Elimination of Deceptive Metrics & Objective Verification Suite
+Re-engineer the visual verification engine (`verification/run_diff.js` and `verification/zonal_diff.js`):
+- **Acknowledge and Penalize Whitespace/Background Dilution**: Stop reporting deceptive 90%+ similarity scores caused by empty space or solid tinted background canvas.
+- **True Element-Level & Contour Metrics**:
+  - **Glyph Edge & Contour Alignment**: Edge-detection diff (Sobel/Canny) comparing letterform and icon contours to detect and heavily penalize double-vision ghosting and spatial displacement.
+  - **Dynamic Background Subtraction**: Compute foreground ink strictly by clustering the dominant background canvas color per region rather than a fixed luminance threshold.
+  - **Zonal Bounding Box IoU**: Compute spatial overlap per UI element (headings, paragraphs, pills, toolbar icons).
+- **Hard Anti-Deception Guardrail**: If an overlay image shows visible text double-vision or displaced icon contours, the verification score must fail and reflect the failure (score must not report passing).
+
+### R2. Spatial Drift Detection & Vector Coordinate Resolver
+- Calculate exact translation offset vectors $(\Delta x, \Delta y)$, bounding dimensions, and padding deltas for each visual component between reference web viewport and rendered Compose preview.
+- Eliminate font-metric mismatch (kerning, baseline offsets, line-height leading) by dynamically resolving Compose `TextStyle` parameters (`letterSpacing`, `lineHeight`, `baselineShift`, `fontSize`).
+
+### R3. Automated Closed-Loop Visual Auto-Tuner
+Implement an automated closed-loop optimization cycle:
+1. Render Compose preview headlessly via Robolectric Native Graphics.
+2. Run contour edge diff and zonal drift analysis against the reference screenshot.
+3. Automatically adjust Compose layout modifiers (`padding`, `offset`, `size`, `spacedBy`, and vector control points).
+4. Re-render and iterate until contour ghosting reaches zero and structural alignment converges.
+
+### R4. Multi-Artifact Real-World Validation
+Validate the improved tool and closed-loop tuner against both target Claude Design artifacts:
+- **`da63f0b2-6919-408a-b3eb-68685f019fe6`** (Floating 3-pill toolbar, active pen indicator, faint article reading canvas, highlighter & ink circle vector annotations).
+- **`e34f4387-f506-4de5-bced-ef318d7f8bdf`** (Sol:OS warm sand background, serif title hierarchy, 6 categorized pill rows with orange and dark variants).
+
+### R5. Remote Repository Parity
+- Commit all code, test suites, and generated verification artifacts to `https://github.com/a12k-a2b/claude-to-compose`.
+- Ensure `./gradlew test` and test suites pass with zero regressions.
+
+## Acceptance Criteria
+
+### Visual Parity (Zero Double-Vision)
+- [ ] In the visual diff overlay for `da63`, headline ("The quiet economics of planting a city forest"), masthead ("The Meridian"), and body columns have zero visible double-vision red ghosting.
+- [ ] In `da63`, all 3 top floating pills and their internal icons/buttons align directly over the reference toolbar.
+- [ ] In `e34f`, "A sheet of glass", paragraphs, and all 6 pill rows align over reference letterforms and pills without vertical or horizontal displacement.
+- [ ] The ink circle and highlighter in `da63` align directly over reference annotations.
+
+### Metric Honesty & Convergence
+- [ ] Edge contour alignment score $\ge 90.0\%$ (penalizing glyph shifts $\ge 2\text{px}$).
+- [ ] Element bounding box IoU $\ge 90.0\%$ across all primary text blocks and pill rows.
+- [ ] Verification suite actively fails if text or icons are offset by more than 3px, preventing self-certification of misaligned screens.
+
+### Automated Tool Pipeline
+- [ ] Closed-loop tuner can run autonomously and converge without manual developer intervention.
+- [ ] Code compiles cleanly with `./gradlew compileDebugKotlin` and passes unit tests.
+- [ ] All changes committed and pushed to GitHub `origin/main`.
+
+## 2026-09-20T02:57:54Z
+
+USER ADVERSARIAL REVIEW FEEDBACK:
+Please incorporate the critical findings from the adversarial review into the current roadmap (documented in ADVERSARIAL_REVIEW.md):
+
+1. P0 Verification Integrity: Enforce hard gates (Ink IoU >= 55%, SSIM >= 0.72). Never invent scores or treat skipped diffs as green. Touch-target must be invisible hit-slop, not visual min-size that blows up button bounds.
+2. P0 Fidelity Mode (Default for Daylight): Synthesize absolute Box / Text / Canvas using exact scene IR coordinates (Modifier.offset). Do NOT force Material 3 component defaults (fat pill buttons, selected chip bloat) onto Daylight LivePaper hairlines.
+3. P0 Canvas 2D / SVG Paths: Preserve stroke style, cap, width, and empty dash array (= solid hairlines, not leftover dashPathEffect).
+4. P0 Claude Code URL support: Update extractor/claude_urls.js to recognize https://claude.ai/code/artifact/<uuid>.
+5. P1 Scene Graph IR: Retain extracted {x, y, w, h} bounding boxes in fidelity mode instead of discarding them.
+6. P1 Font Bundling: Embed ABC Arizona Flare and Anthropic fonts directly into res/font/ and generate FontFamily in Type.kt, matching exact line heights and letter spacing.
+7. P2 Closed-Loop Tuner: Iterate Compose layout modifiers and control points against headless Skia-on-Robolectric renders until red ghosting is eliminated.
+
+Please acknowledge and incorporate these priorities into Milestones 2-5 execution.

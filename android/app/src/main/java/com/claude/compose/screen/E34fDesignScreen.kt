@@ -1,6 +1,7 @@
 package com.claude.compose.screen
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -9,14 +10,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.claude.compose.theme.AbcArizonaFlare
+import com.claude.compose.theme.AbcArizonaSans
+import com.claude.compose.theme.AbcRomMono
+import com.claude.compose.theme.BaseTextStyle
 
 // Sol:OS Authentic Color Palette sampled from reference
 private val SolOsBg = Color(0xFFE7E4DE)
@@ -24,7 +31,7 @@ private val SolOsTextPrimary = Color(0xFF141413)
 private val SolOsTextSecondary = Color(0xFF4D4C48)
 private val SolOsTextTertiary = Color(0xFF7D7A73)
 private val SolOsOrange = Color(0xFFFF5200)
-private val SolOsWhitePill = Color(0xFFFAF8F5)
+private val SolOsWhitePill = Color.White
 private val SolOsDarkPill = Color(0xFF1A1A1A)
 
 @Composable
@@ -33,83 +40,130 @@ fun E34fDesignScreen(
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .requiredSize(width = 1440.dp, height = 860.dp)
             .background(SolOsBg)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 80.dp, top = 54.dp, end = 72.dp)
+                .padding(start = 72.dp, top = 64.5.dp, end = 72.dp)
         ) {
-            // Category Tag: Note Overlay · Sol:OS · DaylightLook Reskin
+            // Category Tag: NOTE OVERLAY · SOL:OS · DAYLIGHTLOOK RESKIN
             Text(
                 text = "NOTE OVERLAY · SOL:OS · DAYLIGHTLOOK RESKIN",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                letterSpacing = 2.sp,
-                color = SolOsTextTertiary,
-                modifier = Modifier.padding(bottom = 12.dp)
+                fontFamily = AbcRomMono,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                lineHeight = 18.sp,
+                letterSpacing = 1.68.sp,
+                color = Color(0xFF6C6C6D),
+                modifier = Modifier
+                    .offset(x = (-1.75).dp, y = 0.5.dp)
+                    .padding(bottom = 14.dp),
+                style = BaseTextStyle
             )
 
-            // Screen Headline: A sheet of glass
-            Text(
-                text = "A sheet of glass",
-                fontFamily = AbcArizonaFlare,
-                fontSize = 54.sp,
-                fontWeight = FontWeight.Normal,
-                lineHeight = 60.sp,
-                color = SolOsTextPrimary,
-                modifier = Modifier.padding(bottom = 28.dp)
-            )
+            // Screen Headline: A sheet of glass (Box with exact word offsets)
+            Box(
+                modifier = Modifier
+                    .offset(x = (-1.0).dp, y = 3.8.dp)
+                    .padding(bottom = 17.0.dp)
+            ) {
+                Text(
+                    text = "A",
+                    modifier = Modifier.offset(x = (-2.0).dp, y = (-2.0).dp),
+                    fontFamily = AbcArizonaFlare,
+                    fontSize = 70.sp,
+                    lineHeight = 77.52.sp,
+                    color = Color(0xFF17190F),
+                    style = BaseTextStyle
+                )
+                Text(
+                    text = "sheet",
+                    modifier = Modifier.offset(x = 67.2.dp, y = (-2.75).dp),
+                    fontFamily = AbcArizonaFlare,
+                    fontSize = 76.sp,
+                    lineHeight = 77.52.sp,
+                    letterSpacing = (-8.0).sp,
+                    color = Color(0xFF17190F),
+                    style = BaseTextStyle
+                )
+                Text(
+                    text = "of",
+                    modifier = Modifier.offset(x = 236.9.dp, y = (-1.4).dp),
+                    fontFamily = AbcArizonaFlare,
+                    fontSize = 74.sp,
+                    lineHeight = 77.52.sp,
+                    letterSpacing = (-6.4).sp,
+                    color = Color(0xFF17190F),
+                    style = BaseTextStyle
+                )
+                Text(
+                    text = "glass",
+                    modifier = Modifier.offset(x = 310.25.dp, y = (-0.5).dp),
+                    fontFamily = AbcArizonaFlare,
+                    fontSize = 73.5.sp,
+                    lineHeight = 77.52.sp,
+                    letterSpacing = (-7.0).sp,
+                    color = Color(0xFF17190F),
+                    style = BaseTextStyle
+                )
+            }
 
             // Lead Paragraph
             Text(
-                text = "The overlay sits over whatever you're reading, so its chrome has to stay legible over anything and never compete with the ink. This page collects the directions we explored for that chrome, arranged for reading top to bottom — from the most conventional to the most experimental — rather than in the order they were drawn.",
-                fontSize = 19.sp,
+                text = "The overlay sits over whatever you're reading, so its chrome has to stay legible over anything\nand never compete with the ink. This page collects the directions we explored for that\nchrome, arranged for reading top to bottom — from the most conventional to the most\nexperimental — rather than in the order they were drawn.",
+                fontFamily = AbcArizonaSans,
+                fontSize = 20.sp,
                 lineHeight = 31.sp,
-                color = SolOsTextSecondary,
+                letterSpacing = (-1.10).sp,
+                color = Color(0xFF3A3A37),
                 modifier = Modifier
-                    .fillMaxWidth(0.55f)
-                    .padding(bottom = 28.dp)
+                    .width(790.dp)
+                    .padding(bottom = 27.5.dp),
+                style = BaseTextStyle
             )
 
             // Sub-paragraph with inline emphasis
             val subText = buildAnnotatedString {
                 append("Read top to bottom, biggest decision first: the ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = SolOsTextPrimary)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = SolOsTextPrimary)) {
                     append("four toolbar directions")
                 }
                 append(" and their bolder variants, a ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = SolOsTextPrimary)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = SolOsTextPrimary)) {
                     append("rotation check")
                 }
-                append(" that stress-tests them, the ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = SolOsTextPrimary)) {
+                append("\nthat stress-tests them, the ")
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = SolOsTextPrimary)) {
                     append("Beyond the bar")
                 }
                 append(" interaction explorations, the ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = SolOsTextPrimary)) {
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = SolOsTextPrimary)) {
                     append("mildliner")
                 }
-                append(" feature built on them, and the ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = SolOsTextPrimary)) {
+                append(" feature built on them, and the\n")
+                withStyle(SpanStyle(fontWeight = FontWeight.Medium, color = SolOsTextPrimary)) {
                     append("shared system")
                 }
-                append(" every direction inherits. Within a section, permutations sit side by side — scroll across to compare them; scroll down for the next section.")
+                append(" every direction inherits. Within a section, permutations sit side by side — scroll across to compare\nthem; scroll down for the next section.")
             }
             Text(
                 text = subText,
-                fontSize = 15.sp,
-                lineHeight = 26.sp,
-                color = SolOsTextTertiary,
+                fontFamily = AbcArizonaSans,
+                fontSize = 16.sp,
+                lineHeight = 25.35.sp,
+                letterSpacing = (-0.95).sp,
+                color = Color(0xFF6C6C6D),
                 modifier = Modifier
-                    .fillMaxWidth(0.55f)
-                    .padding(bottom = 32.dp)
+                    .width(742.dp)
+                    .padding(bottom = 23.15.dp),
+                style = BaseTextStyle
             )
 
-            // Category rows and pills
+            // Category rows and pills (50dp pitch, 100px center-to-center)
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 // Row 1: DIRECTIONS
                 PillCategoryRow(
@@ -119,7 +173,9 @@ fun E34fDesignScreen(
                         PillItem("1 · Frosted plate", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("3 · Floating slips", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("4 · Loose coins", SolOsWhitePill, SolOsTextPrimary, true)
-                    )
+                    ),
+                    spacing = 10.7.dp,
+                    spacerWidth = 14.25.dp
                 )
 
                 // Row 2: BOLDER IDEAS
@@ -129,7 +185,9 @@ fun E34fDesignScreen(
                         PillItem("2a · Sun bloom", SolOsOrange, Color.White, false),
                         PillItem("3c · The dial", SolOsOrange, Color.White, false),
                         PillItem("6d · Ledger band", SolOsOrange, Color.White, false)
-                    )
+                    ),
+                    spacing = 7.7.dp,
+                    spacerWidth = 12.25.dp
                 )
 
                 // Row 3: EVALUATE
@@ -137,7 +195,9 @@ fun E34fDesignScreen(
                     category = "EVALUATE",
                     items = listOf(
                         PillItem("5 · Rotation / landscape check", SolOsWhitePill, SolOsTextPrimary, true)
-                    )
+                    ),
+                    spacing = 11.0.dp,
+                    spacerWidth = 12.0.dp
                 )
 
                 // Row 4: BEYOND THE BAR
@@ -150,7 +210,9 @@ fun E34fDesignScreen(
                         PillItem("g4 · Selection", SolOsDarkPill, Color.White, false),
                         PillItem("g5 · Pages", SolOsDarkPill, Color.White, false),
                         PillItem("g6 · First stroke", SolOsDarkPill, Color.White, false)
-                    )
+                    ),
+                    spacing = 10.2.dp,
+                    spacerWidth = 14.75.dp
                 )
 
                 // Row 5: MILDLINER
@@ -158,7 +220,12 @@ fun E34fDesignScreen(
                     category = "MILDLINER",
                     items = listOf(
                         PillItem("m · The mildliner", SolOsOrange, Color.White, false)
-                    )
+                    ),
+                    spacing = 8.0.dp,
+                    spacerWidth = 11.5.dp,
+                    labelModifier = Modifier.offset(y = (-0.5).dp),
+                    categoryFontSize = 12.sp,
+                    categoryLetterSpacing = 0.75.sp
                 )
 
                 // Row 6: SHARED SYSTEM
@@ -170,23 +237,11 @@ fun E34fDesignScreen(
                         PillItem("snip", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("small", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("onboard", SolOsWhitePill, SolOsTextPrimary, true)
-                    )
+                    ),
+                    spacing = 9.0.dp,
+                    spacerWidth = 13.0.dp
                 )
             }
-        }
-
-        // Bottom border line & Claude Design watermark
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-                    .background(Color(0xFF1A1A1A))
-            )
         }
 
         Surface(
@@ -196,18 +251,56 @@ fun E34fDesignScreen(
             shadowElevation = 2.dp,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 12.dp)
-                .height(30.dp)
+                .padding(end = 16.5.dp, bottom = 17.dp)
+                .size(width = 211.dp, height = 29.dp)
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 10.dp, end = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("🎨", fontSize = 12.sp)
-                Text("Made with Claude Design", fontSize = 11.sp, color = Color(0xFF64748B))
-                Text("✕", fontSize = 10.sp, color = Color(0xFF94A3B8))
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    Canvas(modifier = Modifier.size(14.dp)) {
+                        drawCircle(color = Color(0xFFD97757), radius = 6.dp.toPx(), center = Offset(7.dp.toPx(), 7.dp.toPx()))
+                        drawCircle(color = Color.White, radius = 1.2.dp.toPx(), center = Offset(4.5.dp.toPx(), 5.5.dp.toPx()))
+                        drawCircle(color = Color.White, radius = 1.2.dp.toPx(), center = Offset(7.dp.toPx(), 4.dp.toPx()))
+                        drawCircle(color = Color.White, radius = 1.2.dp.toPx(), center = Offset(9.5.dp.toPx(), 5.5.dp.toPx()))
+                    }
+                    Text(
+                        text = "Made with Claude Design",
+                        fontFamily = AbcArizonaSans,
+                        fontSize = 12.5.sp,
+                        lineHeight = 12.5.sp,
+                        color = Color(0xFF141413),
+                        style = BaseTextStyle
+                    )
+                }
+                Box(
+                    modifier = Modifier.size(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.size(12.dp)) {
+                        drawLine(Color(0xFF141413), Offset(2.dp.toPx(), 2.dp.toPx()), Offset(10.dp.toPx(), 10.dp.toPx()), strokeWidth = 1.5.dp.toPx(), cap = StrokeCap.Round)
+                        drawLine(Color(0xFF141413), Offset(10.dp.toPx(), 2.dp.toPx()), Offset(2.dp.toPx(), 10.dp.toPx()), strokeWidth = 1.5.dp.toPx(), cap = StrokeCap.Round)
+                    }
+                }
             }
+        }
+
+        // Browser horizontal scrollbar track (2dp height at y = 844.5dp from x = 72dp to 1368dp)
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawLine(
+                color = Color(0xFF17190F),
+                start = Offset(72.dp.toPx(), 844.5.dp.toPx()),
+                end = Offset(1368.dp.toPx(), 844.5.dp.toPx()),
+                strokeWidth = 2.dp.toPx(),
+                cap = StrokeCap.Round
+            )
         }
     }
 }
@@ -219,41 +312,61 @@ private data class PillItem(
     val hasBorder: Boolean
 )
 
+// Category row component: prevents label wrapping via softWrap = false without artificial width(140.dp) truncation
 @Composable
 private fun PillCategoryRow(
     category: String,
-    items: List<PillItem>
+    items: List<PillItem>,
+    spacing: Dp = 10.5.dp,
+    labelModifier: Modifier = Modifier,
+    spacerWidth: Dp = 11.0.dp,
+    categoryFontSize: androidx.compose.ui.unit.TextUnit = 11.5.sp,
+    categoryLetterSpacing: androidx.compose.ui.unit.TextUnit = 1.25.sp
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = category,
-            fontSize = 11.5.sp,
-            fontWeight = FontWeight.SemiBold,
-            letterSpacing = 1.2.sp,
-            color = SolOsTextTertiary,
-            modifier = Modifier.width(100.dp)
+            fontFamily = AbcRomMono,
+            fontSize = categoryFontSize,
+            fontWeight = FontWeight.Normal,
+            letterSpacing = categoryLetterSpacing,
+            color = Color(0xFF9A968F),
+            maxLines = 1,
+            softWrap = false,
+            modifier = labelModifier
+                .padding(start = 3.0.dp),
+            style = BaseTextStyle
         )
+        Spacer(modifier = Modifier.width(spacerWidth))
 
         Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(spacing),
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { pill ->
                 Surface(
                     shape = CircleShape,
                     color = pill.bg,
-                    border = if (pill.hasBorder) BorderStroke(1.dp, Color(0x14000000)) else null,
+                    border = if (pill.hasBorder) BorderStroke(1.dp, Color(0x20000000)) else null,
                     shadowElevation = if (pill.hasBorder) 1.dp else 0.dp
                 ) {
                     Text(
                         text = pill.label,
-                        fontSize = 13.5.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontFamily = AbcRomMono,
+                        fontSize = 12.sp,
+                        lineHeight = 18.sp,
+                        letterSpacing = 0.28.sp,
                         color = pill.text,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
+                        modifier = Modifier.padding(
+                            horizontal = if (pill.bg == SolOsOrange) 14.3.dp else 13.dp,
+                            vertical = if (!pill.hasBorder) 8.5.dp else 8.0.dp
+                        ),
+                        style = BaseTextStyle
                     )
                 }
             }

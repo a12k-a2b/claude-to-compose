@@ -1,0 +1,22 @@
+{
+  "canvas": { "width": 2880, "height": 1720 },
+  "driftVectors": [
+    {
+      "elementId": "node_1",
+      "name": "The Meridian",
+      "category": "heading",
+      "priority": "primary",
+      "text": "The Meridian",
+      "refBounds": { "x": 128, "y": 300, "width": 365, "height": 102 },
+      "refTightBbox": [128, 325, 364, 51],
+      "renderedTightBbox": [128, 335, 364, 51],
+      "dx": 0,
+      "dy": 10,
+      "dxDp": 0,
+      "dyDp": 5,
+      "shiftMagnitude": 10,
+      "status": "DRIFTED",
+      "passed": false
+    }
+  ]
+}

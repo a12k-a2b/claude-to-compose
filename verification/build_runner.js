@@ -117,6 +117,36 @@ class BuildRunner {
   }
 
   /**
+   * Parses test runner runtime failures and assertion errors from Gradle output.
+   * e.g., "com.claude.compose.ArtifactScreenshotsTest > renderDa63Preview FAILED"
+   * followed by "java.lang.IllegalArgumentException: Padding must be non-negative"
+   *
+   * @param {string} output
+   * @returns {Array<{testClass: string, testMethod: string, test: string, exception: string|null, message: string|null}>}
+   */
+  static parseTestFailures(output) {
+    const failures = [];
+    if (!output) return failures;
+
+    const testFailRegex = /([a-zA-Z0-9_.]+)\s*>\s*([a-zA-Z0-9_]+)\s*FAILED/g;
+    let match;
+    while ((match = testFailRegex.exec(output)) !== null) {
+      const testClass = match[1];
+      const testMethod = match[2];
+      const tail = output.slice(match.index, match.index + 1200);
+      const excMatch = tail.match(/(?:(?:java|kotlin|org|androidx|com)\.[a-zA-Z0-9_.]*(?:Exception|Error|Failure)):\s*([^\r\n]+)/);
+      failures.push({
+        testClass,
+        testMethod,
+        test: `${testClass}.${testMethod}`,
+        exception: excMatch ? excMatch[0] : null,
+        message: excMatch ? excMatch[1].trim() : null
+      });
+    }
+    return failures;
+  }
+
+  /**
    * Executes arbitrary Gradle tasks with bounded timeout and stream parsing.
    *
    * @param {Array<string>} tasks
@@ -128,6 +158,7 @@ class BuildRunner {
    *   durationMs: number,
    *   timedOut: boolean,
    *   errors: Array<Object>,
+   *   testFailures: Array<Object>,
    *   failureReason: string|null,
    *   stdout: string,
    *   stderr: string
@@ -136,7 +167,8 @@ class BuildRunner {
   async runGradle(tasks, options = {}) {
     this.ensureEnvironment();
     const timeoutMs = options.timeout || this.defaultTimeoutMs;
-    const args = [...tasks, '--no-daemon', ...(options.extraArgs || [])];
+    const daemonArg = (options.daemon === true || options.noDaemon === false) ? [] : ['--no-daemon'];
+    const args = [...tasks, ...daemonArg, ...(options.extraArgs || [])];
 
     const startTime = Date.now();
     let stdout = '';
@@ -176,26 +208,34 @@ class BuildRunner {
         const durationMs = Date.now() - startTime;
         const combined = stdout + '\n' + stderr;
         const kotlinErrors = BuildRunner.parseKotlinErrors(combined);
+        const testFailures = BuildRunner.parseTestFailures(combined);
 
         let failureReason = null;
         if (timedOut) {
           failureReason = `Execution timed out after ${timeoutMs}ms`;
         } else if (code !== 0) {
-          const failMatch = combined.match(
-            /\* What went wrong:\s*([\s\S]+?)(?=\* Try:|\* Exception is:|$)/
-          );
-          failureReason = failMatch
-            ? failMatch[1].trim()
-            : `Process exited with code ${code}`;
+          if (testFailures.length > 0) {
+            failureReason = `Test failure in ${testFailures.map(f => f.test).join(', ')}: ${testFailures[0].message || testFailures[0].exception || 'FAILED'}`;
+          } else if (kotlinErrors.length > 0) {
+            failureReason = `Kotlin compilation failed: ${kotlinErrors[0].message} (${path.basename(kotlinErrors[0].file)}:${kotlinErrors[0].line})`;
+          } else {
+            const failMatch = combined.match(
+              /\* What went wrong:\s*([\s\S]+?)(?=\* Try:|\* Exception is:|$)/
+            );
+            failureReason = failMatch
+              ? failMatch[1].trim()
+              : `Process exited with code ${code}`;
+          }
         }
 
         resolve({
-          success: code === 0 && kotlinErrors.length === 0 && !timedOut,
+          success: code === 0 && kotlinErrors.length === 0 && testFailures.length === 0 && !timedOut,
           exitCode: code !== null ? code : -1,
           signal,
           durationMs,
           timedOut,
           errors: kotlinErrors,
+          testFailures,
           failureReason,
           stdout,
           stderr
@@ -211,6 +251,7 @@ class BuildRunner {
           durationMs: Date.now() - startTime,
           timedOut: false,
           errors: [],
+          testFailures: [],
           failureReason: err.message,
           stdout,
           stderr
@@ -262,6 +303,72 @@ class BuildRunner {
       ...res,
       renderedPreviewPath,
       previewGenerated: Boolean(renderedPreviewPath)
+    };
+  }
+
+  /**
+   * Executes artifact preview screenshot tests via Robolectric with --rerun-tasks and warm daemon.
+   *
+   * Targets:
+   * - 'da63': `./gradlew testDebugUnitTest --tests "com.claude.compose.ArtifactScreenshotsTest.renderDa63Preview" --rerun-tasks`
+   * - 'e34f': `./gradlew testDebugUnitTest --tests "com.claude.compose.ArtifactScreenshotsTest.renderE34fPreview" --rerun-tasks`
+   * - 'all':  `./gradlew testDebugUnitTest --tests "com.claude.compose.ArtifactScreenshotsTest" --rerun-tasks`
+   *
+   * @param {string} [artifactName='all']
+   * @param {Object} [options]
+   * @returns {Promise<{
+   *   success: boolean,
+   *   exitCode: number,
+   *   artifact: string,
+   *   outputPath: string|null,
+   *   freshScreenshotVerified: boolean,
+   *   durationMs: number,
+   *   errors: Array<Object>,
+   *   testFailures: Array<Object>,
+   *   stdout: string,
+   *   stderr: string
+   * }>}
+   */
+  async runArtifactScreenshot(artifactName = 'all', options = {}) {
+    let testPattern;
+    let expectedOutputPath = null;
+
+    const key = String(artifactName || 'all').toLowerCase().trim();
+
+    if (key === 'da63' || key.includes('da63')) {
+      testPattern = 'com.claude.compose.ArtifactScreenshotsTest.renderDa63Preview';
+      expectedOutputPath = path.resolve(this.projectRoot, 'output/test_da63/rendered_compose.png');
+    } else if (key === 'e34f' || key.includes('e34f')) {
+      testPattern = 'com.claude.compose.ArtifactScreenshotsTest.renderE34fPreview';
+      expectedOutputPath = path.resolve(this.projectRoot, 'output/test_e34f/rendered_compose.png');
+    } else {
+      testPattern = 'com.claude.compose.ArtifactScreenshotsTest';
+      expectedOutputPath = null;
+    }
+
+    const startTime = Date.now();
+    const initialMtime = (expectedOutputPath && fs.existsSync(expectedOutputPath))
+      ? fs.statSync(expectedOutputPath).mtimeMs
+      : 0;
+
+    const res = await this.runGradle(['testDebugUnitTest'], {
+      extraArgs: ['--tests', testPattern, '--rerun-tasks'],
+      daemon: options.daemon !== undefined ? options.daemon : true,
+      timeout: options.timeout || this.testTimeoutMs,
+      ...options
+    });
+
+    let freshScreenshotVerified = false;
+    if (expectedOutputPath && fs.existsSync(expectedOutputPath)) {
+      const stat = fs.statSync(expectedOutputPath);
+      freshScreenshotVerified = stat.size > 0 && stat.mtimeMs >= (initialMtime - 100);
+    }
+
+    return {
+      ...res,
+      artifact: key,
+      outputPath: expectedOutputPath,
+      freshScreenshotVerified: expectedOutputPath ? freshScreenshotVerified : res.success
     };
   }
 

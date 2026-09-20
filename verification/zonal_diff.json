@@ -1,17 +1,17 @@
 {
   "canvas": {
-    "width": 1184,
-    "height": 1584
+    "width": 2880,
+    "height": 1720
   },
-  "totalPixels": 1875456,
-  "totalMismatches": 174690,
-  "globalSimilarity": 90.69,
-  "globalInkIou": 34.38,
-  "globalInkDice": 51.17,
-  "globalRefInkCount": 277564,
-  "globalRenderedInkCount": 153889,
-  "globalInkIntersection": 110381,
-  "globalInkUnion": 321072,
+  "totalPixels": 4953600,
+  "totalMismatches": 209519,
+  "globalSimilarity": 95.77,
+  "globalInkIou": 76.54,
+  "globalInkDice": 86.71,
+  "globalRefInkCount": 1239888,
+  "globalRenderedInkCount": 1207318,
+  "globalInkIntersection": 1060969,
+  "globalInkUnion": 1386237,
   "zones": [
     {
       "id": "zone_navigation",
@@ -20,21 +20,21 @@
       "yStart": 0,
       "yEnd": 180,
       "height": 180,
-      "similarity": 97.87,
-      "mismatchCount": 4549,
-      "totalPixels": 213120,
-      "ssimScore": 0.9402,
-      "refInkCount": 11300,
-      "renderedInkCount": 8299,
-      "inkIou": 48.35,
-      "inkDice": 65.19,
-      "inkIntersection": 6388,
-      "inkUnion": 13211,
+      "similarity": 98.01,
+      "mismatchCount": 10296,
+      "totalPixels": 518400,
+      "ssimScore": 0.9455,
+      "refInkCount": 18396,
+      "renderedInkCount": 15680,
+      "inkIou": 89.61,
+      "inkDice": 94.52,
+      "inkIntersection": 109813,
+      "inkUnion": 122543,
       "centroidDrift": {
-        "deltaX": 32.17,
-        "deltaY": -1.75,
-        "deltaXDp": 16.09,
-        "deltaYDp": -0.88
+        "deltaX": 5.02,
+        "deltaY": 0.29,
+        "deltaXDp": 2.51,
+        "deltaYDp": 0.14
       }
     },
     {
@@ -44,21 +44,21 @@
       "yStart": 180,
       "yEnd": 800,
       "height": 620,
-      "similarity": 89.02,
-      "mismatchCount": 80629,
-      "totalPixels": 734080,
-      "ssimScore": 0.6181,
-      "refInkCount": 106186,
-      "renderedInkCount": 42467,
-      "inkIou": 25.36,
-      "inkDice": 40.46,
-      "inkIntersection": 30073,
-      "inkUnion": 118580,
+      "similarity": 97.15,
+      "mismatchCount": 50941,
+      "totalPixels": 1785600,
+      "ssimScore": 0.8995,
+      "refInkCount": 50694,
+      "renderedInkCount": 54403,
+      "inkIou": 80.03,
+      "inkDice": 88.91,
+      "inkIntersection": 359941,
+      "inkUnion": 449774,
       "centroidDrift": {
-        "deltaX": 29.43,
-        "deltaY": -13.67,
-        "deltaXDp": 14.71,
-        "deltaYDp": -6.83
+        "deltaX": -46.06,
+        "deltaY": 61.68,
+        "deltaXDp": -23.03,
+        "deltaYDp": 30.84
       }
     },
     {
@@ -68,21 +68,21 @@
       "yStart": 800,
       "yEnd": 1350,
       "height": 550,
-      "similarity": 87.76,
-      "mismatchCount": 79689,
-      "totalPixels": 651200,
-      "ssimScore": 0.5556,
-      "refInkCount": 116841,
-      "renderedInkCount": 69644,
-      "inkIou": 32.03,
-      "inkDice": 48.52,
-      "inkIntersection": 45237,
-      "inkUnion": 141248,
+      "similarity": 94.31,
+      "mismatchCount": 90152,
+      "totalPixels": 1584000,
+      "ssimScore": 0.799,
+      "refInkCount": 48690,
+      "renderedInkCount": 77061,
+      "inkIou": 70.43,
+      "inkDice": 82.65,
+      "inkIntersection": 325122,
+      "inkUnion": 461637,
       "centroidDrift": {
-        "deltaX": 8.47,
-        "deltaY": 42.75,
-        "deltaXDp": 4.24,
-        "deltaYDp": 21.38
+        "deltaX": 30.49,
+        "deltaY": 17.82,
+        "deltaXDp": 15.24,
+        "deltaYDp": 8.91
       }
     },
     {
@@ -92,23 +92,1828 @@
       "yStart": 1350,
       "yEnd": 1584,
       "height": 234,
-      "similarity": 96.45,
-      "mismatchCount": 9823,
-      "totalPixels": 277056,
-      "ssimScore": 0.8935,
-      "refInkCount": 43237,
-      "renderedInkCount": 33479,
-      "inkIou": 59.72,
-      "inkDice": 74.78,
-      "inkIntersection": 28683,
-      "inkUnion": 48033,
+      "similarity": 93.4,
+      "mismatchCount": 44467,
+      "totalPixels": 673920,
+      "ssimScore": 0.7796,
+      "refInkCount": 21714,
+      "renderedInkCount": 34291,
+      "inkIou": 66.72,
+      "inkDice": 80.04,
+      "inkIntersection": 138534,
+      "inkUnion": 207620,
       "centroidDrift": {
-        "deltaX": 18.23,
-        "deltaY": 5.17,
-        "deltaXDp": 9.12,
-        "deltaYDp": 2.58
+        "deltaX": -56.08,
+        "deltaY": 3.64,
+        "deltaXDp": -28.04,
+        "deltaYDp": 1.82
       }
     }
   ],
-  "zonalDiffOverlay": "/Users/anjan/.gemini/antigravity/scratch/claude_to_compose/verification/zonal_diff_overlay.png"
+  "zonalDiffOverlay": "verification/zonal_diff_overlay.png",
+  "elementIouScore": 91.7,
+  "maxSpatialShiftPx": 2.55,
+  "worstDriftElement": {
+    "elementId": "node_24",
+    "name": "Field notes",
+    "category": "text",
+    "priority": "secondary",
+    "text": "Field notes",
+    "refBounds": {
+      "x": 376,
+      "y": 140,
+      "width": 171,
+      "height": 57
+    },
+    "refTightBbox": [
+      377,
+      151,
+      170,
+      31
+    ],
+    "renderedTightBbox": [
+      376,
+      151,
+      177,
+      30
+    ],
+    "refCentroid": {
+      "x": 458.53,
+      "y": 168.45
+    },
+    "renderedCentroid": {
+      "x": 462.88,
+      "y": 167.35
+    },
+    "refInkCount": 2346,
+    "renderedInkCount": 1906,
+    "dx": 2.5,
+    "dy": -0.5,
+    "dxDp": 1.25,
+    "dyDp": -0.25,
+    "dWidth": 7,
+    "dHeight": -1,
+    "shiftMagnitude": 2.55,
+    "iou": 93.07,
+    "status": "ALIGNED",
+    "passed": true
+  },
+  "driftVectors": [
+    {
+      "elementId": "node_1",
+      "name": "The Meridian",
+      "category": "heading",
+      "priority": "primary",
+      "text": "The Meridian",
+      "refBounds": {
+        "x": 128,
+        "y": 300,
+        "width": 365,
+        "height": 102
+      },
+      "refTightBbox": [
+        128,
+        325,
+        364,
+        51
+      ],
+      "renderedTightBbox": [
+        128,
+        326,
+        364,
+        53
+      ],
+      "refCentroid": {
+        "x": 316.34,
+        "y": 353.14
+      },
+      "renderedCentroid": {
+        "x": 317.06,
+        "y": 356.28
+      },
+      "refInkCount": 4403,
+      "renderedInkCount": 5770,
+      "dx": 0,
+      "dy": 1,
+      "dxDp": 0,
+      "dyDp": 0.5,
+      "dWidth": 0,
+      "dHeight": 2,
+      "shiftMagnitude": 1,
+      "iou": 92.59,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_2",
+      "name": "World",
+      "category": "pill",
+      "priority": "primary",
+      "text": "World",
+      "refBounds": {
+        "x": 1681,
+        "y": 324,
+        "width": 92,
+        "height": 54
+      },
+      "refTightBbox": [
+        1681,
+        336,
+        91,
+        27
+      ],
+      "renderedTightBbox": [
+        1685,
+        336,
+        85,
+        27
+      ],
+      "refCentroid": {
+        "x": 1738.35,
+        "y": 349.23
+      },
+      "renderedCentroid": {
+        "x": 1718.41,
+        "y": 350.48
+      },
+      "refInkCount": 168,
+      "renderedInkCount": 46,
+      "dx": 1,
+      "dy": 0,
+      "dxDp": 0.5,
+      "dyDp": 0,
+      "dWidth": -6,
+      "dHeight": 0,
+      "shiftMagnitude": 1,
+      "iou": 93.41,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_3",
+      "name": "Cities",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Cities",
+      "refBounds": {
+        "x": 1837,
+        "y": 324,
+        "width": 83,
+        "height": 54
+      },
+      "refTightBbox": [
+        1838,
+        336,
+        82,
+        27
+      ],
+      "renderedTightBbox": [
+        1840,
+        336,
+        78,
+        27
+      ],
+      "refCentroid": {
+        "x": 1878.04,
+        "y": 350.27
+      },
+      "renderedCentroid": {
+        "x": 1878.61,
+        "y": 348.81
+      },
+      "refInkCount": 79,
+      "renderedInkCount": 31,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": -4,
+      "dHeight": 0,
+      "shiftMagnitude": 0,
+      "iou": 95.12,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_4",
+      "name": "Climate",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Climate",
+      "refBounds": {
+        "x": 1984,
+        "y": 324,
+        "width": 115,
+        "height": 54
+      },
+      "refTightBbox": [
+        1985,
+        336,
+        113,
+        27
+      ],
+      "renderedTightBbox": [
+        1983,
+        336,
+        120,
+        27
+      ],
+      "refCentroid": {
+        "x": 2036.54,
+        "y": 351.2
+      },
+      "renderedCentroid": {
+        "x": 2050.65,
+        "y": 350.13
+      },
+      "refInkCount": 201,
+      "renderedInkCount": 55,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": 7,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 94.17,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_5",
+      "name": "Ideas",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Ideas",
+      "refBounds": {
+        "x": 2163,
+        "y": 324,
+        "width": 78,
+        "height": 54
+      },
+      "refTightBbox": [
+        2165,
+        336,
+        75,
+        27
+      ],
+      "renderedTightBbox": [
+        2164,
+        340,
+        77,
+        20
+      ],
+      "refCentroid": {
+        "x": 2195.16,
+        "y": 352.61
+      },
+      "renderedCentroid": {
+        "x": 2201.39,
+        "y": 350.34
+      },
+      "refInkCount": 89,
+      "renderedInkCount": 38,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
+      "dWidth": 2,
+      "dHeight": -7,
+      "shiftMagnitude": 0.5,
+      "iou": 72.64,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_8",
+      "name": "Climate · 9 min read",
+      "category": "text",
+      "priority": "secondary",
+      "text": "Climate · 9 min read",
+      "refBounds": {
+        "x": 144,
+        "y": 560,
+        "width": 560,
+        "height": 45
+      },
+      "refTightBbox": [
+        145,
+        570,
+        391,
+        22
+      ],
+      "renderedTightBbox": [
+        145,
+        571,
+        391,
+        20
+      ],
+      "refCentroid": {
+        "x": 358.39,
+        "y": 580.92
+      },
+      "renderedCentroid": {
+        "x": 339.01,
+        "y": 581.99
+      },
+      "refInkCount": 412,
+      "renderedInkCount": 100,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 0,
+      "dHeight": -2,
+      "shiftMagnitude": 0,
+      "iou": 90.91,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_9",
+      "name": "The quiet economics of planting a city forest",
+      "category": "heading",
+      "priority": "primary",
+      "text": "The quiet economics of planting a city forest",
+      "refBounds": {
+        "x": 144,
+        "y": 641,
+        "width": 1920,
+        "height": 255
+      },
+      "refTightBbox": [
+        145,
+        662,
+        1535,
+        236
+      ],
+      "renderedTightBbox": [
+        145,
+        662,
+        1527,
+        243
+      ],
+      "refCentroid": {
+        "x": 799.75,
+        "y": 744.84
+      },
+      "renderedCentroid": {
+        "x": 801.62,
+        "y": 745.6
+      },
+      "refInkCount": 42040,
+      "renderedInkCount": 53475,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": -8,
+      "dHeight": 7,
+      "shiftMagnitude": 0,
+      "iou": 96.63,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_10",
+      "name": "For a century the ledger of a growing city was wri",
+      "category": "paragraph",
+      "priority": "primary",
+      "text": "For a century the ledger of a growing city was written in concrete and asphalt, materials that hold the day's heat long after the sun has gone. The new arithmetic is greener, and stranger. A maturing street tree returns far more than its planting cost in cooling, drainage and slowed traffic — a fact the accountants took a decade to trust.",
+      "refBounds": {
+        "x": 144,
+        "y": 964,
+        "width": 984,
+        "height": 392
+      },
+      "refTightBbox": [
+        145,
+        978,
+        965,
+        355
+      ],
+      "renderedTightBbox": [
+        145,
+        978,
+        977,
+        355
+      ],
+      "refCentroid": {
+        "x": 590.64,
+        "y": 1152.64
+      },
+      "renderedCentroid": {
+        "x": 601.91,
+        "y": 1156.25
+      },
+      "refInkCount": 21303,
+      "renderedInkCount": 35646,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 12,
+      "dHeight": 0,
+      "shiftMagnitude": 0,
+      "iou": 98.77,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_11",
+      "name": "Planners in three coastal cities now treat the can",
+      "category": "paragraph",
+      "priority": "primary",
+      "text": "Planners in three coastal cities now treat the canopy as infrastructure, mapped and budgeted like a bridge. The result is a slower construction, measured in seasons rather than quarters, and a skyline that softens at its edges.",
+      "refBounds": {
+        "x": 144,
+        "y": 1394,
+        "width": 984,
+        "height": 261
+      },
+      "refTightBbox": [
+        145,
+        1409,
+        961,
+        238
+      ],
+      "renderedTightBbox": [
+        145,
+        1409,
+        981,
+        239
+      ],
+      "refCentroid": {
+        "x": 600.18,
+        "y": 1523.89
+      },
+      "renderedCentroid": {
+        "x": 612.42,
+        "y": 1522.35
+      },
+      "refInkCount": 14163,
+      "renderedInkCount": 24417,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 20,
+      "dHeight": 1,
+      "shiftMagnitude": 0,
+      "iou": 97.55,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_12",
+      "name": "What surprised them was not the shade but the wate",
+      "category": "paragraph",
+      "priority": "primary",
+      "text": "What surprised them was not the shade but the water. A single mature plane can intercept thousands of litres of stormwater a year, water the drains no longer have to carry, and a pilot block dropped four degrees against its neighbours last July.",
+      "refBounds": {
+        "x": 1240,
+        "y": 964,
+        "width": 984,
+        "height": 327
+      },
+      "refTightBbox": [
+        1241,
+        979,
+        965,
+        328
+      ],
+      "renderedTightBbox": [
+        1242,
+        978,
+        981,
+        329
+      ],
+      "refCentroid": {
+        "x": 1692.83,
+        "y": 1118.14
+      },
+      "renderedCentroid": {
+        "x": 1686.79,
+        "y": 1115.02
+      },
+      "refInkCount": 17006,
+      "renderedInkCount": 26978,
+      "dx": 1,
+      "dy": -1,
+      "dxDp": 0.5,
+      "dyDp": -0.5,
+      "dWidth": 16,
+      "dHeight": 1,
+      "shiftMagnitude": 1.41,
+      "iou": 97.87,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_13",
+      "name": "The maintenance crews doubled as the budget line m",
+      "category": "paragraph",
+      "priority": "primary",
+      "text": "The maintenance crews doubled as the budget line moved from parks to public works, and the forest, once an ornament, became a system with a return.",
+      "refBounds": {
+        "x": 1240,
+        "y": 1329,
+        "width": 984,
+        "height": 196
+      },
+      "refTightBbox": [
+        1241,
+        1319,
+        974,
+        190
+      ],
+      "renderedTightBbox": [
+        1242,
+        1319,
+        973,
+        185
+      ],
+      "refCentroid": {
+        "x": 1745.88,
+        "y": 1409.57
+      },
+      "renderedCentroid": {
+        "x": 1712.63,
+        "y": 1407.4
+      },
+      "refInkCount": 11633,
+      "renderedInkCount": 18497,
+      "dx": 1,
+      "dy": 0,
+      "dxDp": 0.5,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": -5,
+      "shiftMagnitude": 1,
+      "iou": 97.27,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_28",
+      "name": "Card",
+      "category": "pill",
+      "priority": "primary",
+      "text": "",
+      "refBounds": {
+        "x": 162,
+        "y": 88,
+        "width": 499,
+        "height": 160
+      },
+      "refTightBbox": [
+        158,
+        86,
+        505,
+        170
+      ],
+      "renderedTightBbox": [
+        162,
+        90,
+        499,
+        158
+      ],
+      "refCentroid": {
+        "x": 394.88,
+        "y": 186.25
+      },
+      "renderedCentroid": {
+        "x": 408.97,
+        "y": 167.79
+      },
+      "refInkCount": 5467,
+      "renderedInkCount": 2984,
+      "dx": 1,
+      "dy": -2,
+      "dxDp": 0.5,
+      "dyDp": -1,
+      "dWidth": -6,
+      "dHeight": -12,
+      "shiftMagnitude": 2.24,
+      "iou": 91.84,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_22",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 178,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        220,
+        144,
+        48,
+        50
+      ],
+      "renderedTightBbox": [
+        219,
+        144,
+        50,
+        50
+      ],
+      "refCentroid": {
+        "x": 241.74,
+        "y": 166.35
+      },
+      "renderedCentroid": {
+        "x": 243.93,
+        "y": 168.07
+      },
+      "refInkCount": 1016,
+      "renderedInkCount": 806,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 2,
+      "dHeight": 0,
+      "shiftMagnitude": 0,
+      "iou": 96,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_20",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 216,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        220,
+        144,
+        48,
+        50
+      ],
+      "renderedTightBbox": [
+        219,
+        144,
+        50,
+        50
+      ],
+      "refCentroid": {
+        "x": 241.74,
+        "y": 166.35
+      },
+      "renderedCentroid": {
+        "x": 243.93,
+        "y": 168.07
+      },
+      "refInkCount": 1016,
+      "renderedInkCount": 806,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 2,
+      "dHeight": 0,
+      "shiftMagnitude": 0,
+      "iou": 96,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_27",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 340,
+        "y": 104,
+        "width": 305,
+        "height": 128
+      },
+      "refTightBbox": [
+        378,
+        152,
+        212,
+        29
+      ],
+      "renderedTightBbox": [
+        376,
+        151,
+        213,
+        30
+      ],
+      "refCentroid": {
+        "x": 463.7,
+        "y": 168.44
+      },
+      "renderedCentroid": {
+        "x": 470.54,
+        "y": 167.37
+      },
+      "refInkCount": 1880,
+      "renderedInkCount": 1859,
+      "dx": -1.5,
+      "dy": -0.5,
+      "dxDp": -0.75,
+      "dyDp": -0.25,
+      "dWidth": 1,
+      "dHeight": 1,
+      "shiftMagnitude": 1.58,
+      "iou": 95.33,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_24",
+      "name": "Field notes",
+      "category": "text",
+      "priority": "secondary",
+      "text": "Field notes",
+      "refBounds": {
+        "x": 376,
+        "y": 140,
+        "width": 171,
+        "height": 57
+      },
+      "refTightBbox": [
+        377,
+        151,
+        170,
+        31
+      ],
+      "renderedTightBbox": [
+        376,
+        151,
+        177,
+        30
+      ],
+      "refCentroid": {
+        "x": 458.53,
+        "y": 168.45
+      },
+      "renderedCentroid": {
+        "x": 462.88,
+        "y": 167.35
+      },
+      "refInkCount": 2346,
+      "renderedInkCount": 1906,
+      "dx": 2.5,
+      "dy": -0.5,
+      "dxDp": 1.25,
+      "dyDp": -0.25,
+      "dWidth": 7,
+      "dHeight": -1,
+      "shiftMagnitude": 2.55,
+      "iou": 93.07,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_25",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 564,
+        "y": 150,
+        "width": 36,
+        "height": 36
+      },
+      "refTightBbox": [
+        540,
+        161,
+        50,
+        19
+      ],
+      "renderedTightBbox": [
+        540,
+        159,
+        49,
+        21
+      ],
+      "refCentroid": {
+        "x": 563.72,
+        "y": 169.13
+      },
+      "renderedCentroid": {
+        "x": 559.09,
+        "y": 168.04
+      },
+      "refInkCount": 148,
+      "renderedInkCount": 280,
+      "dx": -0.5,
+      "dy": -1,
+      "dxDp": -0.25,
+      "dyDp": -0.5,
+      "dWidth": -1,
+      "dHeight": 2,
+      "shiftMagnitude": 1.12,
+      "iou": 88.84,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_50",
+      "name": "Card",
+      "category": "pill",
+      "priority": "primary",
+      "text": "",
+      "refBounds": {
+        "x": 700,
+        "y": 88,
+        "width": 1012,
+        "height": 160
+      },
+      "refTightBbox": [
+        696,
+        86,
+        1019,
+        170
+      ],
+      "renderedTightBbox": [
+        701,
+        90,
+        1012,
+        158
+      ],
+      "refCentroid": {
+        "x": 984.01,
+        "y": 177.7
+      },
+      "renderedCentroid": {
+        "x": 936.34,
+        "y": 167.6
+      },
+      "refInkCount": 22573,
+      "renderedInkCount": 17673,
+      "dx": 1.5,
+      "dy": -2,
+      "dxDp": 0.75,
+      "dyDp": -1,
+      "dWidth": -7,
+      "dHeight": -12,
+      "shiftMagnitude": 2.5,
+      "iou": 92.3,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_31",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 716,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        715,
+        104,
+        129,
+        128
+      ],
+      "renderedTightBbox": [
+        717,
+        104,
+        128,
+        128
+      ],
+      "refCentroid": {
+        "x": 779.13,
+        "y": 167.38
+      },
+      "renderedCentroid": {
+        "x": 780.64,
+        "y": 167.38
+      },
+      "refInkCount": 12431,
+      "renderedInkCount": 12128,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 97.69,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_29",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 754,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        730,
+        126,
+        100,
+        84
+      ],
+      "renderedTightBbox": [
+        730,
+        126,
+        100,
+        84
+      ],
+      "refCentroid": {
+        "x": 779.73,
+        "y": 167.31
+      },
+      "renderedCentroid": {
+        "x": 779.68,
+        "y": 167.29
+      },
+      "refInkCount": 7754,
+      "renderedInkCount": 7605,
+      "dx": 0,
+      "dy": 0,
+      "dxDp": 0,
+      "dyDp": 0,
+      "dWidth": 0,
+      "dHeight": 0,
+      "shiftMagnitude": 0,
+      "iou": 100,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_34",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 848,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        822,
+        120,
+        114,
+        96
+      ],
+      "renderedTightBbox": [
+        822,
+        119,
+        112,
+        98
+      ],
+      "refCentroid": {
+        "x": 858.88,
+        "y": 167.79
+      },
+      "renderedCentroid": {
+        "x": 856.14,
+        "y": 168.47
+      },
+      "refInkCount": 2307,
+      "renderedInkCount": 2330,
+      "dx": -1,
+      "dy": 0,
+      "dxDp": -0.5,
+      "dyDp": 0,
+      "dWidth": -2,
+      "dHeight": 2,
+      "shiftMagnitude": 1,
+      "iou": 96.28,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_32",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 886,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        887,
+        144,
+        49,
+        48
+      ],
+      "renderedTightBbox": [
+        889,
+        147,
+        45,
+        44
+      ],
+      "refCentroid": {
+        "x": 910.02,
+        "y": 168.3
+      },
+      "renderedCentroid": {
+        "x": 909.3,
+        "y": 170.53
+      },
+      "refInkCount": 823,
+      "renderedInkCount": 750,
+      "dx": 0,
+      "dy": 1,
+      "dxDp": 0,
+      "dyDp": 0.5,
+      "dWidth": -4,
+      "dHeight": -4,
+      "shiftMagnitude": 1,
+      "iou": 84.18,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_36",
+      "name": "IconButton",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 980,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1023,
+        157,
+        41,
+        23
+      ],
+      "renderedTightBbox": [
+        1025,
+        157,
+        40,
+        23
+      ],
+      "refCentroid": {
+        "x": 1043,
+        "y": 168.05
+      },
+      "renderedCentroid": {
+        "x": 1044.5,
+        "y": 167.98
+      },
+      "refInkCount": 671,
+      "renderedInkCount": 578,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 92.86,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_35",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1018,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1023,
+        157,
+        41,
+        23
+      ],
+      "renderedTightBbox": [
+        1025,
+        157,
+        40,
+        23
+      ],
+      "refCentroid": {
+        "x": 1043,
+        "y": 168.05
+      },
+      "renderedCentroid": {
+        "x": 1044.5,
+        "y": 167.98
+      },
+      "refInkCount": 671,
+      "renderedInkCount": 578,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 92.86,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_39",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1112,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1149,
+        142,
+        51,
+        47
+      ],
+      "renderedTightBbox": [
+        1150,
+        141,
+        51,
+        48
+      ],
+      "refCentroid": {
+        "x": 1174.43,
+        "y": 168.61
+      },
+      "renderedCentroid": {
+        "x": 1176.3,
+        "y": 168.72
+      },
+      "refInkCount": 1023,
+      "renderedInkCount": 950,
+      "dx": 1,
+      "dy": -0.5,
+      "dxDp": 0.5,
+      "dyDp": -0.25,
+      "dWidth": 0,
+      "dHeight": 1,
+      "shiftMagnitude": 1.12,
+      "iou": 94.19,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_37",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1150,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1149,
+        142,
+        51,
+        47
+      ],
+      "renderedTightBbox": [
+        1150,
+        141,
+        51,
+        48
+      ],
+      "refCentroid": {
+        "x": 1174.43,
+        "y": 168.61
+      },
+      "renderedCentroid": {
+        "x": 1176.3,
+        "y": 168.72
+      },
+      "refInkCount": 1023,
+      "renderedInkCount": 950,
+      "dx": 1,
+      "dy": -0.5,
+      "dxDp": 0.5,
+      "dyDp": -0.25,
+      "dWidth": 0,
+      "dHeight": 1,
+      "shiftMagnitude": 1.12,
+      "iou": 94.19,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_42",
+      "name": "IconButton",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1274,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1317,
+        147,
+        41,
+        39
+      ],
+      "renderedTightBbox": [
+        1319,
+        148,
+        40,
+        38
+      ],
+      "refCentroid": {
+        "x": 1335.08,
+        "y": 165.12
+      },
+      "renderedCentroid": {
+        "x": 1336.62,
+        "y": 164.8
+      },
+      "refInkCount": 592,
+      "renderedInkCount": 507,
+      "dx": 1.5,
+      "dy": 0.5,
+      "dxDp": 0.75,
+      "dyDp": 0.25,
+      "dWidth": -1,
+      "dHeight": -1,
+      "shiftMagnitude": 1.58,
+      "iou": 90.53,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_41",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1312,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1317,
+        147,
+        41,
+        39
+      ],
+      "renderedTightBbox": [
+        1319,
+        148,
+        40,
+        38
+      ],
+      "refCentroid": {
+        "x": 1335.08,
+        "y": 165.12
+      },
+      "renderedCentroid": {
+        "x": 1336.62,
+        "y": 164.8
+      },
+      "refInkCount": 592,
+      "renderedInkCount": 507,
+      "dx": 1.5,
+      "dy": 0.5,
+      "dxDp": 0.75,
+      "dyDp": 0.25,
+      "dWidth": -1,
+      "dHeight": -1,
+      "shiftMagnitude": 1.58,
+      "iou": 90.53,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_45",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1406,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1443,
+        142,
+        51,
+        52
+      ],
+      "renderedTightBbox": [
+        1446,
+        143,
+        49,
+        50
+      ],
+      "refCentroid": {
+        "x": 1463.33,
+        "y": 167.11
+      },
+      "renderedCentroid": {
+        "x": 1465.36,
+        "y": 167.24
+      },
+      "refInkCount": 1039,
+      "renderedInkCount": 930,
+      "dx": 2,
+      "dy": 0,
+      "dxDp": 1,
+      "dyDp": 0,
+      "dWidth": -2,
+      "dHeight": -2,
+      "shiftMagnitude": 2,
+      "iou": 88.82,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_43",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1444,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1443,
+        142,
+        51,
+        52
+      ],
+      "renderedTightBbox": [
+        1446,
+        143,
+        49,
+        50
+      ],
+      "refCentroid": {
+        "x": 1463.33,
+        "y": 167.11
+      },
+      "renderedCentroid": {
+        "x": 1465.36,
+        "y": 167.24
+      },
+      "refInkCount": 1039,
+      "renderedInkCount": 930,
+      "dx": 2,
+      "dy": 0,
+      "dxDp": 1,
+      "dyDp": 0,
+      "dWidth": -2,
+      "dHeight": -2,
+      "shiftMagnitude": 2,
+      "iou": 88.82,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_49",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1568,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1609,
+        145,
+        45,
+        46
+      ],
+      "renderedTightBbox": [
+        1610,
+        145,
+        46,
+        46
+      ],
+      "refCentroid": {
+        "x": 1628.09,
+        "y": 167.49
+      },
+      "renderedCentroid": {
+        "x": 1629.03,
+        "y": 167.5
+      },
+      "refInkCount": 1199,
+      "renderedInkCount": 1142,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": 1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 93.62,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_47",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1606,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1609,
+        145,
+        45,
+        46
+      ],
+      "renderedTightBbox": [
+        1610,
+        145,
+        46,
+        46
+      ],
+      "refCentroid": {
+        "x": 1628.09,
+        "y": 167.49
+      },
+      "renderedCentroid": {
+        "x": 1629.03,
+        "y": 167.5
+      },
+      "refInkCount": 1199,
+      "renderedInkCount": 1142,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": 1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.5,
+      "iou": 93.62,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_61",
+      "name": "Card",
+      "category": "pill",
+      "priority": "primary",
+      "text": "",
+      "refBounds": {
+        "x": 1752,
+        "y": 88,
+        "width": 454,
+        "height": 160
+      },
+      "refTightBbox": [
+        1748,
+        86,
+        461,
+        170
+      ],
+      "renderedTightBbox": [
+        1753,
+        90,
+        454,
+        158
+      ],
+      "refCentroid": {
+        "x": 1955.11,
+        "y": 195.48
+      },
+      "renderedCentroid": {
+        "x": 1939.45,
+        "y": 166.47
+      },
+      "refInkCount": 3129,
+      "renderedInkCount": 1536,
+      "dx": 1.5,
+      "dy": -2,
+      "dxDp": 0.75,
+      "dyDp": -1,
+      "dWidth": -7,
+      "dHeight": -12,
+      "shiftMagnitude": 2.5,
+      "iou": 91.53,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_53",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1768,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1809,
+        146,
+        45,
+        36
+      ],
+      "renderedTightBbox": [
+        1810,
+        147,
+        45,
+        35
+      ],
+      "refCentroid": {
+        "x": 1832.22,
+        "y": 164.22
+      },
+      "renderedCentroid": {
+        "x": 1833.6,
+        "y": 164.15
+      },
+      "refInkCount": 619,
+      "renderedInkCount": 541,
+      "dx": 1,
+      "dy": 0.5,
+      "dxDp": 0.5,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -1,
+      "shiftMagnitude": 1.12,
+      "iou": 93.05,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_51",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1806,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1809,
+        146,
+        45,
+        36
+      ],
+      "renderedTightBbox": [
+        1810,
+        147,
+        45,
+        35
+      ],
+      "refCentroid": {
+        "x": 1832.22,
+        "y": 164.22
+      },
+      "renderedCentroid": {
+        "x": 1833.6,
+        "y": 164.15
+      },
+      "refInkCount": 619,
+      "renderedInkCount": 541,
+      "dx": 1,
+      "dy": 0.5,
+      "dxDp": 0.5,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -1,
+      "shiftMagnitude": 1.12,
+      "iou": 93.05,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_56",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1900,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        1942,
+        149,
+        41,
+        34
+      ],
+      "renderedTightBbox": [
+        1943,
+        147,
+        43,
+        38
+      ],
+      "refCentroid": {
+        "x": 1962.3,
+        "y": 166.09
+      },
+      "renderedCentroid": {
+        "x": 1963.64,
+        "y": 166.92
+      },
+      "refInkCount": 255,
+      "renderedInkCount": 533,
+      "dx": 2,
+      "dy": 0,
+      "dxDp": 1,
+      "dyDp": 0,
+      "dWidth": 2,
+      "dHeight": 4,
+      "shiftMagnitude": 2,
+      "iou": 81.53,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_54",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 1938,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        1942,
+        149,
+        41,
+        34
+      ],
+      "renderedTightBbox": [
+        1943,
+        147,
+        43,
+        38
+      ],
+      "refCentroid": {
+        "x": 1962.3,
+        "y": 166.09
+      },
+      "renderedCentroid": {
+        "x": 1963.64,
+        "y": 166.92
+      },
+      "refInkCount": 255,
+      "renderedInkCount": 533,
+      "dx": 2,
+      "dy": 0,
+      "dxDp": 1,
+      "dyDp": 0,
+      "dWidth": 2,
+      "dHeight": 4,
+      "shiftMagnitude": 2,
+      "iou": 81.53,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_60",
+      "name": "Button",
+      "category": "button",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 2062,
+        "y": 104,
+        "width": 128,
+        "height": 128
+      },
+      "refTightBbox": [
+        2101,
+        162,
+        49,
+        12
+      ],
+      "renderedTightBbox": [
+        2103,
+        163,
+        48,
+        10
+      ],
+      "refCentroid": {
+        "x": 2125,
+        "y": 167.5
+      },
+      "renderedCentroid": {
+        "x": 2126.5,
+        "y": 167.5
+      },
+      "refInkCount": 246,
+      "renderedInkCount": 236,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": -2,
+      "shiftMagnitude": 1.5,
+      "iou": 78.6,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_58",
+      "name": "Icon",
+      "category": "icon",
+      "priority": "secondary",
+      "text": "",
+      "refBounds": {
+        "x": 2100,
+        "y": 142,
+        "width": 52,
+        "height": 52
+      },
+      "refTightBbox": [
+        2101,
+        162,
+        49,
+        12
+      ],
+      "renderedTightBbox": [
+        2103,
+        163,
+        48,
+        10
+      ],
+      "refCentroid": {
+        "x": 2125,
+        "y": 167.5
+      },
+      "renderedCentroid": {
+        "x": 2126.5,
+        "y": 167.5
+      },
+      "refInkCount": 246,
+      "renderedInkCount": 236,
+      "dx": 1.5,
+      "dy": 0,
+      "dxDp": 0.75,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": -2,
+      "shiftMagnitude": 1.5,
+      "iou": 78.6,
+      "status": "LOW_IOU",
+      "passed": false
+    }
+  ],
+  "elementsEvaluatedCount": 39
 }
