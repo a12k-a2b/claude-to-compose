@@ -1,5 +1,13 @@
 # Claude to Compose (claude-to-compose)
 
+## Preview
+
+Claude Design → Jetpack Compose pipeline: device reference + verification composite.
+
+![DC-1 screen reference](docs/preview/dc1-screen.jpg)
+
+![Verification composite](docs/preview/verification-composite.jpg)
+
 [![Build & Verification Status](https://img.shields.io/badge/Verification-100%25%20PASS-brightgreen.svg)](#test-results-summary)
 [![Tests Passing](https://img.shields.io/badge/Tests-533%2F533%20Passing-brightgreen.svg)](#test-results-summary)
 [![Compose Material 3](https://img.shields.io/badge/Material%203-2024.10.01-blue.svg)](#technical-deep-dive)
