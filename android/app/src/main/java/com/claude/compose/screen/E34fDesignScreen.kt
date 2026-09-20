@@ -71,7 +71,7 @@ fun E34fDesignScreen(
             ) {
                 Text(
                     text = "A",
-                    modifier = Modifier.offset(x = (-2.0).dp, y = (-2.0).dp),
+                    modifier = Modifier.offset(x = 0.0.dp, y = (-1.5).dp),
                     fontFamily = AbcArizonaFlare,
                     fontSize = 70.sp,
                     lineHeight = 77.52.sp,
@@ -100,7 +100,7 @@ fun E34fDesignScreen(
                 )
                 Text(
                     text = "glass",
-                    modifier = Modifier.offset(x = 310.25.dp, y = (-0.5).dp),
+                    modifier = Modifier.offset(x = 311.75.dp, y = (-0.5).dp),
                     fontFamily = AbcArizonaFlare,
                     fontSize = 73.5.sp,
                     lineHeight = 77.52.sp,

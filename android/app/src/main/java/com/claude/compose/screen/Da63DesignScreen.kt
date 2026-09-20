@@ -109,11 +109,47 @@ fun Da63DesignScreen(
 
                     // Article headline: Single unified Text composable with precise baseline pitch (63.0sp)
                     val headlineText = buildAnnotatedString {
-                        withStyle(SpanStyle(letterSpacing = (-4.55).sp)) {
-                            append("The quiet economics of planting a\n")
+                        withStyle(SpanStyle(letterSpacing = (-6.8).sp)) {
+                            append("The")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 4.0.sp)) {
+                            append(" ")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-5.5).sp)) {
+                            append("quiet")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 3.0.sp)) {
+                            append(" ")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-6.2).sp)) {
+                            append("economics")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 5.5.sp)) {
+                            append(" ")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-4.8).sp)) {
+                            append("of")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 6.0.sp)) {
+                            append(" ")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-6.0).sp)) {
+                            append("planting")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 4.0.sp)) {
+                            append(" ")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-5.5).sp)) {
+                            append("a\n")
+                        }
+                        withStyle(SpanStyle(letterSpacing = (-5.8).sp)) {
+                            append("city")
+                        }
+                        withStyle(SpanStyle(letterSpacing = 3.0.sp)) {
+                            append(" ")
                         }
                         withStyle(SpanStyle(letterSpacing = (-4.45).sp)) {
-                            append("city forest")
+                            append("forest")
                         }
                     }
                     Text(

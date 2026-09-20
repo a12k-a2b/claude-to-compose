@@ -4,14 +4,14 @@
     "height": 1720
   },
   "totalPixels": 4953600,
-  "totalMismatches": 209519,
-  "globalSimilarity": 95.77,
-  "globalInkIou": 76.54,
-  "globalInkDice": 86.71,
+  "totalMismatches": 204159,
+  "globalSimilarity": 95.88,
+  "globalInkIou": 76.93,
+  "globalInkDice": 86.96,
   "globalRefInkCount": 1239888,
-  "globalRenderedInkCount": 1207318,
-  "globalInkIntersection": 1060969,
-  "globalInkUnion": 1386237,
+  "globalRenderedInkCount": 1207422,
+  "globalInkIntersection": 1064114,
+  "globalInkUnion": 1383196,
   "zones": [
     {
       "id": "zone_navigation",
@@ -44,21 +44,21 @@
       "yStart": 180,
       "yEnd": 800,
       "height": 620,
-      "similarity": 97.15,
-      "mismatchCount": 50941,
+      "similarity": 97.24,
+      "mismatchCount": 49291,
       "totalPixels": 1785600,
-      "ssimScore": 0.8995,
+      "ssimScore": 0.9021,
       "refInkCount": 50694,
-      "renderedInkCount": 54403,
-      "inkIou": 80.03,
-      "inkDice": 88.91,
-      "inkIntersection": 359941,
-      "inkUnion": 449774,
+      "renderedInkCount": 54488,
+      "inkIou": 80.32,
+      "inkDice": 89.08,
+      "inkIntersection": 360689,
+      "inkUnion": 449090,
       "centroidDrift": {
-        "deltaX": -46.06,
-        "deltaY": 61.68,
-        "deltaXDp": -23.03,
-        "deltaYDp": 30.84
+        "deltaX": -45.55,
+        "deltaY": 60.39,
+        "deltaXDp": -22.77,
+        "deltaYDp": 30.2
       }
     },
     {
@@ -68,21 +68,21 @@
       "yStart": 800,
       "yEnd": 1350,
       "height": 550,
-      "similarity": 94.31,
-      "mismatchCount": 90152,
+      "similarity": 94.42,
+      "mismatchCount": 88359,
       "totalPixels": 1584000,
-      "ssimScore": 0.799,
+      "ssimScore": 0.8011,
       "refInkCount": 48690,
-      "renderedInkCount": 77061,
-      "inkIou": 70.43,
-      "inkDice": 82.65,
-      "inkIntersection": 325122,
-      "inkUnion": 461637,
+      "renderedInkCount": 75000,
+      "inkIou": 70.66,
+      "inkDice": 82.81,
+      "inkIntersection": 324631,
+      "inkUnion": 459400,
       "centroidDrift": {
-        "deltaX": 30.49,
-        "deltaY": 17.82,
-        "deltaXDp": 15.24,
-        "deltaYDp": 8.91
+        "deltaX": 12.6,
+        "deltaY": 11.37,
+        "deltaXDp": 6.3,
+        "deltaYDp": 5.68
       }
     },
     {
@@ -92,26 +92,26 @@
       "yStart": 1350,
       "yEnd": 1584,
       "height": 234,
-      "similarity": 93.4,
-      "mismatchCount": 44467,
+      "similarity": 93.69,
+      "mismatchCount": 42550,
       "totalPixels": 673920,
-      "ssimScore": 0.7796,
+      "ssimScore": 0.7913,
       "refInkCount": 21714,
-      "renderedInkCount": 34291,
-      "inkIou": 66.72,
-      "inkDice": 80.04,
-      "inkIntersection": 138534,
-      "inkUnion": 207620,
+      "renderedInkCount": 36336,
+      "inkIou": 68.16,
+      "inkDice": 81.06,
+      "inkIntersection": 141422,
+      "inkUnion": 207500,
       "centroidDrift": {
-        "deltaX": -56.08,
-        "deltaY": 3.64,
-        "deltaXDp": -28.04,
-        "deltaYDp": 1.82
+        "deltaX": -21.88,
+        "deltaY": 1.23,
+        "deltaXDp": -10.94,
+        "deltaYDp": 0.61
       }
     }
   ],
   "zonalDiffOverlay": "verification/zonal_diff_overlay.png",
-  "elementIouScore": 91.7,
+  "elementIouScore": 91.74,
   "maxSpatialShiftPx": 2.55,
   "worstDriftElement": {
     "elementId": "node_24",
@@ -449,8 +449,8 @@
       ],
       "renderedTightBbox": [
         145,
-        662,
-        1527,
+        660,
+        1538,
         243
       ],
       "refCentroid": {
@@ -458,19 +458,19 @@
         "y": 744.84
       },
       "renderedCentroid": {
-        "x": 801.62,
-        "y": 745.6
+        "x": 804.45,
+        "y": 743.56
       },
       "refInkCount": 42040,
-      "renderedInkCount": 53475,
+      "renderedInkCount": 53488,
       "dx": 0,
-      "dy": 0,
+      "dy": -2,
       "dxDp": 0,
-      "dyDp": 0,
-      "dWidth": -8,
+      "dyDp": -1,
+      "dWidth": 3,
       "dHeight": 7,
-      "shiftMagnitude": 0,
-      "iou": 96.63,
+      "shiftMagnitude": 2,
+      "iou": 96.93,
       "status": "ALIGNED",
       "passed": true
     },
@@ -593,11 +593,11 @@
         "y": 1118.14
       },
       "renderedCentroid": {
-        "x": 1686.79,
-        "y": 1115.02
+        "x": 1685.6,
+        "y": 1114.64
       },
       "refInkCount": 17006,
-      "renderedInkCount": 26978,
+      "renderedInkCount": 26909,
       "dx": 1,
       "dy": -1,
       "dxDp": 0.5,
@@ -631,26 +631,26 @@
         1242,
         1319,
         973,
-        185
+        193
       ],
       "refCentroid": {
         "x": 1745.88,
         "y": 1409.57
       },
       "renderedCentroid": {
-        "x": 1712.63,
-        "y": 1407.4
+        "x": 1713.84,
+        "y": 1414.39
       },
       "refInkCount": 11633,
-      "renderedInkCount": 18497,
+      "renderedInkCount": 18614,
       "dx": 1,
       "dy": 0,
       "dxDp": 0.5,
       "dyDp": 0,
       "dWidth": -1,
-      "dHeight": -5,
+      "dHeight": 3,
       "shiftMagnitude": 1,
-      "iou": 97.27,
+      "iou": 98.35,
       "status": "ALIGNED",
       "passed": true
     },

@@ -4,13 +4,13 @@
 ## Verdict: PASSED
 Verdict: PASSED
 
-- **Execution Date**: 2026-09-20T18:06:16.940Z
+- **Execution Date**: 2026-09-20T20:24:12.059Z
 - **Target Application**: Claude to Compose
 - **Overall Score**: 100 / 100 (Pass threshold: >= 90)
 - **Build Status**: PASSED
 - **Visual Similarity**: 95.4%
-- **Ink IoU (Non-White Ink)**: 72.44%
-- **Ink Dice Coefficient**: 84.02%
+- **Ink IoU (Non-White Ink)**: 72.63%
+- **Ink Dice Coefficient**: 84.15%
 
 ## 2. Programmatic Build & Unit Test Results
 - Gradle Compilation: 0 errors
@@ -19,10 +19,10 @@ Verdict: PASSED
 
 ## 3. Programmatic Visual Diff Analysis
 - Pixel Similarity: 95.4%
-- Ink IoU: 72.44%
-- Ink Dice: 84.02%
+- Ink IoU: 72.63%
+- Ink Dice: 84.15%
 - MSSIM Score: 0.942
-- Pixel Mismatch Count: 228019
+- Pixel Mismatch Count: 227236
 
 ### Visual Diff Artifacts
 - **Reference Web Viewport**: ![Reference Web Viewport](output/test_e34f/screenshots/desktop_reference.png)
@@ -35,7 +35,7 @@ Verdict: PASSED
 | Zone | Y Range (px) | Similarity | Ink IoU | Ink Dice | SSIM | Mismatches | Drift (Δx, Δy px) | Drift (dp) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Navigation & Header Frame** | 0-180 | 99.25% | 50.05% | 66.71% | 0.9833 | 3907 | `0.94, -0.85` | `0.47dp, -0.42dp` |
-| **Hero Map & Tracks Canvas** | 180-800 | 91.97% | 43.87% | 60.99% | 0.8272 | 143329 | `-15.19, -16.26` | `-7.59dp, -8.13dp` |
+| **Hero Map & Tracks Canvas** | 180-800 | 92.02% | 44.32% | 61.42% | 0.829 | 142546 | `-13.96, -16.13` | `-6.98dp, -8.06dp` |
 | **Headline & Subtitle Typography** | 800-1350 | 96.31% | 94.54% | 97.19% | 0.9139 | 58506 | `-171.95, -109.94` | `-85.97dp, -54.97dp` |
 | **Action Controls & Motion Chips** | 1350-1584 | 98.91% | 93.76% | 96.78% | 0.9753 | 7360 | `7.16, -0.26` | `3.58dp, -0.13dp` |
 
@@ -45,7 +45,7 @@ Verdict: PASSED
 
 | Zone | Measured Drift (dp) | Match | Recommended Action |
 | :--- | :--- | :--- | :--- |
-| **Hero Map & Tracks Canvas** | `Δx: -7.59dp, Δy: -8.13dp` | 91.97% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 8.13dp (element rendered 8.13dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or increase start padding by 7.59dp (rendered 7.59dp too far left) |
+| **Hero Map & Tracks Canvas** | `Δx: -6.98dp, Δy: -8.06dp` | 92.02% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 8.06dp (element rendered 8.06dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or increase start padding by 6.98dp (rendered 6.98dp too far left) |
 | **Headline & Subtitle Typography** | `Δx: -85.97dp, Δy: -54.97dp` | 96.31% | • **Vertical Alignment / Padding**: Increase top padding or Spacer height by 54.97dp (element rendered 54.97dp too high)<br>• **Horizontal Offset / Origin**: Shift horizontal start anchor or increase start padding by 85.97dp (rendered 85.97dp too far left) |
 | **Action Controls & Motion Chips** | `Δx: 3.58dp, Δy: -0.13dp` | 98.91% | • **Horizontal Offset / Origin**: Shift horizontal start anchor or reduce start padding by 3.58dp (rendered 3.58dp too far right) |
 
