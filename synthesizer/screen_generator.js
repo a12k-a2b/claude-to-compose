@@ -329,7 +329,12 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   // 6. Badge Component
   if (type === 'Badge') {
     const label = JSON.stringify(textContent || 'Status');
-    return `${indent}StatusBadge(\n${indent}    text = ${label},\n${indent}    modifier = Modifier.padding(2.dp)\n${indent})\n`;
+    const isPill = node.style?.borderRadius?.isPill;
+    const heightDp = node.bounds?.height ? `${Math.round(node.bounds.height)}` : '32';
+    const modifier = isPill
+      ? `Modifier.requiredHeight(${heightDp}.dp).padding(horizontal = 4.dp)`
+      : 'Modifier.padding(2.dp)';
+    return `${indent}StatusBadge(\n${indent}    text = ${label},\n${indent}    modifier = ${modifier}\n${indent})\n`;
   }
 
   // 7. Checkbox Component

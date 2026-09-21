@@ -262,6 +262,37 @@ function detectBackgroundPalette(png, width, height, options = {}) {
  *   bgPaletteRendered: Array<{r: number, g: number, b: number}>
  * }}
  */
+/**
+ * Detects the horizontal bounding range [minX, maxX] of the primary document sheet
+ * for multi-palette canvases (e.g. tablet document sheet placed on a desktop surround).
+ */
+function detectSheetBounds(png, width, height, primaryBg) {
+  let minX = width;
+  let maxX = 0;
+  const tauSq = 20 * 20;
+  const testYs = [
+    Math.floor(height * 0.2),
+    Math.floor(height * 0.4),
+    Math.floor(height * 0.6),
+    Math.floor(height * 0.8)
+  ];
+  for (let x = 0; x < width; x++) {
+    let matchCount = 0;
+    for (const y of testYs) {
+      const idx = (y * width + x) * 4;
+      const dR = png.data[idx] - primaryBg.r;
+      const dG = png.data[idx + 1] - primaryBg.g;
+      const dB = png.data[idx + 2] - primaryBg.b;
+      if (dR * dR + dG * dG + dB * dB <= tauSq) matchCount++;
+    }
+    if (matchCount >= 2) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+    }
+  }
+  return { minX: minX <= maxX ? minX : 0, maxX: maxX >= minX ? maxX : width - 1 };
+}
+
 function computeInkMetrics(normRefPng, normRenderedPng, width, height, options = {}) {
   const tauBg = options.tauBg !== undefined ? options.tauBg : 20.0;
   const tauBgSq = tauBg * tauBg;
@@ -269,61 +300,76 @@ function computeInkMetrics(normRefPng, normRenderedPng, width, height, options =
   const bgPaletteA = detectBackgroundPalette(normRefPng, width, height, options);
   const bgPaletteB = detectBackgroundPalette(normRenderedPng, width, height, options);
 
+  const hasSurroundA = bgPaletteA.length > 1 && width >= 2000;
+  const hasSurroundB = bgPaletteB.length > 1 && width >= 2000;
+
+  const boundsA = hasSurroundA ? detectSheetBounds(normRefPng, width, height, bgPaletteA[0]) : { minX: 0, maxX: width - 1 };
+  const boundsB = hasSurroundB ? detectSheetBounds(normRenderedPng, width, height, bgPaletteB[0]) : { minX: 0, maxX: width - 1 };
+
   let refInk = 0;
   let renderedInk = 0;
   let intersection = 0;
   let union = 0;
 
-  const totalPixels = width * height;
-  for (let i = 0; i < totalPixels; i++) {
-    const idx = i * 4;
-    const aA = normRefPng.data[idx + 3];
-    const aB = normRenderedPng.data[idx + 3];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = (y * width + x) * 4;
+      const aA = normRefPng.data[idx + 3];
+      const aB = normRenderedPng.data[idx + 3];
 
-    let isInkA = aA > 50;
-    if (isInkA) {
-      const rA = normRefPng.data[idx];
-      const gA = normRefPng.data[idx + 1];
-      const bA = normRefPng.data[idx + 2];
-      const alphaFactorA = aA / 255.0;
+      let isInkA = aA > 50;
+      if (isInkA) {
+        const rA = normRefPng.data[idx];
+        const gA = normRefPng.data[idx + 1];
+        const bA = normRefPng.data[idx + 2];
+        const alphaFactorA = aA / 255.0;
 
-      for (let b = 0; b < bgPaletteA.length; b++) {
-        const bg = bgPaletteA[b];
-        const dR = rA - bg.r;
-        const dG = gA - bg.g;
-        const dB = bA - bg.b;
-        const distSq = (dR * dR + dG * dG + dB * dB) * (alphaFactorA * alphaFactorA);
-        if (distSq <= tauBgSq) {
-          isInkA = false;
-          break;
+        const palA = hasSurroundA
+          ? (x >= boundsA.minX && x <= boundsA.maxX ? [bgPaletteA[0]] : bgPaletteA.slice(1))
+          : bgPaletteA;
+
+        for (let b = 0; b < palA.length; b++) {
+          const bg = palA[b];
+          const dR = rA - bg.r;
+          const dG = gA - bg.g;
+          const dB = bA - bg.b;
+          const distSq = (dR * dR + dG * dG + dB * dB) * (alphaFactorA * alphaFactorA);
+          if (distSq <= tauBgSq) {
+            isInkA = false;
+            break;
+          }
         }
       }
-    }
 
-    let isInkB = aB > 50;
-    if (isInkB) {
-      const rB = normRenderedPng.data[idx];
-      const gB = normRenderedPng.data[idx + 1];
-      const bB = normRenderedPng.data[idx + 2];
-      const alphaFactorB = aB / 255.0;
+      let isInkB = aB > 50;
+      if (isInkB) {
+        const rB = normRenderedPng.data[idx];
+        const gB = normRenderedPng.data[idx + 1];
+        const bB = normRenderedPng.data[idx + 2];
+        const alphaFactorB = aB / 255.0;
 
-      for (let b = 0; b < bgPaletteB.length; b++) {
-        const bg = bgPaletteB[b];
-        const dR = rB - bg.r;
-        const dG = gB - bg.g;
-        const dB = bB - bg.b;
-        const distSq = (dR * dR + dG * dG + dB * dB) * (alphaFactorB * alphaFactorB);
-        if (distSq <= tauBgSq) {
-          isInkB = false;
-          break;
+        const palB = hasSurroundB
+          ? (x >= boundsB.minX && x <= boundsB.maxX ? [bgPaletteB[0]] : bgPaletteB.slice(1))
+          : bgPaletteB;
+
+        for (let b = 0; b < palB.length; b++) {
+          const bg = palB[b];
+          const dR = rB - bg.r;
+          const dG = gB - bg.g;
+          const dB = bB - bg.b;
+          const distSq = (dR * dR + dG * dG + dB * dB) * (alphaFactorB * alphaFactorB);
+          if (distSq <= tauBgSq) {
+            isInkB = false;
+            break;
+          }
         }
       }
-    }
 
-    if (isInkA) refInk++;
-    if (isInkB) renderedInk++;
-    if (isInkA && isInkB) intersection++;
-    if (isInkA || isInkB) union++;
+      if (isInkA) refInk++;
+      if (isInkB) renderedInk++;
+      if (isInkA && isInkB) intersection++;
+      if (isInkA || isInkB) union++;
+    }
   }
 
   // Blank white screens (or if rendered has no ink, or union is 0) must score 0.00% IoU
@@ -942,6 +988,7 @@ module.exports = {
   compareImages,
   computeInkMetrics,
   detectBackgroundPalette,
+  detectSheetBounds,
   computeSobelEdges,
   evaluateContourAlignment,
   generateEdgeDiffOverlay,

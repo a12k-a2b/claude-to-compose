@@ -66,31 +66,31 @@ fun E34fDesignScreen(
             // Screen Headline: A sheet of glass (Box with exact word offsets)
             Box(
                 modifier = Modifier
-                    .offset(x = (-1.0).dp, y = 3.3.dp)
+                    .offset(x = (-1.0).dp, y = 1.3.dp)
                     .padding(bottom = 13.0.dp)
             ) {
                 Text(
                     text = "A",
-                    modifier = Modifier.offset(x = 0.0.dp, y = (-1.5).dp),
+                    modifier = Modifier.offset(x = 0.0.dp, y = (-1.0).dp),
                     fontFamily = AbcArizonaFlare,
-                    fontSize = 70.sp,
+                    fontSize = 74.5.sp,
                     lineHeight = 77.52.sp,
                     color = Color(0xFF17190F),
                     style = BaseTextStyle
                 )
                 Text(
                     text = "sheet",
-                    modifier = Modifier.offset(x = 67.2.dp, y = (-2.75).dp),
+                    modifier = Modifier.offset(x = 67.2.dp, y = (-1.0).dp),
                     fontFamily = AbcArizonaFlare,
                     fontSize = 76.sp,
                     lineHeight = 77.52.sp,
-                    letterSpacing = (-8.0).sp,
+                    letterSpacing = (-7.2).sp,
                     color = Color(0xFF17190F),
                     style = BaseTextStyle
                 )
                 Text(
                     text = "of",
-                    modifier = Modifier.offset(x = 236.9.dp, y = (-1.4).dp),
+                    modifier = Modifier.offset(x = 236.9.dp, y = (-0.5).dp),
                     fontFamily = AbcArizonaFlare,
                     fontSize = 74.sp,
                     lineHeight = 77.52.sp,
@@ -100,11 +100,11 @@ fun E34fDesignScreen(
                 )
                 Text(
                     text = "glass",
-                    modifier = Modifier.offset(x = 311.75.dp, y = (-0.5).dp),
+                    modifier = Modifier.offset(x = 310.5.dp, y = (-0.5).dp),
                     fontFamily = AbcArizonaFlare,
-                    fontSize = 73.5.sp,
+                    fontSize = 74.sp,
                     lineHeight = 77.52.sp,
-                    letterSpacing = (-7.0).sp,
+                    letterSpacing = (-5.2).sp,
                     color = Color(0xFF17190F),
                     style = BaseTextStyle
                 )
@@ -358,21 +358,26 @@ private fun PillCategoryRow(
                     shape = CircleShape,
                     color = pill.bg,
                     border = if (pill.hasBorder) BorderStroke(0.5.dp, Color(0x20000000)) else null,
-                    shadowElevation = if (pill.hasBorder) 1.dp else 0.dp
+                    shadowElevation = if (pill.hasBorder) 1.dp else 0.dp,
+                    modifier = Modifier.requiredHeight(30.5.dp)
                 ) {
-                    Text(
-                        text = pill.label,
-                        fontFamily = AbcRomMono,
-                        fontSize = 12.sp,
-                        lineHeight = 18.sp,
-                        letterSpacing = 0.28.sp,
-                        color = pill.text,
-                        modifier = Modifier.padding(
-                            horizontal = if (pill.bg == SolOsOrange) 14.3.dp else 13.dp,
-                            vertical = if (!pill.hasBorder) 8.5.dp else 8.0.dp
-                        ),
-                        style = BaseTextStyle
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.requiredHeight(30.5.dp)
+                    ) {
+                        Text(
+                            text = pill.label,
+                            fontFamily = AbcRomMono,
+                            fontSize = 12.sp,
+                            lineHeight = 18.sp,
+                            letterSpacing = 0.28.sp,
+                            color = pill.text,
+                            modifier = Modifier.padding(
+                                horizontal = if (pill.bg == SolOsOrange) 14.3.dp else 13.dp
+                            ),
+                            style = BaseTextStyle
+                        )
+                    }
                 }
             }
         }

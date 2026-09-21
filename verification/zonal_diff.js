@@ -133,6 +133,37 @@ function computeInkCentroid(png, width, height, options = {}) {
  *   inkUnion: number
  * }}
  */
+/**
+ * Detects the horizontal bounding range [minX, maxX] of the primary document sheet
+ * for multi-palette canvases (e.g. tablet document sheet placed on a desktop surround).
+ */
+function detectSheetBounds(png, width, height, primaryBg) {
+  let minX = width;
+  let maxX = 0;
+  const tauSq = 20 * 20;
+  const testYs = [
+    Math.floor(height * 0.2),
+    Math.floor(height * 0.4),
+    Math.floor(height * 0.6),
+    Math.floor(height * 0.8)
+  ];
+  for (let x = 0; x < width; x++) {
+    let matchCount = 0;
+    for (const y of testYs) {
+      const idx = (y * width + x) * 4;
+      const dR = png.data[idx] - primaryBg.r;
+      const dG = png.data[idx + 1] - primaryBg.g;
+      const dB = png.data[idx + 2] - primaryBg.b;
+      if (dR * dR + dG * dG + dB * dB <= tauSq) matchCount++;
+    }
+    if (matchCount >= 2) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+    }
+  }
+  return { minX: minX <= maxX ? minX : 0, maxX: maxX >= minX ? maxX : width - 1 };
+}
+
 function computeZonalInkMetrics(refPng, renderedPng, width, height, options = {}) {
   const tauBg = options.tauBg !== undefined ? options.tauBg : 20.0;
   const tauBgSq = tauBg * tauBg;
@@ -142,8 +173,8 @@ function computeZonalInkMetrics(refPng, renderedPng, width, height, options = {}
 
   const hasSurroundA = bgPaletteA.length > 1 && width >= 2000;
   const hasSurroundB = bgPaletteB.length > 1 && width >= 2000;
-  const leftMargin = Math.round((width - 2368) / 2);
-  const rightMargin = width - leftMargin;
+  const boundsA = hasSurroundA ? detectSheetBounds(refPng, width, height, bgPaletteA[0]) : { minX: 0, maxX: width - 1 };
+  const boundsB = hasSurroundB ? detectSheetBounds(renderedPng, width, height, bgPaletteB[0]) : { minX: 0, maxX: width - 1 };
 
   let refInk = 0;
   let renderedInk = 0;
@@ -164,7 +195,7 @@ function computeZonalInkMetrics(refPng, renderedPng, width, height, options = {}
         const alphaFactorA = aA / 255.0;
 
         const palA = hasSurroundA
-          ? (x >= leftMargin && x <= rightMargin ? [bgPaletteA[0]] : bgPaletteA.slice(1))
+          ? (x >= boundsA.minX && x <= boundsA.maxX ? [bgPaletteA[0]] : bgPaletteA.slice(1))
           : bgPaletteA;
 
         for (let b = 0; b < palA.length; b++) {
@@ -187,7 +218,7 @@ function computeZonalInkMetrics(refPng, renderedPng, width, height, options = {}
         const alphaFactorB = aB / 255.0;
 
         const palB = hasSurroundB
-          ? (x >= leftMargin && x <= rightMargin ? [bgPaletteB[0]] : bgPaletteB.slice(1))
+          ? (x >= boundsB.minX && x <= boundsB.maxX ? [bgPaletteB[0]] : bgPaletteB.slice(1))
           : bgPaletteB;
 
         for (let b = 0; b < palB.length; b++) {

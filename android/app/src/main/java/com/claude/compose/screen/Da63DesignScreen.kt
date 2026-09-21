@@ -109,43 +109,43 @@ fun Da63DesignScreen(
 
                     // Article headline: Single unified Text composable with precise baseline pitch (63.0sp)
                     val headlineText = buildAnnotatedString {
-                        withStyle(SpanStyle(letterSpacing = (-6.8).sp)) {
+                        withStyle(SpanStyle(letterSpacing = (-7.0).sp)) {
                             append("The")
                         }
-                        withStyle(SpanStyle(letterSpacing = 4.0.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 7.0.sp)) {
                             append(" ")
                         }
                         withStyle(SpanStyle(letterSpacing = (-5.5).sp)) {
                             append("quiet")
                         }
-                        withStyle(SpanStyle(letterSpacing = 3.0.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 5.5.sp)) {
                             append(" ")
                         }
                         withStyle(SpanStyle(letterSpacing = (-6.2).sp)) {
                             append("economics")
                         }
-                        withStyle(SpanStyle(letterSpacing = 5.5.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 7.0.sp)) {
                             append(" ")
                         }
-                        withStyle(SpanStyle(letterSpacing = (-4.8).sp)) {
+                        withStyle(SpanStyle(letterSpacing = (-5.5).sp)) {
                             append("of")
                         }
-                        withStyle(SpanStyle(letterSpacing = 6.0.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 9.0.sp)) {
                             append(" ")
                         }
                         withStyle(SpanStyle(letterSpacing = (-6.0).sp)) {
                             append("planting")
                         }
-                        withStyle(SpanStyle(letterSpacing = 4.0.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 6.5.sp)) {
                             append(" ")
                         }
-                        withStyle(SpanStyle(letterSpacing = (-5.5).sp)) {
+                        withStyle(SpanStyle(letterSpacing = (-7.0).sp)) {
                             append("a\n")
                         }
                         withStyle(SpanStyle(letterSpacing = (-5.8).sp)) {
                             append("city")
                         }
-                        withStyle(SpanStyle(letterSpacing = 3.0.sp)) {
+                        withStyle(SpanStyle(letterSpacing = 3.5.sp)) {
                             append(" ")
                         }
                         withStyle(SpanStyle(letterSpacing = (-4.45).sp)) {
@@ -160,7 +160,7 @@ fun Da63DesignScreen(
                         color = Color(0xFF1A1A1A),
                         style = BaseTextStyle,
                         modifier = Modifier
-                            .offset(x = 1.5.dp, y = (-1.25).dp)
+                            .offset(x = 2.0.dp, y = (-1.25).dp)
                             .padding(bottom = 28.5.dp)
                     )
 
@@ -203,7 +203,7 @@ fun Da63DesignScreen(
                                 color = Color(0xFF1A1A1A),
                                 style = BaseTextStyle
                             )
-                            Spacer(modifier = Modifier.height(44.5.dp))
+                            Spacer(modifier = Modifier.height(20.5.dp))
                             Text(
                                 text = "The maintenance crews doubled as the budget line moved from parks to public works, and the forest, once an ornament, became a system with a return.",
                                 fontFamily = AbcArizonaSans,
@@ -224,6 +224,29 @@ fun Da63DesignScreen(
                     .fillMaxSize()
                     .background(Color.White.copy(alpha = 0.79f))
             )
+
+            // LAYER 2.5: Background Ruled Paper Lines on Scrim (every 56dp starting at y = 55.25dp, #F0F0F0, 1dp stroke)
+            Canvas(
+                modifier = Modifier
+                    .width(1184.dp)
+                    .fillMaxHeight()
+            ) {
+                val stepPx = 56.dp.toPx()
+                var yPx = 55.25.dp.toPx()
+                val endXPx = 1184.dp.toPx()
+                val strokeWidthPx = 1.5.dp.toPx()
+                val lineColor = Color(0xFFF0F0F0)
+
+                while (yPx < size.height) {
+                    drawLine(
+                        color = lineColor,
+                        start = Offset(0f, yPx),
+                        end = Offset(endXPx, yPx),
+                        strokeWidth = strokeWidthPx
+                    )
+                    yPx += stepPx
+                }
+            }
 
             // LAYER 3: Handwritten Ink & Highlighter Vector Annotations
             Canvas(modifier = Modifier.fillMaxSize()) {
