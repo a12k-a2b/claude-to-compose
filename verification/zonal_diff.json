@@ -4,14 +4,14 @@
     "height": 1720
   },
   "totalPixels": 4953600,
-  "totalMismatches": 241155,
-  "globalSimilarity": 95.13,
-  "globalInkIou": 42.1,
-  "globalInkDice": 59.25,
-  "globalRefInkCount": 432174,
-  "globalRenderedInkCount": 417635,
-  "globalInkIntersection": 251755,
-  "globalInkUnion": 598054,
+  "totalMismatches": 245034,
+  "globalSimilarity": 95.05,
+  "globalInkIou": 70.99,
+  "globalInkDice": 83.03,
+  "globalRefInkCount": 531680,
+  "globalRenderedInkCount": 460035,
+  "globalInkIntersection": 411720,
+  "globalInkUnion": 579995,
   "zones": [
     {
       "id": "zone_navigation",
@@ -20,21 +20,21 @@
       "yStart": 0,
       "yEnd": 180,
       "height": 180,
-      "similarity": 98.02,
-      "mismatchCount": 10257,
+      "similarity": 99.04,
+      "mismatchCount": 4951,
       "totalPixels": 518400,
-      "ssimScore": 0.9408,
-      "refInkCount": 18396,
-      "renderedInkCount": 15414,
-      "inkIou": 55.27,
-      "inkDice": 71.19,
-      "inkIntersection": 17841,
-      "inkUnion": 32279,
+      "ssimScore": 0.9765,
+      "refInkCount": 6164,
+      "renderedInkCount": 3430,
+      "inkIou": 42.24,
+      "inkDice": 59.39,
+      "inkIntersection": 2849,
+      "inkUnion": 6745,
       "centroidDrift": {
-        "deltaX": -0.47,
-        "deltaY": 0.7,
-        "deltaXDp": -0.23,
-        "deltaYDp": 0.35
+        "deltaX": 0.94,
+        "deltaY": -1.85,
+        "deltaXDp": 0.47,
+        "deltaYDp": -0.93
       }
     },
     {
@@ -44,21 +44,21 @@
       "yStart": 180,
       "yEnd": 800,
       "height": 620,
-      "similarity": 96.7,
-      "mismatchCount": 58849,
+      "similarity": 91.59,
+      "mismatchCount": 150193,
       "totalPixels": 1785600,
-      "ssimScore": 0.8994,
-      "refInkCount": 50694,
-      "renderedInkCount": 54948,
-      "inkIou": 40.49,
-      "inkDice": 57.65,
-      "inkIntersection": 61310,
-      "inkUnion": 151404,
+      "ssimScore": 0.8278,
+      "refInkCount": 160725,
+      "renderedInkCount": 123523,
+      "inkIou": 44.3,
+      "inkDice": 61.4,
+      "inkIntersection": 87267,
+      "inkUnion": 196981,
       "centroidDrift": {
-        "deltaX": -44.24,
-        "deltaY": 52.88,
-        "deltaXDp": -22.12,
-        "deltaYDp": 26.44
+        "deltaX": -15.51,
+        "deltaY": -15.95,
+        "deltaXDp": -7.75,
+        "deltaYDp": -7.97
       }
     },
     {
@@ -68,21 +68,21 @@
       "yStart": 800,
       "yEnd": 1350,
       "height": 550,
-      "similarity": 93.45,
-      "mismatchCount": 103688,
+      "similarity": 95.81,
+      "mismatchCount": 66422,
       "totalPixels": 1584000,
-      "ssimScore": 0.7576,
-      "refInkCount": 48690,
-      "renderedInkCount": 76329,
-      "inkIou": 28.75,
-      "inkDice": 44.66,
-      "inkIntersection": 60063,
-      "inkUnion": 208907,
+      "ssimScore": 0.9089,
+      "refInkCount": 183615,
+      "renderedInkCount": 154593,
+      "inkIou": 84.99,
+      "inkDice": 91.89,
+      "inkIntersection": 235425,
+      "inkUnion": 276996,
       "centroidDrift": {
-        "deltaX": 13.46,
-        "deltaY": 18.34,
-        "deltaXDp": 6.73,
-        "deltaYDp": 9.17
+        "deltaX": 14.45,
+        "deltaY": 9.87,
+        "deltaXDp": 7.22,
+        "deltaYDp": 4.93
       }
     },
     {
@@ -92,1828 +92,1423 @@
       "yStart": 1350,
       "yEnd": 1584,
       "height": 234,
-      "similarity": 92.17,
-      "mismatchCount": 52781,
+      "similarity": 98.76,
+      "mismatchCount": 8360,
       "totalPixels": 673920,
-      "ssimScore": 0.7431,
-      "refInkCount": 21714,
-      "renderedInkCount": 36470,
-      "inkIou": 24.23,
-      "inkDice": 39.01,
-      "inkIntersection": 24926,
-      "inkUnion": 102862,
+      "ssimScore": 0.976,
+      "refInkCount": 57562,
+      "renderedInkCount": 55179,
+      "inkIou": 92.08,
+      "inkDice": 95.88,
+      "inkIntersection": 54047,
+      "inkUnion": 58694,
       "centroidDrift": {
-        "deltaX": -18.66,
-        "deltaY": 8.19,
-        "deltaXDp": -9.33,
-        "deltaYDp": 4.09
+        "deltaX": 12.19,
+        "deltaY": 2.44,
+        "deltaXDp": 6.09,
+        "deltaYDp": 1.22
       }
     }
   ],
   "zonalDiffOverlay": "verification/zonal_diff_overlay.png",
-  "elementIouScore": 89.69,
-  "maxSpatialShiftPx": 8.06,
+  "elementIouScore": 93.69,
+  "maxSpatialShiftPx": 2.55,
   "worstDriftElement": {
-    "elementId": "node_9",
-    "name": "The quiet economics of planting a city forest",
-    "category": "heading",
+    "elementId": "node_25",
+    "name": "g1 · Gestures",
+    "category": "pill",
     "priority": "primary",
-    "text": "The quiet economics of planting a city forest",
+    "text": "g1 · Gestures",
     "refBounds": {
-      "x": 144,
-      "y": 641,
-      "width": 1920,
-      "height": 255
+      "x": 393,
+      "y": 1265,
+      "width": 248,
+      "height": 64
     },
     "refTightBbox": [
-      145,
-      662,
-      1535,
-      236
+      393,
+      1263,
+      248,
+      66
     ],
     "renderedTightBbox": [
-      144,
-      654,
-      1546,
-      252
+      393,
+      1266,
+      243,
+      61
     ],
     "refCentroid": {
-      "x": 799.75,
-      "y": 744.84
+      "x": 516.51,
+      "y": 1295.5
     },
     "renderedCentroid": {
-      "x": 802.87,
-      "y": 740.02
+      "x": 513.99,
+      "y": 1295.99
     },
-    "refInkCount": 42040,
-    "renderedInkCount": 53575,
-    "dx": -1,
-    "dy": -8,
-    "dxDp": -0.5,
-    "dyDp": -4,
-    "dWidth": 11,
-    "dHeight": 16,
-    "shiftMagnitude": 8.06,
-    "iou": 92.98,
-    "status": "DRIFTED",
-    "passed": false
+    "refInkCount": 15554,
+    "renderedInkCount": 14003,
+    "dx": -2.5,
+    "dy": 0.5,
+    "dxDp": -1.25,
+    "dyDp": 0.25,
+    "dWidth": -5,
+    "dHeight": -5,
+    "shiftMagnitude": 2.55,
+    "iou": 90.56,
+    "status": "ALIGNED",
+    "passed": true
   },
   "driftVectors": [
     {
       "elementId": "node_1",
-      "name": "The Meridian",
-      "category": "heading",
+      "name": "Note Overlay · Sol:OS · DaylightLook reskin",
+      "category": "pill",
       "priority": "primary",
-      "text": "The Meridian",
+      "text": "Note Overlay · Sol:OS · DaylightLook reskin",
       "refBounds": {
-        "x": 128,
-        "y": 300,
-        "width": 365,
-        "height": 102
+        "x": 144,
+        "y": 128,
+        "width": 492,
+        "height": 72
       },
       "refTightBbox": [
-        128,
-        325,
-        364,
-        51
+        144,
+        135,
+        497,
+        20
       ],
       "renderedTightBbox": [
-        128,
-        325,
-        362,
-        53
+        144,
+        135,
+        497,
+        17
       ],
       "refCentroid": {
-        "x": 316.34,
-        "y": 353.14
+        "x": 373.31,
+        "y": 144.86
       },
       "renderedCentroid": {
-        "x": 314.77,
-        "y": 355.63
+        "x": 374.09,
+        "y": 143.02
       },
-      "refInkCount": 4403,
-      "renderedInkCount": 5715,
+      "refInkCount": 3731,
+      "renderedInkCount": 2079,
+      "dx": 0,
+      "dy": -1.5,
+      "dxDp": 0,
+      "dyDp": -0.75,
+      "dWidth": 0,
+      "dHeight": -3,
+      "shiftMagnitude": 1.5,
+      "iou": 85,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_2",
+      "name": "A sheet of glass",
+      "category": "heading",
+      "priority": "primary",
+      "text": "A sheet of glass",
+      "refBounds": {
+        "x": 144,
+        "y": 228,
+        "width": 900,
+        "height": 150
+      },
+      "refTightBbox": [
+        144,
+        227,
+        901,
+        146
+      ],
+      "renderedTightBbox": [
+        144,
+        227,
+        911,
+        149
+      ],
+      "refCentroid": {
+        "x": 612.98,
+        "y": 298.18
+      },
+      "renderedCentroid": {
+        "x": 614.62,
+        "y": 300.38
+      },
+      "refInkCount": 38642,
+      "renderedInkCount": 35661,
       "dx": 0,
       "dy": 0,
       "dxDp": 0,
       "dyDp": 0,
-      "dWidth": -2,
-      "dHeight": 2,
+      "dWidth": 10,
+      "dHeight": 3,
       "shiftMagnitude": 0,
-      "iou": 95.72,
-      "status": "ALIGNED",
-      "passed": true
-    },
-    {
-      "elementId": "node_2",
-      "name": "World",
-      "category": "pill",
-      "priority": "primary",
-      "text": "World",
-      "refBounds": {
-        "x": 1681,
-        "y": 324,
-        "width": 92,
-        "height": 54
-      },
-      "refTightBbox": [
-        1681,
-        336,
-        91,
-        27
-      ],
-      "renderedTightBbox": [
-        1682,
-        336,
-        85,
-        27
-      ],
-      "refCentroid": {
-        "x": 1738.35,
-        "y": 349.23
-      },
-      "renderedCentroid": {
-        "x": 1715.41,
-        "y": 350.48
-      },
-      "refInkCount": 168,
-      "renderedInkCount": 46,
-      "dx": -2,
-      "dy": 0,
-      "dxDp": -1,
-      "dyDp": 0,
-      "dWidth": -6,
-      "dHeight": 0,
-      "shiftMagnitude": 2,
-      "iou": 93.41,
+      "iou": 96.91,
       "status": "ALIGNED",
       "passed": true
     },
     {
       "elementId": "node_3",
-      "name": "Cities",
-      "category": "pill",
+      "name": "The overlay sits over whatever you're reading, so ",
+      "category": "paragraph",
       "priority": "primary",
-      "text": "Cities",
-      "refBounds": {
-        "x": 1837,
-        "y": 324,
-        "width": 83,
-        "height": 54
-      },
-      "refTightBbox": [
-        1838,
-        336,
-        82,
-        27
-      ],
-      "renderedTightBbox": [
-        1837,
-        336,
-        85,
-        27
-      ],
-      "refCentroid": {
-        "x": 1878.04,
-        "y": 350.27
-      },
-      "renderedCentroid": {
-        "x": 1877.03,
-        "y": 349.22
-      },
-      "refInkCount": 79,
-      "renderedInkCount": 32,
-      "dx": 0.5,
-      "dy": 0,
-      "dxDp": 0.25,
-      "dyDp": 0,
-      "dWidth": 3,
-      "dHeight": 0,
-      "shiftMagnitude": 0.5,
-      "iou": 96.47,
-      "status": "ALIGNED",
-      "passed": true
-    },
-    {
-      "elementId": "node_4",
-      "name": "Climate",
-      "category": "pill",
-      "priority": "primary",
-      "text": "Climate",
-      "refBounds": {
-        "x": 1984,
-        "y": 324,
-        "width": 115,
-        "height": 54
-      },
-      "refTightBbox": [
-        1985,
-        336,
-        113,
-        27
-      ],
-      "renderedTightBbox": [
-        1980,
-        336,
-        122,
-        27
-      ],
-      "refCentroid": {
-        "x": 2036.54,
-        "y": 351.2
-      },
-      "renderedCentroid": {
-        "x": 2048.61,
-        "y": 350.07
-      },
-      "refInkCount": 201,
-      "renderedInkCount": 56,
-      "dx": -0.5,
-      "dy": 0,
-      "dxDp": -0.25,
-      "dyDp": 0,
-      "dWidth": 9,
-      "dHeight": 0,
-      "shiftMagnitude": 0.5,
-      "iou": 92.62,
-      "status": "ALIGNED",
-      "passed": true
-    },
-    {
-      "elementId": "node_5",
-      "name": "Ideas",
-      "category": "pill",
-      "priority": "primary",
-      "text": "Ideas",
-      "refBounds": {
-        "x": 2163,
-        "y": 324,
-        "width": 78,
-        "height": 54
-      },
-      "refTightBbox": [
-        2165,
-        336,
-        75,
-        27
-      ],
-      "renderedTightBbox": [
-        2164,
-        340,
-        77,
-        20
-      ],
-      "refCentroid": {
-        "x": 2195.16,
-        "y": 352.61
-      },
-      "renderedCentroid": {
-        "x": 2201.39,
-        "y": 350.34
-      },
-      "refInkCount": 89,
-      "renderedInkCount": 38,
-      "dx": 0,
-      "dy": 0.5,
-      "dxDp": 0,
-      "dyDp": 0.25,
-      "dWidth": 2,
-      "dHeight": -7,
-      "shiftMagnitude": 0.5,
-      "iou": 72.64,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_8",
-      "name": "Climate · 9 min read",
-      "category": "text",
-      "priority": "secondary",
-      "text": "Climate · 9 min read",
+      "text": "The overlay sits over whatever you're reading, so its chrome has to stay legible over anything and never compete with the ink. This page collects the directions we explored for that chrome, arranged for reading top to bottom — from the most conventional to the most experimental — rather than in the order they were drawn.",
       "refBounds": {
         "x": 144,
-        "y": 560,
-        "width": 560,
-        "height": 45
+        "y": 423,
+        "width": 1524,
+        "height": 224
       },
       "refTightBbox": [
-        145,
-        570,
-        391,
-        22
+        143,
+        422,
+        1512,
+        226
       ],
       "renderedTightBbox": [
-        145,
-        570,
-        391,
-        20
+        144,
+        422,
+        1511,
+        226
       ],
       "refCentroid": {
-        "x": 358.39,
-        "y": 580.92
+        "x": 828.84,
+        "y": 522.74
       },
       "renderedCentroid": {
-        "x": 339.01,
-        "y": 580.99
+        "x": 827.24,
+        "y": 521.67
       },
-      "refInkCount": 412,
-      "renderedInkCount": 100,
-      "dx": 0,
-      "dy": -1,
-      "dxDp": 0,
-      "dyDp": -0.5,
-      "dWidth": 0,
-      "dHeight": -2,
+      "refInkCount": 81318,
+      "renderedInkCount": 59221,
+      "dx": 1,
+      "dy": 0,
+      "dxDp": 0.5,
+      "dyDp": 0,
+      "dWidth": -1,
+      "dHeight": 0,
       "shiftMagnitude": 1,
-      "iou": 90.91,
+      "iou": 99.93,
       "status": "ALIGNED",
       "passed": true
     },
     {
       "elementId": "node_9",
-      "name": "The quiet economics of planting a city forest",
-      "category": "heading",
+      "name": "Read top to bottom, biggest decision first: the an",
+      "category": "paragraph",
       "priority": "primary",
-      "text": "The quiet economics of planting a city forest",
+      "text": "Read top to bottom, biggest decision first: the and their bolder variants, a that stress-tests them, the interaction explorations, the feature built on them, and the every direction inherits. Within a section, permutations sit side by side — scroll across to compare them; scroll down for the next section.",
       "refBounds": {
         "x": 144,
-        "y": 641,
-        "width": 1920,
-        "height": 255
+        "y": 712,
+        "width": 1524,
+        "height": 184
       },
       "refTightBbox": [
-        145,
-        662,
-        1535,
-        236
+        143,
+        711,
+        1472,
+        183
       ],
       "renderedTightBbox": [
         144,
-        654,
-        1546,
-        252
+        711,
+        1476,
+        182
       ],
       "refCentroid": {
-        "x": 799.75,
-        "y": 744.84
+        "x": 822.18,
+        "y": 786.38
       },
       "renderedCentroid": {
-        "x": 802.87,
-        "y": 740.02
+        "x": 816.25,
+        "y": 785.85
       },
-      "refInkCount": 42040,
-      "renderedInkCount": 53575,
-      "dx": -1,
-      "dy": -8,
-      "dxDp": -0.5,
-      "dyDp": -4,
-      "dWidth": 11,
-      "dHeight": 16,
-      "shiftMagnitude": 8.06,
-      "iou": 92.98,
-      "status": "DRIFTED",
-      "passed": false
-    },
-    {
-      "elementId": "node_10",
-      "name": "For a century the ledger of a growing city was wri",
-      "category": "paragraph",
-      "priority": "primary",
-      "text": "For a century the ledger of a growing city was written in concrete and asphalt, materials that hold the day's heat long after the sun has gone. The new arithmetic is greener, and stranger. A maturing street tree returns far more than its planting cost in cooling, drainage and slowed traffic — a fact the accountants took a decade to trust.",
-      "refBounds": {
-        "x": 144,
-        "y": 964,
-        "width": 984,
-        "height": 392
-      },
-      "refTightBbox": [
-        145,
-        978,
-        965,
-        355
-      ],
-      "renderedTightBbox": [
-        145,
-        986,
-        977,
-        355
-      ],
-      "refCentroid": {
-        "x": 590.64,
-        "y": 1152.64
-      },
-      "renderedCentroid": {
-        "x": 602.43,
-        "y": 1163.9
-      },
-      "refInkCount": 21303,
-      "renderedInkCount": 36362,
-      "dx": 0,
-      "dy": 8,
-      "dxDp": 0,
-      "dyDp": 4,
-      "dWidth": 12,
-      "dHeight": 0,
-      "shiftMagnitude": 8,
-      "iou": 94.44,
-      "status": "DRIFTED",
-      "passed": false
-    },
-    {
-      "elementId": "node_11",
-      "name": "Planners in three coastal cities now treat the can",
-      "category": "paragraph",
-      "priority": "primary",
-      "text": "Planners in three coastal cities now treat the canopy as infrastructure, mapped and budgeted like a bridge. The result is a slower construction, measured in seasons rather than quarters, and a skyline that softens at its edges.",
-      "refBounds": {
-        "x": 144,
-        "y": 1394,
-        "width": 984,
-        "height": 261
-      },
-      "refTightBbox": [
-        145,
-        1409,
-        961,
-        238
-      ],
-      "renderedTightBbox": [
-        145,
-        1417,
-        981,
-        234
-      ],
-      "refCentroid": {
-        "x": 600.18,
-        "y": 1523.89
-      },
-      "renderedCentroid": {
-        "x": 612.59,
-        "y": 1534.17
-      },
-      "refInkCount": 14163,
-      "renderedInkCount": 25185,
-      "dx": 0,
-      "dy": 8,
-      "dxDp": 0,
-      "dyDp": 4,
-      "dWidth": 20,
-      "dHeight": -4,
-      "shiftMagnitude": 8,
-      "iou": 93.17,
-      "status": "DRIFTED",
-      "passed": false
-    },
-    {
-      "elementId": "node_12",
-      "name": "What surprised them was not the shade but the wate",
-      "category": "paragraph",
-      "priority": "primary",
-      "text": "What surprised them was not the shade but the water. A single mature plane can intercept thousands of litres of stormwater a year, water the drains no longer have to carry, and a pilot block dropped four degrees against its neighbours last July.",
-      "refBounds": {
-        "x": 1240,
-        "y": 964,
-        "width": 984,
-        "height": 327
-      },
-      "refTightBbox": [
-        1241,
-        979,
-        965,
-        328
-      ],
-      "renderedTightBbox": [
-        1242,
-        986,
-        981,
-        321
-      ],
-      "refCentroid": {
-        "x": 1692.83,
-        "y": 1118.14
-      },
-      "renderedCentroid": {
-        "x": 1686.87,
-        "y": 1122.87
-      },
-      "refInkCount": 17006,
-      "renderedInkCount": 27747,
-      "dx": 1,
-      "dy": 7,
-      "dxDp": 0.5,
-      "dyDp": 3.5,
-      "dWidth": 16,
-      "dHeight": -7,
-      "shiftMagnitude": 7.07,
-      "iou": 96.11,
-      "status": "DRIFTED",
-      "passed": false
-    },
-    {
-      "elementId": "node_13",
-      "name": "The maintenance crews doubled as the budget line m",
-      "category": "paragraph",
-      "priority": "primary",
-      "text": "The maintenance crews doubled as the budget line moved from parks to public works, and the forest, once an ornament, became a system with a return.",
-      "refBounds": {
-        "x": 1240,
-        "y": 1329,
-        "width": 984,
-        "height": 196
-      },
-      "refTightBbox": [
-        1241,
-        1319,
-        974,
-        190
-      ],
-      "renderedTightBbox": [
-        1242,
-        1319,
-        973,
-        201
-      ],
-      "refCentroid": {
-        "x": 1745.88,
-        "y": 1409.57
-      },
-      "renderedCentroid": {
-        "x": 1713.27,
-        "y": 1421.67
-      },
-      "refInkCount": 11633,
-      "renderedInkCount": 18569,
+      "refInkCount": 66770,
+      "renderedInkCount": 47550,
       "dx": 1,
       "dy": 0,
       "dxDp": 0.5,
       "dyDp": 0,
-      "dWidth": -1,
-      "dHeight": 11,
+      "dWidth": 4,
+      "dHeight": -1,
       "shiftMagnitude": 1,
+      "iou": 99.05,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_10",
+      "name": "Directions",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Directions",
+      "refBounds": {
+        "x": 144,
+        "y": 965,
+        "width": 170,
+        "height": 33
+      },
+      "refTightBbox": [
+        152,
+        985,
+        151,
+        18
+      ],
+      "renderedTightBbox": [
+        152,
+        986,
+        151,
+        17
+      ],
+      "refCentroid": {
+        "x": 226.74,
+        "y": 993.24
+      },
+      "renderedCentroid": {
+        "x": 227.63,
+        "y": 994.15
+      },
+      "refInkCount": 1418,
+      "renderedInkCount": 917,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
       "iou": 94.44,
       "status": "ALIGNED",
       "passed": true
     },
     {
-      "elementId": "node_28",
-      "name": "Card",
+      "elementId": "node_11",
+      "name": "6 · Toolbar band",
       "category": "pill",
       "priority": "primary",
-      "text": "",
+      "text": "6 · Toolbar band",
       "refBounds": {
-        "x": 162,
-        "y": 88,
-        "width": 499,
-        "height": 160
+        "x": 333,
+        "y": 965,
+        "width": 288,
+        "height": 64
       },
       "refTightBbox": [
-        158,
-        86,
-        505,
-        170
+        334,
+        966,
+        286,
+        60
       ],
       "renderedTightBbox": [
-        162,
-        89,
-        499,
-        160
+        334,
+        967,
+        284,
+        59
       ],
       "refCentroid": {
-        "x": 394.88,
-        "y": 186.25
+        "x": 476.12,
+        "y": 995.5
       },
       "renderedCentroid": {
-        "x": 394.2,
-        "y": 168.88
+        "x": 475.52,
+        "y": 996
       },
-      "refInkCount": 5467,
-      "renderedInkCount": 3162,
-      "dx": 1,
-      "dy": -2,
-      "dxDp": 0.5,
-      "dyDp": -1,
-      "dWidth": -6,
-      "dHeight": -10,
-      "shiftMagnitude": 2.24,
-      "iou": 93,
+      "refInkCount": 16036,
+      "renderedInkCount": 15879,
+      "dx": -1,
+      "dy": 0.5,
+      "dxDp": -0.5,
+      "dyDp": 0.25,
+      "dWidth": -2,
+      "dHeight": -1,
+      "shiftMagnitude": 1.12,
+      "iou": 97.65,
       "status": "ALIGNED",
       "passed": true
     },
     {
-      "elementId": "node_22",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_12",
+      "name": "1 · Frosted plate",
+      "category": "pill",
+      "priority": "primary",
+      "text": "1 · Frosted plate",
       "refBounds": {
-        "x": 178,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 641,
+        "y": 965,
+        "width": 304,
+        "height": 64
       },
       "refTightBbox": [
-        220,
-        144,
-        48,
-        50
+        642,
+        966,
+        302,
+        60
       ],
       "renderedTightBbox": [
-        222,
-        145,
-        47,
-        51
+        642,
+        967,
+        299,
+        59
       ],
       "refCentroid": {
-        "x": 241.74,
-        "y": 166.35
+        "x": 792.25,
+        "y": 995.49
       },
       "renderedCentroid": {
-        "x": 242.38,
-        "y": 167.51
+        "x": 790.86,
+        "y": 995.99
       },
-      "refInkCount": 1016,
-      "renderedInkCount": 960,
-      "dx": 1.5,
-      "dy": 1.5,
-      "dxDp": 0.75,
-      "dyDp": 0.75,
-      "dWidth": -1,
-      "dHeight": 1,
-      "shiftMagnitude": 2.12,
-      "iou": 88.64,
-      "status": "LOW_IOU",
-      "passed": false
+      "refInkCount": 17021,
+      "renderedInkCount": 16780,
+      "dx": -1.5,
+      "dy": 0.5,
+      "dxDp": -0.75,
+      "dyDp": 0.25,
+      "dWidth": -3,
+      "dHeight": -1,
+      "shiftMagnitude": 1.58,
+      "iou": 97.36,
+      "status": "ALIGNED",
+      "passed": true
     },
     {
-      "elementId": "node_20",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_13",
+      "name": "3 · Floating slips",
+      "category": "pill",
+      "priority": "primary",
+      "text": "3 · Floating slips",
       "refBounds": {
-        "x": 216,
-        "y": 142,
-        "width": 52,
-        "height": 52
+        "x": 965,
+        "y": 965,
+        "width": 316,
+        "height": 64
       },
       "refTightBbox": [
-        220,
-        144,
-        48,
-        50
+        966,
+        966,
+        314,
+        60
       ],
       "renderedTightBbox": [
-        222,
-        145,
-        47,
-        51
+        965,
+        967,
+        314,
+        59
       ],
       "refCentroid": {
-        "x": 241.74,
-        "y": 166.35
+        "x": 1122.28,
+        "y": 995.49
       },
       "renderedCentroid": {
-        "x": 242.38,
-        "y": 167.51
+        "x": 1121.42,
+        "y": 995.99
       },
-      "refInkCount": 1016,
-      "renderedInkCount": 960,
-      "dx": 1.5,
-      "dy": 1.5,
-      "dxDp": 0.75,
-      "dyDp": 0.75,
-      "dWidth": -1,
-      "dHeight": 1,
-      "shiftMagnitude": 2.12,
-      "iou": 88.64,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_27",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 340,
-        "y": 104,
-        "width": 305,
-        "height": 128
-      },
-      "refTightBbox": [
-        378,
-        152,
-        212,
-        29
-      ],
-      "renderedTightBbox": [
-        376,
-        153,
-        214,
-        30
-      ],
-      "refCentroid": {
-        "x": 463.7,
-        "y": 168.44
-      },
-      "renderedCentroid": {
-        "x": 468.62,
-        "y": 169.42
-      },
-      "refInkCount": 1880,
-      "renderedInkCount": 1823,
+      "refInkCount": 17656,
+      "renderedInkCount": 17675,
       "dx": -1,
-      "dy": 1.5,
+      "dy": 0.5,
       "dxDp": -0.5,
-      "dyDp": 0.75,
-      "dWidth": 2,
-      "dHeight": 1,
-      "shiftMagnitude": 1.8,
-      "iou": 89.51,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -1,
+      "shiftMagnitude": 1.12,
+      "iou": 97.71,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_14",
+      "name": "4 · Loose coins",
+      "category": "pill",
+      "priority": "primary",
+      "text": "4 · Loose coins",
+      "refBounds": {
+        "x": 1301,
+        "y": 965,
+        "width": 274,
+        "height": 64
+      },
+      "refTightBbox": [
+        1302,
+        966,
+        272,
+        60
+      ],
+      "renderedTightBbox": [
+        1303,
+        967,
+        270,
+        59
+      ],
+      "refCentroid": {
+        "x": 1437.07,
+        "y": 995.47
+      },
+      "renderedCentroid": {
+        "x": 1437.46,
+        "y": 995.99
+      },
+      "refInkCount": 15291,
+      "renderedInkCount": 15079,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
+      "dWidth": -2,
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
+      "iou": 97.61,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_16",
+      "name": "Bolder ideas",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Bolder ideas",
+      "refBounds": {
+        "x": 144,
+        "y": 1065,
+        "width": 201,
+        "height": 33
+      },
+      "refTightBbox": [
+        153,
+        1085,
+        181,
+        18
+      ],
+      "renderedTightBbox": [
+        152,
+        1086,
+        182,
+        18
+      ],
+      "refCentroid": {
+        "x": 239.96,
+        "y": 1093.63
+      },
+      "renderedCentroid": {
+        "x": 240.1,
+        "y": 1094.55
+      },
+      "refInkCount": 1666,
+      "renderedInkCount": 1026,
+      "dx": -0.5,
+      "dy": 1,
+      "dxDp": -0.25,
+      "dyDp": 0.5,
+      "dWidth": 1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.12,
+      "iou": 89.01,
       "status": "LOW_IOU",
       "passed": false
+    },
+    {
+      "elementId": "node_17",
+      "name": "2a · Sun bloom",
+      "category": "pill",
+      "priority": "primary",
+      "text": "2a · Sun bloom",
+      "refBounds": {
+        "x": 361,
+        "y": 1065,
+        "width": 264,
+        "height": 64
+      },
+      "refTightBbox": [
+        361,
+        1063,
+        264,
+        66
+      ],
+      "renderedTightBbox": [
+        361,
+        1066,
+        263,
+        61
+      ],
+      "refCentroid": {
+        "x": 492.5,
+        "y": 1095.5
+      },
+      "renderedCentroid": {
+        "x": 491.99,
+        "y": 1096
+      },
+      "refInkCount": 16596,
+      "renderedInkCount": 15306,
+      "dx": -0.5,
+      "dy": 0.5,
+      "dxDp": -0.25,
+      "dyDp": 0.25,
+      "dWidth": -1,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 92.07,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_18",
+      "name": "3c · The dial",
+      "category": "pill",
+      "priority": "primary",
+      "text": "3c · The dial",
+      "refBounds": {
+        "x": 641,
+        "y": 1065,
+        "width": 246,
+        "height": 64
+      },
+      "refTightBbox": [
+        641,
+        1063,
+        246,
+        66
+      ],
+      "renderedTightBbox": [
+        640,
+        1066,
+        249,
+        61
+      ],
+      "refCentroid": {
+        "x": 763.5,
+        "y": 1095.5
+      },
+      "renderedCentroid": {
+        "x": 763.99,
+        "y": 1096
+      },
+      "refInkCount": 15408,
+      "renderedInkCount": 14452,
+      "dx": 0.5,
+      "dy": 0.5,
+      "dxDp": 0.25,
+      "dyDp": 0.25,
+      "dWidth": 3,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 91.39,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_19",
+      "name": "6d · Ledger band",
+      "category": "pill",
+      "priority": "primary",
+      "text": "6d · Ledger band",
+      "refBounds": {
+        "x": 903,
+        "y": 1065,
+        "width": 292,
+        "height": 64
+      },
+      "refTightBbox": [
+        903,
+        1063,
+        292,
+        66
+      ],
+      "renderedTightBbox": [
+        905,
+        1066,
+        292,
+        61
+      ],
+      "refCentroid": {
+        "x": 1048.5,
+        "y": 1095.5
+      },
+      "renderedCentroid": {
+        "x": 1050.49,
+        "y": 1096
+      },
+      "refInkCount": 18444,
+      "renderedInkCount": 17075,
+      "dx": 2,
+      "dy": 0.5,
+      "dxDp": 1,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -5,
+      "shiftMagnitude": 2.06,
+      "iou": 91.21,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_21",
+      "name": "Evaluate",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Evaluate",
+      "refBounds": {
+        "x": 144,
+        "y": 1165,
+        "width": 139,
+        "height": 33
+      },
+      "refTightBbox": [
+        153,
+        1185,
+        119,
+        18
+      ],
+      "renderedTightBbox": [
+        153,
+        1186,
+        120,
+        18
+      ],
+      "refCentroid": {
+        "x": 210.86,
+        "y": 1193.63
+      },
+      "renderedCentroid": {
+        "x": 210.97,
+        "y": 1194.6
+      },
+      "refInkCount": 1023,
+      "renderedInkCount": 648,
+      "dx": 0.5,
+      "dy": 1,
+      "dxDp": 0.25,
+      "dyDp": 0.5,
+      "dWidth": 1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.12,
+      "iou": 88.77,
+      "status": "LOW_IOU",
+      "passed": false
+    },
+    {
+      "elementId": "node_22",
+      "name": "5 · Rotation / landscape check",
+      "category": "pill",
+      "priority": "primary",
+      "text": "5 · Rotation / landscape check",
+      "refBounds": {
+        "x": 303,
+        "y": 1165,
+        "width": 496,
+        "height": 100
+      },
+      "refTightBbox": [
+        304,
+        1166,
+        501,
+        119
+      ],
+      "renderedTightBbox": [
+        304,
+        1167,
+        501,
+        118
+      ],
+      "refCentroid": {
+        "x": 561.15,
+        "y": 1213
+      },
+      "renderedCentroid": {
+        "x": 557.42,
+        "y": 1211.73
+      },
+      "refInkCount": 36230,
+      "renderedInkCount": 34739,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
+      "dWidth": 0,
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
+      "iou": 99.16,
+      "status": "ALIGNED",
+      "passed": true
     },
     {
       "elementId": "node_24",
-      "name": "Field notes",
-      "category": "text",
-      "priority": "secondary",
-      "text": "Field notes",
+      "name": "Beyond the bar",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Beyond the bar",
       "refBounds": {
-        "x": 376,
-        "y": 140,
-        "width": 171,
-        "height": 57
+        "x": 144,
+        "y": 1265,
+        "width": 232,
+        "height": 33
       },
       "refTightBbox": [
-        377,
-        151,
-        170,
-        31
+        153,
+        1285,
+        212,
+        18
       ],
       "renderedTightBbox": [
-        376,
-        153,
-        177,
-        30
+        152,
+        1286,
+        214,
+        18
       ],
       "refCentroid": {
-        "x": 458.53,
-        "y": 168.45
+        "x": 255.25,
+        "y": 1293.25
       },
       "renderedCentroid": {
-        "x": 462.88,
-        "y": 169.35
+        "x": 255.9,
+        "y": 1294.31
       },
-      "refInkCount": 2346,
-      "renderedInkCount": 1906,
-      "dx": 2.5,
-      "dy": 1.5,
-      "dxDp": 1.25,
-      "dyDp": 0.75,
-      "dWidth": 7,
-      "dHeight": -1,
-      "shiftMagnitude": 2.92,
-      "iou": 87.26,
+      "refInkCount": 1824,
+      "renderedInkCount": 1143,
+      "dx": 0,
+      "dy": 1,
+      "dxDp": 0,
+      "dyDp": 0.5,
+      "dWidth": 2,
+      "dHeight": 0,
+      "shiftMagnitude": 1,
+      "iou": 88.68,
       "status": "LOW_IOU",
       "passed": false
     },
     {
       "elementId": "node_25",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 564,
-        "y": 150,
-        "width": 36,
-        "height": 36
-      },
-      "refTightBbox": [
-        540,
-        161,
-        50,
-        19
-      ],
-      "renderedTightBbox": [
-        540,
-        161,
-        50,
-        21
-      ],
-      "refCentroid": {
-        "x": 563.72,
-        "y": 169.13
-      },
-      "renderedCentroid": {
-        "x": 557.77,
-        "y": 170.55
-      },
-      "refInkCount": 148,
-      "renderedInkCount": 244,
-      "dx": 0,
-      "dy": 1,
-      "dxDp": 0,
-      "dyDp": 0.5,
-      "dWidth": 0,
-      "dHeight": 2,
-      "shiftMagnitude": 1,
-      "iou": 90.48,
-      "status": "ALIGNED",
-      "passed": true
-    },
-    {
-      "elementId": "node_50",
-      "name": "Card",
+      "name": "g1 · Gestures",
       "category": "pill",
       "priority": "primary",
-      "text": "",
+      "text": "g1 · Gestures",
       "refBounds": {
-        "x": 700,
-        "y": 88,
-        "width": 1012,
-        "height": 160
+        "x": 393,
+        "y": 1265,
+        "width": 248,
+        "height": 64
       },
       "refTightBbox": [
-        696,
-        86,
-        1019,
-        170
+        393,
+        1263,
+        248,
+        66
       ],
       "renderedTightBbox": [
-        701,
-        89,
-        1012,
-        160
+        393,
+        1266,
+        243,
+        61
       ],
       "refCentroid": {
-        "x": 984.01,
-        "y": 177.7
+        "x": 516.51,
+        "y": 1295.5
       },
       "renderedCentroid": {
-        "x": 936.49,
-        "y": 168.55
+        "x": 513.99,
+        "y": 1295.99
       },
-      "refInkCount": 22573,
-      "renderedInkCount": 17683,
-      "dx": 1.5,
-      "dy": -2,
-      "dxDp": 0.75,
-      "dyDp": -1,
-      "dWidth": -7,
-      "dHeight": -10,
-      "shiftMagnitude": 2.5,
-      "iou": 93.47,
+      "refInkCount": 15554,
+      "renderedInkCount": 14003,
+      "dx": -2.5,
+      "dy": 0.5,
+      "dxDp": -1.25,
+      "dyDp": 0.25,
+      "dWidth": -5,
+      "dHeight": -5,
+      "shiftMagnitude": 2.55,
+      "iou": 90.56,
       "status": "ALIGNED",
       "passed": true
     },
     {
-      "elementId": "node_31",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_26",
+      "name": "g2 · The glass",
+      "category": "pill",
+      "priority": "primary",
+      "text": "g2 · The glass",
       "refBounds": {
-        "x": 716,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 657,
+        "y": 1265,
+        "width": 262,
+        "height": 64
       },
       "refTightBbox": [
-        715,
-        104,
-        129,
-        128
+        657,
+        1263,
+        262,
+        66
       ],
       "renderedTightBbox": [
-        717,
-        105,
-        128,
-        128
+        657,
+        1266,
+        257,
+        61
       ],
       "refCentroid": {
-        "x": 779.13,
-        "y": 167.38
+        "x": 787.5,
+        "y": 1295.5
       },
       "renderedCentroid": {
-        "x": 780.64,
-        "y": 168.38
+        "x": 785.1,
+        "y": 1295.99
       },
-      "refInkCount": 12431,
-      "renderedInkCount": 12128,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": -1,
-      "dHeight": 0,
-      "shiftMagnitude": 1.8,
-      "iou": 96.19,
+      "refInkCount": 16476,
+      "renderedInkCount": 14833,
+      "dx": -2.5,
+      "dy": 0.5,
+      "dxDp": -1.25,
+      "dyDp": 0.25,
+      "dWidth": -5,
+      "dHeight": -5,
+      "shiftMagnitude": 2.55,
+      "iou": 90.66,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_27",
+      "name": "g3 · Ink",
+      "category": "pill",
+      "priority": "primary",
+      "text": "g3 · Ink",
+      "refBounds": {
+        "x": 935,
+        "y": 1265,
+        "width": 172,
+        "height": 64
+      },
+      "refTightBbox": [
+        935,
+        1263,
+        172,
+        66
+      ],
+      "renderedTightBbox": [
+        935,
+        1266,
+        170,
+        61
+      ],
+      "refCentroid": {
+        "x": 1020.49,
+        "y": 1295.5
+      },
+      "renderedCentroid": {
+        "x": 1019.53,
+        "y": 1295.98
+      },
+      "refInkCount": 10536,
+      "renderedInkCount": 9577,
+      "dx": -1,
+      "dy": 0.5,
+      "dxDp": -0.5,
+      "dyDp": 0.25,
+      "dWidth": -2,
+      "dHeight": -5,
+      "shiftMagnitude": 1.12,
+      "iou": 91.35,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_28",
+      "name": "g4 · Selection",
+      "category": "pill",
+      "priority": "primary",
+      "text": "g4 · Selection",
+      "refBounds": {
+        "x": 1123,
+        "y": 1265,
+        "width": 262,
+        "height": 64
+      },
+      "refTightBbox": [
+        1123,
+        1263,
+        262,
+        66
+      ],
+      "renderedTightBbox": [
+        1126,
+        1266,
+        257,
+        61
+      ],
+      "refCentroid": {
+        "x": 1253.5,
+        "y": 1295.5
+      },
+      "renderedCentroid": {
+        "x": 1253.99,
+        "y": 1295.99
+      },
+      "refInkCount": 16469,
+      "renderedInkCount": 14865,
+      "dx": 0.5,
+      "dy": 0.5,
+      "dxDp": 0.25,
+      "dyDp": 0.25,
+      "dWidth": -5,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 90.66,
       "status": "ALIGNED",
       "passed": true
     },
     {
       "elementId": "node_29",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
+      "name": "g5 · Pages",
+      "category": "pill",
+      "priority": "primary",
+      "text": "g5 · Pages",
       "refBounds": {
-        "x": 754,
-        "y": 142,
-        "width": 52,
-        "height": 52
+        "x": 1401,
+        "y": 1265,
+        "width": 204,
+        "height": 64
       },
       "refTightBbox": [
-        730,
-        126,
-        100,
-        84
+        1401,
+        1263,
+        204,
+        66
       ],
       "renderedTightBbox": [
-        730,
-        126,
-        100,
-        84
+        1404,
+        1266,
+        199,
+        61
       ],
       "refCentroid": {
-        "x": 779.73,
-        "y": 167.31
+        "x": 1502.5,
+        "y": 1295.5
       },
       "renderedCentroid": {
-        "x": 779.68,
-        "y": 167.22
+        "x": 1503.09,
+        "y": 1296
       },
-      "refInkCount": 7754,
-      "renderedInkCount": 7603,
-      "dx": 0,
-      "dy": 0,
-      "dxDp": 0,
-      "dyDp": 0,
-      "dWidth": 0,
-      "dHeight": 0,
-      "shiftMagnitude": 0,
-      "iou": 100,
+      "refInkCount": 12651,
+      "renderedInkCount": 11318,
+      "dx": 0.5,
+      "dy": 0.5,
+      "dxDp": 0.25,
+      "dyDp": 0.25,
+      "dWidth": -5,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 90.16,
       "status": "ALIGNED",
       "passed": true
     },
     {
-      "elementId": "node_34",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_30",
+      "name": "g6 · First stroke",
+      "category": "pill",
+      "priority": "primary",
+      "text": "g6 · First stroke",
       "refBounds": {
-        "x": 848,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 1621,
+        "y": 1265,
+        "width": 306,
+        "height": 64
       },
       "refTightBbox": [
-        822,
-        120,
-        114,
-        96
+        1621,
+        1263,
+        306,
+        66
       ],
       "renderedTightBbox": [
-        822,
-        120,
-        112,
-        98
+        1624,
+        1266,
+        301,
+        61
       ],
       "refCentroid": {
-        "x": 858.88,
-        "y": 167.79
+        "x": 1773.5,
+        "y": 1295.5
       },
       "renderedCentroid": {
-        "x": 856.14,
-        "y": 169.47
+        "x": 1774.08,
+        "y": 1296
       },
-      "refInkCount": 2307,
-      "renderedInkCount": 2330,
-      "dx": -1,
-      "dy": 1,
-      "dxDp": -0.5,
-      "dyDp": 0.5,
-      "dWidth": -2,
-      "dHeight": 2,
-      "shiftMagnitude": 1.41,
-      "iou": 96.28,
+      "refInkCount": 19380,
+      "renderedInkCount": 17517,
+      "dx": 0.5,
+      "dy": 0.5,
+      "dxDp": 0.25,
+      "dyDp": 0.25,
+      "dWidth": -5,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 90.91,
       "status": "ALIGNED",
       "passed": true
     },
     {
       "elementId": "node_32",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
+      "name": "Mildliner",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Mildliner",
       "refBounds": {
-        "x": 886,
-        "y": 142,
-        "width": 52,
-        "height": 52
+        "x": 144,
+        "y": 1365,
+        "width": 155,
+        "height": 33
       },
       "refTightBbox": [
-        887,
-        144,
-        49,
-        48
+        152,
+        1385,
+        135,
+        18
       ],
       "renderedTightBbox": [
-        889,
-        148,
-        45,
-        44
+        152,
+        1386,
+        136,
+        17
       ],
       "refCentroid": {
-        "x": 910.02,
-        "y": 168.3
+        "x": 219.84,
+        "y": 1393.58
       },
       "renderedCentroid": {
-        "x": 909.3,
-        "y": 171.53
+        "x": 220.89,
+        "y": 1394.03
       },
-      "refInkCount": 823,
-      "renderedInkCount": 750,
-      "dx": 0,
-      "dy": 2,
-      "dxDp": 0,
-      "dyDp": 1,
-      "dWidth": -4,
-      "dHeight": -4,
-      "shiftMagnitude": 2,
-      "iou": 84.18,
+      "refInkCount": 1264,
+      "renderedInkCount": 871,
+      "dx": 0.5,
+      "dy": 0.5,
+      "dxDp": 0.25,
+      "dyDp": 0.25,
+      "dWidth": 1,
+      "dHeight": -1,
+      "shiftMagnitude": 0.71,
+      "iou": 93.79,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_33",
+      "name": "m · The mildliner",
+      "category": "pill",
+      "priority": "primary",
+      "text": "m · The mildliner",
+      "refBounds": {
+        "x": 315,
+        "y": 1365,
+        "width": 308,
+        "height": 64
+      },
+      "refTightBbox": [
+        315,
+        1363,
+        308,
+        66
+      ],
+      "renderedTightBbox": [
+        315,
+        1366,
+        307,
+        61
+      ],
+      "refCentroid": {
+        "x": 468.5,
+        "y": 1395.5
+      },
+      "renderedCentroid": {
+        "x": 467.99,
+        "y": 1396
+      },
+      "refInkCount": 19500,
+      "renderedInkCount": 17990,
+      "dx": -0.5,
+      "dy": 0.5,
+      "dxDp": -0.25,
+      "dyDp": 0.25,
+      "dWidth": -1,
+      "dHeight": -5,
+      "shiftMagnitude": 0.71,
+      "iou": 92.12,
+      "status": "ALIGNED",
+      "passed": true
+    },
+    {
+      "elementId": "node_35",
+      "name": "Shared system",
+      "category": "pill",
+      "priority": "primary",
+      "text": "Shared system",
+      "refBounds": {
+        "x": 144,
+        "y": 1465,
+        "width": 216,
+        "height": 33
+      },
+      "refTightBbox": [
+        152,
+        1485,
+        198,
+        18
+      ],
+      "renderedTightBbox": [
+        151,
+        1486,
+        199,
+        18
+      ],
+      "refCentroid": {
+        "x": 249.19,
+        "y": 1493.26
+      },
+      "renderedCentroid": {
+        "x": 248.63,
+        "y": 1494.23
+      },
+      "refInkCount": 1795,
+      "renderedInkCount": 1125,
+      "dx": -0.5,
+      "dy": 1,
+      "dxDp": -0.25,
+      "dyDp": 0.5,
+      "dWidth": 1,
+      "dHeight": 0,
+      "shiftMagnitude": 1.12,
+      "iou": 89.05,
       "status": "LOW_IOU",
       "passed": false
     },
     {
       "elementId": "node_36",
-      "name": "IconButton",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "name": "presets",
+      "category": "pill",
+      "priority": "primary",
+      "text": "presets",
       "refBounds": {
-        "x": 980,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 379,
+        "y": 1465,
+        "width": 154,
+        "height": 64
       },
       "refTightBbox": [
-        1023,
-        157,
-        41,
-        23
+        380,
+        1466,
+        152,
+        60
       ],
       "renderedTightBbox": [
-        1025,
-        158,
-        40,
-        23
+        380,
+        1467,
+        153,
+        59
       ],
       "refCentroid": {
-        "x": 1043,
-        "y": 168.05
+        "x": 455.44,
+        "y": 1495.46
       },
       "renderedCentroid": {
-        "x": 1044.5,
-        "y": 168.98
+        "x": 456.05,
+        "y": 1495.98
       },
-      "refInkCount": 671,
-      "renderedInkCount": 578,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": -1,
-      "dHeight": 0,
-      "shiftMagnitude": 1.8,
-      "iou": 85.37,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_35",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1018,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1023,
-        157,
-        41,
-        23
-      ],
-      "renderedTightBbox": [
-        1025,
-        158,
-        40,
-        23
-      ],
-      "refCentroid": {
-        "x": 1043,
-        "y": 168.05
-      },
-      "renderedCentroid": {
-        "x": 1044.5,
-        "y": 168.98
-      },
-      "refInkCount": 671,
-      "renderedInkCount": 578,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": -1,
-      "dHeight": 0,
-      "shiftMagnitude": 1.8,
-      "iou": 85.37,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_39",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1112,
-        "y": 104,
-        "width": 128,
-        "height": 128
-      },
-      "refTightBbox": [
-        1149,
-        142,
-        51,
-        47
-      ],
-      "renderedTightBbox": [
-        1150,
-        142,
-        51,
-        48
-      ],
-      "refCentroid": {
-        "x": 1174.43,
-        "y": 168.61
-      },
-      "renderedCentroid": {
-        "x": 1176.3,
-        "y": 169.72
-      },
-      "refInkCount": 1023,
-      "renderedInkCount": 950,
-      "dx": 1,
+      "refInkCount": 8230,
+      "renderedInkCount": 8219,
+      "dx": 0.5,
       "dy": 0.5,
-      "dxDp": 0.5,
+      "dxDp": 0.25,
       "dyDp": 0.25,
-      "dWidth": 0,
-      "dHeight": 1,
-      "shiftMagnitude": 1.12,
-      "iou": 94.19,
+      "dWidth": 1,
+      "dHeight": -1,
+      "shiftMagnitude": 0.71,
+      "iou": 97.7,
       "status": "ALIGNED",
       "passed": true
     },
     {
       "elementId": "node_37",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1150,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1149,
-        142,
-        51,
-        47
-      ],
-      "renderedTightBbox": [
-        1150,
-        142,
-        51,
-        48
-      ],
-      "refCentroid": {
-        "x": 1174.43,
-        "y": 168.61
-      },
-      "renderedCentroid": {
-        "x": 1176.3,
-        "y": 169.72
-      },
-      "refInkCount": 1023,
-      "renderedInkCount": 950,
-      "dx": 1,
-      "dy": 0.5,
-      "dxDp": 0.5,
-      "dyDp": 0.25,
-      "dWidth": 0,
-      "dHeight": 1,
-      "shiftMagnitude": 1.12,
-      "iou": 94.19,
-      "status": "ALIGNED",
-      "passed": true
-    },
-    {
-      "elementId": "node_42",
-      "name": "IconButton",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1274,
-        "y": 104,
-        "width": 128,
-        "height": 128
-      },
-      "refTightBbox": [
-        1317,
-        147,
-        41,
-        39
-      ],
-      "renderedTightBbox": [
-        1319,
-        149,
-        40,
-        38
-      ],
-      "refCentroid": {
-        "x": 1335.08,
-        "y": 165.12
-      },
-      "renderedCentroid": {
-        "x": 1336.62,
-        "y": 165.8
-      },
-      "refInkCount": 592,
-      "renderedInkCount": 507,
-      "dx": 1.5,
-      "dy": 1.5,
-      "dxDp": 0.75,
-      "dyDp": 0.75,
-      "dWidth": -1,
-      "dHeight": -1,
-      "shiftMagnitude": 2.12,
-      "iou": 86.1,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_41",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1312,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1317,
-        147,
-        41,
-        39
-      ],
-      "renderedTightBbox": [
-        1319,
-        149,
-        40,
-        38
-      ],
-      "refCentroid": {
-        "x": 1335.08,
-        "y": 165.12
-      },
-      "renderedCentroid": {
-        "x": 1336.62,
-        "y": 165.8
-      },
-      "refInkCount": 592,
-      "renderedInkCount": 507,
-      "dx": 1.5,
-      "dy": 1.5,
-      "dxDp": 0.75,
-      "dyDp": 0.75,
-      "dWidth": -1,
-      "dHeight": -1,
-      "shiftMagnitude": 2.12,
-      "iou": 86.1,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_45",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1406,
-        "y": 104,
-        "width": 128,
-        "height": 128
-      },
-      "refTightBbox": [
-        1443,
-        142,
-        51,
-        52
-      ],
-      "renderedTightBbox": [
-        1446,
-        144,
-        49,
-        50
-      ],
-      "refCentroid": {
-        "x": 1463.33,
-        "y": 167.11
-      },
-      "renderedCentroid": {
-        "x": 1465.36,
-        "y": 168.24
-      },
-      "refInkCount": 1039,
-      "renderedInkCount": 930,
-      "dx": 2,
-      "dy": 1,
-      "dxDp": 1,
-      "dyDp": 0.5,
-      "dWidth": -2,
-      "dHeight": -2,
-      "shiftMagnitude": 2.24,
-      "iou": 88.82,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_43",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1444,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1443,
-        142,
-        51,
-        52
-      ],
-      "renderedTightBbox": [
-        1446,
-        144,
-        49,
-        50
-      ],
-      "refCentroid": {
-        "x": 1463.33,
-        "y": 167.11
-      },
-      "renderedCentroid": {
-        "x": 1465.36,
-        "y": 168.24
-      },
-      "refInkCount": 1039,
-      "renderedInkCount": 930,
-      "dx": 2,
-      "dy": 1,
-      "dxDp": 1,
-      "dyDp": 0.5,
-      "dWidth": -2,
-      "dHeight": -2,
-      "shiftMagnitude": 2.24,
-      "iou": 88.82,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_49",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1568,
-        "y": 104,
-        "width": 128,
-        "height": 128
-      },
-      "refTightBbox": [
-        1609,
-        145,
-        45,
-        46
-      ],
-      "renderedTightBbox": [
-        1610,
-        146,
-        46,
-        46
-      ],
-      "refCentroid": {
-        "x": 1628.09,
-        "y": 167.49
-      },
-      "renderedCentroid": {
-        "x": 1629.03,
-        "y": 168.5
-      },
-      "refInkCount": 1199,
-      "renderedInkCount": 1142,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": 1,
-      "dHeight": 0,
-      "shiftMagnitude": 1.8,
-      "iou": 89.76,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_47",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1606,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1609,
-        145,
-        45,
-        46
-      ],
-      "renderedTightBbox": [
-        1610,
-        146,
-        46,
-        46
-      ],
-      "refCentroid": {
-        "x": 1628.09,
-        "y": 167.49
-      },
-      "renderedCentroid": {
-        "x": 1629.03,
-        "y": 168.5
-      },
-      "refInkCount": 1199,
-      "renderedInkCount": 1142,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": 1,
-      "dHeight": 0,
-      "shiftMagnitude": 1.8,
-      "iou": 89.76,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_61",
-      "name": "Card",
+      "name": "cards",
       "category": "pill",
       "priority": "primary",
-      "text": "",
+      "text": "cards",
       "refBounds": {
-        "x": 1752,
-        "y": 88,
-        "width": 454,
-        "height": 160
+        "x": 553,
+        "y": 1465,
+        "width": 124,
+        "height": 64
       },
       "refTightBbox": [
-        1748,
-        86,
-        461,
-        170
+        554,
+        1466,
+        122,
+        60
       ],
       "renderedTightBbox": [
-        1753,
-        89,
-        454,
-        160
+        553,
+        1467,
+        124,
+        59
       ],
       "refCentroid": {
-        "x": 1955.11,
-        "y": 195.48
+        "x": 614.46,
+        "y": 1495.47
       },
       "renderedCentroid": {
-        "x": 1939.9,
-        "y": 166.91
+        "x": 614.56,
+        "y": 1495.99
       },
-      "refInkCount": 3129,
-      "renderedInkCount": 1546,
-      "dx": 1.5,
-      "dy": -2,
-      "dxDp": 0.75,
-      "dyDp": -1,
-      "dWidth": -7,
-      "dHeight": -10,
-      "shiftMagnitude": 2.5,
-      "iou": 92.69,
+      "refInkCount": 6451,
+      "renderedInkCount": 6525,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
+      "dWidth": 2,
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
+      "iou": 96.77,
       "status": "ALIGNED",
       "passed": true
     },
     {
-      "elementId": "node_53",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_38",
+      "name": "snip",
+      "category": "pill",
+      "priority": "primary",
+      "text": "snip",
       "refBounds": {
-        "x": 1768,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 697,
+        "y": 1465,
+        "width": 110,
+        "height": 64
       },
       "refTightBbox": [
-        1809,
-        146,
-        45,
-        36
+        698,
+        1466,
+        108,
+        60
       ],
       "renderedTightBbox": [
-        1810,
-        148,
-        45,
-        35
+        697,
+        1467,
+        110,
+        59
       ],
       "refCentroid": {
-        "x": 1832.22,
-        "y": 164.22
+        "x": 751.47,
+        "y": 1495.46
       },
       "renderedCentroid": {
-        "x": 1833.6,
-        "y": 165.15
+        "x": 751.49,
+        "y": 1495.99
       },
-      "refInkCount": 619,
-      "renderedInkCount": 541,
-      "dx": 1,
-      "dy": 1.5,
-      "dxDp": 0.5,
-      "dyDp": 0.75,
-      "dWidth": 0,
-      "dHeight": -1,
-      "shiftMagnitude": 1.8,
-      "iou": 88.05,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_51",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1806,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        1809,
-        146,
-        45,
-        36
-      ],
-      "renderedTightBbox": [
-        1810,
-        148,
-        45,
-        35
-      ],
-      "refCentroid": {
-        "x": 1832.22,
-        "y": 164.22
-      },
-      "renderedCentroid": {
-        "x": 1833.6,
-        "y": 165.15
-      },
-      "refInkCount": 619,
-      "renderedInkCount": 541,
-      "dx": 1,
-      "dy": 1.5,
-      "dxDp": 0.5,
-      "dyDp": 0.75,
-      "dWidth": 0,
-      "dHeight": -1,
-      "shiftMagnitude": 1.8,
-      "iou": 88.05,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_56",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 1900,
-        "y": 104,
-        "width": 128,
-        "height": 128
-      },
-      "refTightBbox": [
-        1942,
-        149,
-        41,
-        34
-      ],
-      "renderedTightBbox": [
-        1943,
-        148,
-        43,
-        38
-      ],
-      "refCentroid": {
-        "x": 1962.3,
-        "y": 166.09
-      },
-      "renderedCentroid": {
-        "x": 1963.64,
-        "y": 167.92
-      },
-      "refInkCount": 255,
-      "renderedInkCount": 533,
-      "dx": 2,
-      "dy": 1,
-      "dxDp": 1,
-      "dyDp": 0.5,
+      "refInkCount": 5642,
+      "renderedInkCount": 5719,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
       "dWidth": 2,
-      "dHeight": 4,
-      "shiftMagnitude": 2.24,
-      "iou": 81.53,
-      "status": "LOW_IOU",
-      "passed": false
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
+      "iou": 96.57,
+      "status": "ALIGNED",
+      "passed": true
     },
     {
-      "elementId": "node_54",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_39",
+      "name": "small",
+      "category": "pill",
+      "priority": "primary",
+      "text": "small",
       "refBounds": {
-        "x": 1938,
-        "y": 142,
-        "width": 52,
-        "height": 52
+        "x": 827,
+        "y": 1465,
+        "width": 124,
+        "height": 64
       },
       "refTightBbox": [
-        1942,
-        149,
-        41,
-        34
+        828,
+        1466,
+        122,
+        60
       ],
       "renderedTightBbox": [
-        1943,
-        148,
-        43,
-        38
+        827,
+        1467,
+        124,
+        59
       ],
       "refCentroid": {
-        "x": 1962.3,
-        "y": 166.09
+        "x": 888.49,
+        "y": 1495.48
       },
       "renderedCentroid": {
-        "x": 1963.64,
-        "y": 167.92
+        "x": 888.46,
+        "y": 1495.99
       },
-      "refInkCount": 255,
-      "renderedInkCount": 533,
-      "dx": 2,
-      "dy": 1,
-      "dxDp": 1,
-      "dyDp": 0.5,
+      "refInkCount": 6471,
+      "renderedInkCount": 6511,
+      "dx": 0,
+      "dy": 0.5,
+      "dxDp": 0,
+      "dyDp": 0.25,
       "dWidth": 2,
-      "dHeight": 4,
-      "shiftMagnitude": 2.24,
-      "iou": 81.53,
-      "status": "LOW_IOU",
-      "passed": false
+      "dHeight": -1,
+      "shiftMagnitude": 0.5,
+      "iou": 96.77,
+      "status": "ALIGNED",
+      "passed": true
     },
     {
-      "elementId": "node_60",
-      "name": "Button",
-      "category": "button",
-      "priority": "secondary",
-      "text": "",
+      "elementId": "node_40",
+      "name": "onboard",
+      "category": "pill",
+      "priority": "primary",
+      "text": "onboard",
       "refBounds": {
-        "x": 2062,
-        "y": 104,
-        "width": 128,
-        "height": 128
+        "x": 971,
+        "y": 1465,
+        "width": 154,
+        "height": 64
       },
       "refTightBbox": [
-        2101,
-        162,
-        49,
-        12
+        972,
+        1466,
+        152,
+        60
       ],
       "renderedTightBbox": [
-        2103,
-        164,
-        48,
-        10
+        971,
+        1467,
+        153,
+        59
       ],
       "refCentroid": {
-        "x": 2125,
-        "y": 167.5
+        "x": 1047.65,
+        "y": 1495.47
       },
       "renderedCentroid": {
-        "x": 2126.5,
-        "y": 168.5
+        "x": 1047.03,
+        "y": 1495.99
       },
-      "refInkCount": 246,
-      "renderedInkCount": 236,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": -1,
-      "dHeight": -2,
-      "shiftMagnitude": 1.8,
-      "iou": 78.6,
-      "status": "LOW_IOU",
-      "passed": false
-    },
-    {
-      "elementId": "node_58",
-      "name": "Icon",
-      "category": "icon",
-      "priority": "secondary",
-      "text": "",
-      "refBounds": {
-        "x": 2100,
-        "y": 142,
-        "width": 52,
-        "height": 52
-      },
-      "refTightBbox": [
-        2101,
-        162,
-        49,
-        12
-      ],
-      "renderedTightBbox": [
-        2103,
-        164,
-        48,
-        10
-      ],
-      "refCentroid": {
-        "x": 2125,
-        "y": 167.5
-      },
-      "renderedCentroid": {
-        "x": 2126.5,
-        "y": 168.5
-      },
-      "refInkCount": 246,
-      "renderedInkCount": 236,
-      "dx": 1.5,
-      "dy": 1,
-      "dxDp": 0.75,
-      "dyDp": 0.5,
-      "dWidth": -1,
-      "dHeight": -2,
-      "shiftMagnitude": 1.8,
-      "iou": 78.6,
-      "status": "LOW_IOU",
-      "passed": false
+      "refInkCount": 8209,
+      "renderedInkCount": 8219,
+      "dx": -0.5,
+      "dy": 0.5,
+      "dxDp": -0.25,
+      "dyDp": 0.25,
+      "dWidth": 1,
+      "dHeight": -1,
+      "shiftMagnitude": 0.71,
+      "iou": 97.7,
+      "status": "ALIGNED",
+      "passed": true
     }
   ],
-  "elementsEvaluatedCount": 39
+  "elementsEvaluatedCount": 30
 }

@@ -72,7 +72,7 @@ fun E34fDesignScreen(
             ) {
                 Text(
                     text = "A",
-                    modifier = Modifier.offset(x = (-2.5).dp, y = (-1.0).dp),
+                    modifier = Modifier.offset(x = 0.5.dp, y = (-1.0).dp),
                     fontFamily = AbcArizonaFlareHeadline,
                     fontSize = 74.5.sp,
                     lineHeight = 77.52.sp,
