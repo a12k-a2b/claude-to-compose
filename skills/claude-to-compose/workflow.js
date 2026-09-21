@@ -281,6 +281,8 @@ class ClaudeToComposeWorkflow {
 
     const verificationResult = {
       iteration,
+      vectorLintSuccess: true,
+      vectorViolations: [],
       buildSuccess: false,
       testSuccess: false,
       pixelSimilarity: 100.0,
@@ -290,6 +292,64 @@ class ClaudeToComposeWorkflow {
       hasVeto: false,
       passed: false
     };
+
+    // -------------------------------------------------------------------------
+    // Stage 0: Pre-flight Sub-Glyph Vector Completeness Linter Gate (M4)
+    // -------------------------------------------------------------------------
+    if (!this.options.skipVectorLint) {
+      this.log('▶ [Stage 0/5] Executing Pre-flight Vector Completeness Linter...');
+      let VectorLinter = null;
+      try {
+        VectorLinter = require(path.join(this.projectRoot, 'verification', 'vector_linter')).VectorLinter;
+      } catch (_) {
+        try {
+          VectorLinter = require('../../verification/vector_linter').VectorLinter;
+        } catch (e) {
+          VectorLinter = null;
+        }
+      }
+
+      if (VectorLinter && this.artifacts && this.artifacts.specPath && fs.existsSync(this.artifacts.specPath)) {
+        try {
+          const linter = new VectorLinter({
+            projectRoot: this.projectRoot,
+            androidDir: this.options.androidDir,
+            specPath: this.artifacts.specPath,
+            outputDir: this.options.outputDir,
+            maxCentroidDrift: this.options.maxCentroidDrift !== undefined ? this.options.maxCentroidDrift : 1.0,
+            minBboxIoU: this.options.minBboxIoU !== undefined ? this.options.minBboxIoU : 90.0,
+            debug: this.options.debug
+          });
+
+          const lintResult = await linter.lint();
+          verificationResult.vectorLintSuccess = lintResult.passed;
+          verificationResult.vectorViolations = lintResult.violations || [];
+
+          if (!lintResult.passed) {
+            this.logError(`[VECTOR VETO] Pre-flight vector verification failed with ${lintResult.violations.length} violation(s):`);
+            lintResult.violations.forEach((v, i) => {
+              this.logError(`  ${i + 1}. [${v.iconName}] ${v.message}`);
+            });
+            verificationResult.hasVeto = true;
+            verificationResult.passed = false;
+
+            this.artifacts.scores = verificationResult;
+            this.generateVerificationReport(verificationResult);
+
+            throw new Error(`VectorCompletenessVetoError: Vector linter vetoed compilation. ${lintResult.violations[0].message}`);
+          }
+
+          this.log(`✓ Pre-flight Vector Completeness Linter passed (${lintResult.totalVectorsEvaluated} vectors verified).`);
+        } catch (lintErr) {
+          if (lintErr.message.includes('VectorCompletenessVetoError')) {
+            throw lintErr;
+          }
+          this.log(`[WARN] Vector linter warning: ${lintErr.message}`);
+        }
+      } else {
+        this.log('[INFO] VectorLinter skipped: specPath not found or VectorLinter unavailable.');
+      }
+    }
 
     // 1. Gradle Compilation Check
     if (!this.options.skipGradle) {

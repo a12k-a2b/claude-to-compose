@@ -65,6 +65,48 @@ class VerificationPipeline {
       gateAction: 'TRIGGER_REFINEMENT'
     };
 
+    // Stage 0: Pre-flight Sub-Glyph Vector Completeness Linter Gate
+    if (!this.options.skipVectorLint) {
+      console.log('▶ [Stage 0/5] Executing Pre-flight Vector Completeness Linter Gate...');
+      try {
+        const { VectorLinter } = require('./vector_linter');
+        if (this.specPath && fs.existsSync(this.specPath)) {
+          const linter = new VectorLinter({
+            projectRoot: this.projectRoot,
+            androidDir: this.androidDir,
+            specPath: this.specPath,
+            outputDir: this.outputDir,
+            maxCentroidDrift: this.options.maxCentroidDrift !== undefined ? this.options.maxCentroidDrift : 1.0,
+            minBboxIoU: this.options.minBboxIoU !== undefined ? this.options.minBboxIoU : 90.0,
+            debug: this.options.debug
+          });
+
+          const vectorLintResult = await linter.lint();
+          pipelineResult.stages.vectorLinter = vectorLintResult;
+
+          if (!vectorLintResult.passed) {
+            console.error(`✗ Vector completeness linter failed: ${vectorLintResult.violations.length} violation(s) detected.`);
+            vectorLintResult.violations.forEach((v, i) => {
+              console.error(`  ${i + 1}. [${v.iconName}] ${v.message}`);
+            });
+
+            if (this.options.vetoCompilation !== false) {
+              pipelineResult.verdict = 'FAILED';
+              pipelineResult.gateAction = 'TRIGGER_REFINEMENT';
+              return this.concludePipeline(pipelineResult);
+            }
+          } else {
+            console.log(`✓ Vector completeness linter passed across ${vectorLintResult.totalVectorsEvaluated} vector(s).`);
+          }
+        } else {
+          pipelineResult.stages.vectorLinter = { success: true, skipped: true, passed: true };
+        }
+      } catch (err) {
+        console.warn(`! Vector completeness linter error: ${err.message}`);
+        pipelineResult.stages.vectorLinter = { success: false, error: err.message, passed: false };
+      }
+    }
+
     // Stage 1 & 2: Programmatic Build & Unit Test
     const runner = new BuildRunner({
       projectRoot: this.projectRoot,
@@ -300,14 +342,25 @@ class VerificationPipeline {
       }
     }
 
+    // VETO 5: Sub-Glyph Vector Completeness & Centroid Drift
+    if (pipelineResult.stages.vectorLinter && !pipelineResult.stages.vectorLinter.passed && !pipelineResult.stages.vectorLinter.skipped) {
+      const violations = pipelineResult.stages.vectorLinter.violations || [];
+      violations.forEach(v => {
+        deceptionViolations.push(
+          `Vector Completeness Veto [${v.iconName}]: ${v.message}`
+        );
+      });
+    }
+
     const antiDeceptionPassed = deceptionViolations.length === 0;
 
+    const vectorSuccess = !pipelineResult.stages.vectorLinter || pipelineResult.stages.vectorLinter.passed !== false;
     const diffSuccess =
       pipelineResult.stages.diff?.success !== false &&
       antiDeceptionPassed &&
       (!diffMetrics.pixelSimilarityPercentage || diffMetrics.pixelSimilarityPercentage >= minSimilarity);
 
-    const overallPassed = buildSuccess && auditSuccess && diffSuccess;
+    const overallPassed = buildSuccess && auditSuccess && diffSuccess && vectorSuccess;
     pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';
     pipelineResult.gateAction = overallPassed ? 'PROCEED_PUBLISH' : 'TRIGGER_REFINEMENT';
     pipelineResult.antiDeceptionPassed = antiDeceptionPassed;

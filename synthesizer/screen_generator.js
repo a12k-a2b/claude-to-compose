@@ -10,31 +10,123 @@ const { MotionGenerator } = require('./motion_generator');
 const { VectorGenerator } = require('./vector_generator');
 
 /**
+ * Resolves the appropriate Compose Color tint for an Icon call.
+ * - Emits Color.Unspecified for multi-colored vectors to prevent clobbering.
+ * - Emits Sol:OS neutral tokens (Os900, Os400, Os300, Color.White) for contextual currentColor.
+ * - Falls back to LocalContentColor.current (never hardcoded purple primary).
+ * @param {Object} node
+ * @param {Object} parentContext
+ * @param {Object} vectorData
+ * @returns {string} Kotlin tint expression
+ */
+function resolveContextualTint(node, parentContext, vectorData) {
+  // 1. Multi-color vectors MUST emit Color.Unspecified to prevent global tint clobbering
+  if (vectorData) {
+    const colorAnalysis = VectorGenerator.analyzeVectorColors(vectorData);
+    if (colorAnalysis.isMultiColor || vectorData.isMultiColor) {
+      return 'Color.Unspecified';
+    }
+  }
+
+  // 2. Inverted containers (dark buttons, dark pills) use White
+  if (parentContext?.isDarkContainer || parentContext?.containerType === 'Button') {
+    return 'Color.White';
+  }
+
+  // 3. Check contextual color token
+  const rawColor = (node?.style?.color || parentContext?.textColor || vectorData?.contextualColor || '').toLowerCase().trim();
+
+  if (['#1a1a1a', '#141413', '#111827', '#000000', 'rgb(26, 26, 26)', 'rgb(20, 20, 19)'].includes(rawColor)) {
+    return 'Os900';
+  }
+  if (['#535353', '#4d4c48', '#64748b', 'rgb(83, 83, 83)'].includes(rawColor)) {
+    return 'Os400';
+  }
+  if (['#858585', '#7d7a73', '#94a3b8', 'rgb(133, 133, 133)'].includes(rawColor)) {
+    return 'Os300';
+  }
+  if (['#cccccc', '#cbd5e1', 'rgb(204, 204, 204)'].includes(rawColor)) {
+    return 'Os200';
+  }
+  if (['#ffffff', 'rgb(255, 255, 255)'].includes(rawColor)) {
+    return 'Color.White';
+  }
+  if (rawColor === '#ff5200' || rawColor === '#6c6c6d') {
+    return 'SolOsOrange';
+  }
+  if (rawColor === '#f59e0b' || rawColor === '#9d9d9e') {
+    return 'SolOsBrandAmber';
+  }
+  if (rawColor === '#eab308' || rawColor === '#cecece') {
+    return 'SolOsBrandYellow';
+  }
+
+  // 4. Default to Compose standard content color inheritance
+  return 'LocalContentColor.current';
+}
+
+/**
  * Resolves the appropriate ClaudeIcons.<IconName> property for a given node.
+ * Inspects explicit imageVector, candidate attributes, multi-alias vectorMap,
+ * non-generic semantic names, and sequential vector fallbacks.
  * @param {Object} targetNode
  * @param {Object} iconContext
- * @returns {string} e.g. "ClaudeIcons.Icon2Icon"
+ * @returns {string} e.g. "ClaudeIcons.FilePlusIcon"
  */
 function resolveIconVector(targetNode, iconContext) {
-  if (!iconContext || !iconContext.vectorList || iconContext.vectorList.length === 0) {
-    return 'ClaudeIcons.Icon1Icon';
+  // 1. Explicit imageVector property
+  if (targetNode?.imageVector) {
+    const iv = String(targetNode.imageVector).trim();
+    return iv.startsWith('ClaudeIcons.') ? iv : `ClaudeIcons.${iv}`;
   }
-  if (targetNode?.vectorId && iconContext.vectorMap.has(targetNode.vectorId)) {
-    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.vectorId)}`;
+
+  // 2. Ordered candidate names from node metadata
+  const candidates = [
+    targetNode?.vectorId,
+    targetNode?.semanticName,
+    targetNode?.iconName,
+    targetNode?.vectorName,
+    targetNode?.name,
+    targetNode?.attributes?.['data-icon'],
+    targetNode?.attributes?.['data-lucide'],
+    targetNode?.attributes?.['data-feather'],
+    targetNode?.attributes?.['aria-label'],
+    targetNode?.id
+  ].filter(c => typeof c === 'string' && c.trim().length > 0);
+
+  // 3. Match against iconContext.vectorMap (exact or normalized)
+  if (iconContext?.vectorMap) {
+    for (const cand of candidates) {
+      if (iconContext.vectorMap.has(cand)) {
+        return `ClaudeIcons.${iconContext.vectorMap.get(cand)}`;
+      }
+      const norm = VectorGenerator.normalizeIconName(cand);
+      if (iconContext.vectorMap.has(norm)) {
+        return `ClaudeIcons.${iconContext.vectorMap.get(norm)}`;
+      }
+    }
   }
-  if (targetNode?.vectorName && iconContext.vectorMap.has(targetNode.vectorName)) {
-    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.vectorName)}`;
+
+  // 4. Autonomous semantic name normalization if not in vectorMap
+  for (const cand of candidates) {
+    const norm = VectorGenerator.normalizeIconName(cand);
+    // If it's a genuine semantic name (not a generic fallback like Icon1Icon)
+    if (!/^Icon\d+Icon$/i.test(norm)) {
+      const safeProp = /^[0-9]/.test(norm) ? `\`${norm}\`` : norm;
+      return `ClaudeIcons.${safeProp}`;
+    }
   }
-  if (targetNode?.name && iconContext.vectorMap.has(targetNode.name)) {
-    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.name)}`;
-  }
-  if (targetNode?.id && iconContext.vectorMap.has(targetNode.id)) {
-    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.id)}`;
-  }
-  if (iconContext.currentIndex < iconContext.vectorList.length) {
+
+  // 5. Sequential fallback through unconsumed spec vectors
+  if (iconContext?.vectorList?.length > 0 && iconContext.currentIndex < iconContext.vectorList.length) {
     const prop = iconContext.vectorList[iconContext.currentIndex].propName;
     iconContext.currentIndex++;
     return `ClaudeIcons.${prop}`;
+  }
+
+  // 6. Universal baseline fallback (if vectorList has at least 1, use first, else Icon1Icon)
+  if (iconContext?.vectorList?.length > 0) {
+    return `ClaudeIcons.${iconContext.vectorList[0].propName}`;
   }
   return 'ClaudeIcons.Icon1Icon';
 }
@@ -307,7 +399,9 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   if (type === 'IconButton') {
     const iconTarget = (children.length > 0 && (children[0].componentType === 'Icon' || children[0].tag === 'svg')) ? children[0] : node;
     const iconVector = resolveIconVector(iconTarget, iconContext);
-    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ${iconVector}, contentDescription = null, tint = MaterialTheme.colorScheme.primary)\n${indent}}\n`;
+    const targetVecData = iconTarget.vectorData || (iconContext?.vectorMapData?.get(iconTarget.vectorId || iconTarget.id || iconTarget.vectorName || iconTarget.name));
+    const tintExpr = resolveContextualTint(iconTarget, parentContext, targetVecData);
+    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ${iconVector}, contentDescription = null, tint = ${tintExpr})\n${indent}}\n`;
   }
 
   // 4. Card Component
@@ -367,7 +461,9 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   // 9. Icon / SVG Component
   if (type === 'Icon' || node.tag === 'svg') {
     const iconVector = resolveIconVector(node, iconContext);
-    return `${indent}Icon(\n${indent}    imageVector = ${iconVector},\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = MaterialTheme.colorScheme.primary\n${indent})\n`;
+    const targetVecData = node.vectorData || (iconContext?.vectorMapData?.get(node.vectorId || node.id || node.vectorName || node.name));
+    const tintExpr = resolveContextualTint(node, parentContext, targetVecData);
+    return `${indent}Icon(\n${indent}    imageVector = ${iconVector},\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = ${tintExpr}\n${indent})\n`;
   }
 
   // 10. Switch
@@ -478,7 +574,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
  * Generates ClaudeDesignScreen.kt
  */
 function generateScreenFile(spec, packageName) {
-  const root = spec ? spec.hierarchy : null;
+  const root = spec ? (spec.hierarchy || spec.root) : null;
   if (!root || !root.children || root.children.length === 0) {
     // Empty hierarchy boundary handling (T2_B11_01)
     return `package ${packageName}.screen
@@ -541,29 +637,49 @@ fun ClaudeDesignScreen(
   // Build icon context from spec.vectors for dynamic icon binding
   const vectorList = [];
   const vectorMap = new Map();
+  const vectorMapData = new Map();
   const generatedNames = new Set();
+  const geometryFingerprintToProp = new Map();
   const safeVectors = (spec?.vectors || []).filter(v => v && typeof v === 'object');
 
   for (let idx = 0; idx < safeVectors.length; idx++) {
     const vec = safeVectors[idx];
-    let baseName = VectorGenerator.toPascalCase(vec.name || `Icon_${idx + 1}`);
-    if (!baseName.endsWith('Icon')) baseName += 'Icon';
+    const fingerprint = VectorGenerator.computeVectorFingerprint(vec);
+    let propName;
 
-    let propName = baseName;
-    let counter = 1;
-    while (generatedNames.has(propName)) {
-      propName = `${baseName}_${++counter}`;
+    if (fingerprint && geometryFingerprintToProp.has(fingerprint)) {
+      propName = geometryFingerprintToProp.get(fingerprint);
+    } else {
+      let baseName = VectorGenerator.normalizeIconName(vec.name, idx + 1);
+      propName = baseName;
+      let counter = 1;
+      while (generatedNames.has(propName)) {
+        propName = `${baseName}_${++counter}`;
+      }
+      generatedNames.add(propName);
+      if (fingerprint) {
+        geometryFingerprintToProp.set(fingerprint, propName);
+      }
     }
-    generatedNames.add(propName);
     const safeProp = /^[0-9]/.test(propName) ? `\`${propName}\`` : propName;
 
-    vectorList.push({ id: vec.id, name: vec.name, propName: safeProp });
-    if (vec.id) vectorMap.set(vec.id, safeProp);
-    if (vec.name) vectorMap.set(vec.name, safeProp);
+    vectorList.push({ id: vec.id, name: vec.name, propName: safeProp, vectorData: vec });
+    if (vec.id) {
+      vectorMap.set(vec.id, safeProp);
+      vectorMapData.set(vec.id, vec);
+    }
+    if (vec.name) {
+      vectorMap.set(vec.name, safeProp);
+      vectorMap.set(VectorGenerator.normalizeIconName(vec.name, idx + 1), safeProp);
+      vectorMap.set(VectorGenerator.toPascalCase(vec.name), safeProp);
+      vectorMapData.set(vec.name, vec);
+    }
+    vectorMap.set(safeProp, safeProp);
+    vectorMap.set(propName, safeProp);
     vectorMap.set(`index_${idx}`, safeProp);
   }
 
-  const iconContext = { vectorList, vectorMap, currentIndex: 0 };
+  const iconContext = { vectorList, vectorMap, vectorMapData, currentIndex: 0 };
 
   const contentCode = translateNode(root, '            ', stateMap, {
     inRow: false,
@@ -623,6 +739,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -803,5 +920,7 @@ module.exports = {
   isRowLayout,
   buildContainerModifier,
   translateNode,
-  extractInteractiveStates
+  extractInteractiveStates,
+  resolveIconVector,
+  resolveContextualTint
 };

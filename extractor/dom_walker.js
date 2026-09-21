@@ -269,24 +269,198 @@ async function walkDOM(frame, options = {}) {
         }
       }
 
+      function multiplyAffineMatrices(m1, m2) {
+        return [
+          m1[0] * m2[0] + m1[2] * m2[1],
+          m1[1] * m2[0] + m1[3] * m2[1],
+          m1[0] * m2[2] + m1[2] * m2[3],
+          m1[1] * m2[2] + m1[3] * m2[3],
+          m1[0] * m2[4] + m1[2] * m2[5] + m1[4],
+          m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
+        ];
+      }
+
+      function isIdentityMatrix(m) {
+        if (!m) return true;
+        return Math.abs(m[0] - 1) < 1e-9 &&
+               Math.abs(m[1]) < 1e-9 &&
+               Math.abs(m[2]) < 1e-9 &&
+               Math.abs(m[3] - 1) < 1e-9 &&
+               Math.abs(m[4]) < 1e-9 &&
+               Math.abs(m[5]) < 1e-9;
+      }
+
+      function formatMatrixString(m) {
+        const round = v => {
+          const r = Math.round(v * 1000000) / 1000000;
+          return Number.isInteger(r) ? String(r) : String(r).replace(/(\.\d*?[1-9])0+$/, '$1');
+        };
+        return `matrix(${round(m[0])} ${round(m[1])} ${round(m[2])} ${round(m[3])} ${round(m[4])} ${round(m[5])})`;
+      }
+
+      function parseTransformToMatrix(transformStr) {
+        if (!transformStr || typeof transformStr !== 'string') return [1, 0, 0, 1, 0, 0];
+        const regex = /([a-zA-Z]+)\s*\(([^)]*)\)/g;
+        let curr = [1, 0, 0, 1, 0, 0];
+        let match;
+        while ((match = regex.exec(transformStr)) !== null) {
+          const name = match[1].toLowerCase();
+          const args = match[2].trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+          let step = [1, 0, 0, 1, 0, 0];
+          if (name === 'matrix' && args.length >= 6) {
+            step = [args[0], args[1], args[2], args[3], args[4], args[5]];
+          } else if (name === 'translate') {
+            const tx = args[0] || 0;
+            const ty = args[1] !== undefined ? args[1] : 0;
+            step = [1, 0, 0, 1, tx, ty];
+          } else if (name === 'scale') {
+            const sx = args[0] !== undefined ? args[0] : 1;
+            const sy = args[1] !== undefined ? args[1] : sx;
+            step = [sx, 0, 0, sy, 0, 0];
+          } else if (name === 'rotate') {
+            const deg = args[0] || 0;
+            const cx = args[1] !== undefined ? args[1] : 0;
+            const cy = args[2] !== undefined ? args[2] : 0;
+            const rad = deg * Math.PI / 180;
+            let cos = Math.cos(rad);
+            let sin = Math.sin(rad);
+            if (Math.abs(cos) < 1e-12) cos = 0;
+            if (Math.abs(sin) < 1e-12) sin = 0;
+            const e = (cx !== 0 || cy !== 0) ? (cx - cx * cos + cy * sin) : 0;
+            const f = (cx !== 0 || cy !== 0) ? (cy - cx * sin - cy * cos) : 0;
+            step = [cos, sin, -sin, cos, e, f];
+          } else if (name === 'skewx') {
+            const deg = args[0] || 0;
+            step = [1, 0, Math.tan(deg * Math.PI / 180), 1, 0, 0];
+          } else if (name === 'skewy') {
+            const deg = args[0] || 0;
+            step = [1, Math.tan(deg * Math.PI / 180), 0, 1, 0, 0];
+          }
+          curr = multiplyAffineMatrices(curr, step);
+        }
+        return curr;
+      }
+
+      function decomposeMatrix(m) {
+        if (!m || isIdentityMatrix(m)) {
+          return {
+            translationX: 0, translationY: 0,
+            scaleX: 1, scaleY: 1,
+            rotate: 0, rotation: 0, pivotX: 0, pivotY: 0,
+            hasSkew: false
+          };
+        }
+        const [a, b, c, d, e, f] = m;
+        const det = a * d - b * c;
+        const scaleX = Math.round(Math.hypot(a, b) * 1000) / 1000;
+        const scaleY = scaleX !== 0 ? Math.round((det / scaleX) * 1000) / 1000 : Math.round(Math.hypot(c, d) * 1000) / 1000;
+        const rad = Math.atan2(b, a);
+        const deg = Math.round((rad * 180 / Math.PI) * 1000) / 1000;
+        const hasSkew = Math.abs(a * c + b * d) > 1e-4;
+        return {
+          translationX: Math.round(e * 1000) / 1000,
+          translationY: Math.round(f * 1000) / 1000,
+          scaleX,
+          scaleY,
+          rotate: deg,
+          rotation: deg,
+          pivotX: 0,
+          pivotY: 0,
+          hasSkew
+        };
+      }
+
       const paths = [];
-      function parseNode(node, inherited = {}) {
+      const rootGroup = {
+        type: 'group',
+        name: 'root',
+        children: [],
+        paths: [],
+        groups: []
+      };
+      rootGroup.elements = rootGroup.children;
+
+      function parseNode(node, inherited = {}, currentGroup = rootGroup) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
         const nodeTag = node.tagName.toLowerCase();
+        if (nodeTag === 'defs' || nodeTag === 'clippath' || nodeTag === 'mask') return;
+
         const nodeStyle = window.getComputedStyle(node);
         let fill = nodeStyle.fill !== 'none' ? (parseColor(nodeStyle.fill).hex || nodeStyle.fill) : undefined;
         let stroke = nodeStyle.stroke !== 'none' ? (parseColor(nodeStyle.stroke).hex || nodeStyle.stroke) : undefined;
         const strokeWidth = nodeStyle.strokeWidth && nodeStyle.strokeWidth !== '0px' ? parseFloat(nodeStyle.strokeWidth) : undefined;
 
-        if (fill === 'currentColor') fill = parseColor(nodeStyle.color || style.color).hex;
-        if (stroke === 'currentColor') stroke = parseColor(nodeStyle.color || style.color).hex;
+        const rawFillAttr = node.getAttribute('fill');
+        const rawStrokeAttr = node.getAttribute('stroke');
+        const isFillCurrentColor = rawFillAttr === 'currentColor' || nodeStyle.fill === 'currentColor';
+        const isStrokeCurrentColor = rawStrokeAttr === 'currentColor' || nodeStyle.stroke === 'currentColor';
+        const isCurrentColor = isFillCurrentColor || isStrokeCurrentColor;
 
+        if (isFillCurrentColor) {
+          fill = parseColor(nodeStyle.color || style.color).hex || nodeStyle.color || style.color;
+        }
+        if (isStrokeCurrentColor) {
+          stroke = parseColor(nodeStyle.color || style.color).hex || nodeStyle.color || style.color;
+        }
+
+        const parentMatrix = inherited.transformMatrix || [1, 0, 0, 1, 0, 0];
         const rawTransform = node.getAttribute('transform');
-        const transform = rawTransform || inherited.transform;
+        let currentMatrix = parentMatrix;
+        let localMatrix = [1, 0, 0, 1, 0, 0];
+
+        if (rawTransform && rawTransform.trim()) {
+          const parsed = parseTransformToMatrix(rawTransform);
+          if (parsed) {
+            localMatrix = parsed;
+            currentMatrix = multiplyAffineMatrices(parentMatrix, parsed);
+          }
+        }
+
+        const isIdentity = isIdentityMatrix(currentMatrix);
+        let transform;
+        if (isIdentity) {
+          transform = undefined;
+        } else if (isIdentityMatrix(parentMatrix) && rawTransform) {
+          transform = rawTransform.trim();
+        } else {
+          transform = formatMatrixString(currentMatrix);
+        }
+
         const rawFillRule = node.getAttribute('fill-rule') || node.getAttribute('clip-rule') || nodeStyle.fillRule;
         const fillRule = (rawFillRule && rawFillRule !== 'none') ? rawFillRule : inherited.fillRule;
 
-        const nextInherited = { transform, fillRule };
+        const nextInherited = { transformMatrix: currentMatrix, fillRule };
+
+        if (nodeTag === 'g') {
+          const decomp = decomposeMatrix(localMatrix);
+          const groupNode = {
+            type: 'group',
+            name: node.getAttribute('id') || node.getAttribute('name') || undefined,
+            transform: rawTransform ? rawTransform.trim() : undefined,
+            transformMatrix: localMatrix,
+            translationX: decomp.translationX,
+            translationY: decomp.translationY,
+            scaleX: decomp.scaleX,
+            scaleY: decomp.scaleY,
+            rotate: decomp.rotate,
+            rotation: decomp.rotate,
+            pivotX: decomp.pivotX,
+            pivotY: decomp.pivotY,
+            hasSkew: decomp.hasSkew,
+            fillRule: fillRule ? fillRule.toLowerCase() : undefined,
+            children: [],
+            paths: [],
+            groups: []
+          };
+          groupNode.elements = groupNode.children;
+          currentGroup.children.push(groupNode);
+          currentGroup.groups.push(groupNode);
+
+          for (const child of node.children) {
+            parseNode(child, nextInherited, groupNode);
+          }
+          return;
+        }
 
         let d = '';
         if (nodeTag === 'path') {
@@ -295,13 +469,17 @@ async function walkDOM(frame, options = {}) {
           const cx = parseFloat(node.getAttribute('cx')) || 0;
           const cy = parseFloat(node.getAttribute('cy')) || 0;
           const r = parseFloat(node.getAttribute('r')) || 0;
-          d = `M ${cx - r},${cy} a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 Z`;
+          if (r > 0) {
+            d = `M ${cx - r},${cy} a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 -${r * 2},0 Z`;
+          }
         } else if (nodeTag === 'ellipse') {
           const cx = parseFloat(node.getAttribute('cx')) || 0;
           const cy = parseFloat(node.getAttribute('cy')) || 0;
           const rx = parseFloat(node.getAttribute('rx')) || 0;
           const ry = parseFloat(node.getAttribute('ry')) || 0;
-          d = `M ${cx - rx},${cy} a ${rx},${ry} 0 1,0 ${rx * 2},0 a ${rx},${ry} 0 1,0 -${rx * 2},0 Z`;
+          if (rx > 0 && ry > 0) {
+            d = `M ${cx - rx},${cy} a ${rx},${ry} 0 1,0 ${rx * 2},0 a ${rx},${ry} 0 1,0 -${rx * 2},0 Z`;
+          }
         } else if (nodeTag === 'line') {
           const x1 = parseFloat(node.getAttribute('x1')) || 0;
           const y1 = parseFloat(node.getAttribute('y1')) || 0;
@@ -309,10 +487,13 @@ async function walkDOM(frame, options = {}) {
           const y2 = parseFloat(node.getAttribute('y2')) || 0;
           d = `M ${x1},${y1} L ${x2},${y2}`;
         } else if (nodeTag === 'polygon' || nodeTag === 'polyline') {
-          const pts = (node.getAttribute('points') || '').trim().split(/[\s,]+/).map(Number);
-          if (pts.length >= 2) {
+          const rawPts = node.getAttribute('points') || '';
+          const matches = rawPts.match(/[+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?/g);
+          const pts = matches ? matches.map(Number).filter(Number.isFinite) : [];
+          const pairCount = Math.floor(pts.length / 2);
+          if (pairCount >= 1) {
             d = `M ${pts[0]},${pts[1]}`;
-            for (let i = 2; i < pts.length; i += 2) d += ` L ${pts[i]},${pts[i + 1]}`;
+            for (let i = 1; i < pairCount; i++) d += ` L ${pts[i * 2]},${pts[i * 2 + 1]}`;
             if (nodeTag === 'polygon') d += ' Z';
           }
         } else if (nodeTag === 'rect') {
@@ -320,12 +501,17 @@ async function walkDOM(frame, options = {}) {
           const y = parseFloat(node.getAttribute('y')) || 0;
           const rw = parseFloat(node.getAttribute('width')) || 0;
           const rh = parseFloat(node.getAttribute('height')) || 0;
-          let rx = parseFloat(node.getAttribute('rx')) || 0;
-          let ry = parseFloat(node.getAttribute('ry')) || 0;
-          if (!rx && !ry) d = `M ${x},${y} h ${rw} v ${rh} h -${rw} Z`;
-          else {
-            rx = rx || ry; ry = ry || rx;
-            d = `M ${x + rx},${y} h ${rw - 2 * rx} a ${rx},${ry} 0 0 1 ${rx},${ry} v ${rh - 2 * ry} a ${rx},${ry} 0 0 1 -${rx},${ry} h -${rw - 2 * rx} a ${rx},${ry} 0 0 1 -${rx},-${ry} v -${rh - 2 * ry} a ${rx},${ry} 0 0 1 ${rx},-${ry} Z`;
+          if (rw > 0 && rh > 0) {
+            let rx = Math.max(0, parseFloat(node.getAttribute('rx')) || 0);
+            let ry = Math.max(0, parseFloat(node.getAttribute('ry')) || 0);
+            if (!rx && ry) rx = ry;
+            if (!ry && rx) ry = rx;
+            rx = Math.min(rx, rw / 2);
+            ry = Math.min(ry, rh / 2);
+            if (rx === 0 || ry === 0) d = `M ${x},${y} h ${rw} v ${rh} h -${rw} Z`;
+            else {
+              d = `M ${x + rx},${y} h ${rw - 2 * rx} a ${rx},${ry} 0 0 1 ${rx},${ry} v ${rh - 2 * ry} a ${rx},${ry} 0 0 1 -${rx},${ry} h -${rw - 2 * rx} a ${rx},${ry} 0 0 1 -${rx},-${ry} v -${rh - 2 * ry} a ${rx},${ry} 0 0 1 ${rx},-${ry} Z`;
+            }
           }
         }
 
@@ -336,26 +522,211 @@ async function walkDOM(frame, options = {}) {
             stroke: stroke && stroke !== 'none' ? stroke : undefined,
             strokeWidth,
             transform: transform || undefined,
-            fillRule: fillRule ? fillRule.toLowerCase() : undefined
+            transformMatrix: isIdentity ? undefined : currentMatrix,
+            fillRule: fillRule ? fillRule.toLowerCase() : undefined,
+            isCurrentColor: isCurrentColor || undefined,
+            currentColorType: isFillCurrentColor && isStrokeCurrentColor ? 'both' : (isFillCurrentColor ? 'fill' : (isStrokeCurrentColor ? 'stroke' : undefined))
           });
+
+          const isLocalIdentity = isIdentityMatrix(localMatrix);
+          const childPathNode = {
+            type: 'path',
+            id: node.getAttribute('id') || undefined,
+            d,
+            fill: fill && fill !== 'none' ? fill : undefined,
+            stroke: stroke && stroke !== 'none' ? stroke : undefined,
+            strokeWidth,
+            transform: isLocalIdentity ? undefined : (rawTransform ? rawTransform.trim() : formatMatrixString(localMatrix)),
+            transformMatrix: isLocalIdentity ? undefined : localMatrix,
+            fillRule: fillRule ? fillRule.toLowerCase() : undefined,
+            isCurrentColor: isCurrentColor || undefined,
+            currentColorType: isFillCurrentColor && isStrokeCurrentColor ? 'both' : (isFillCurrentColor ? 'fill' : (isStrokeCurrentColor ? 'stroke' : undefined))
+          };
+          currentGroup.children.push(childPathNode);
+          currentGroup.paths.push(childPathNode);
         }
 
         for (const child of node.children) {
-          parseNode(child, nextInherited);
+          parseNode(child, nextInherited, currentGroup);
         }
       }
 
-      for (const child of svgEl.children) {
-        parseNode(child, {});
+      const rootSvgStyle = window.getComputedStyle(svgEl);
+      let rootFillRule = svgEl.getAttribute('fill-rule') || svgEl.getAttribute('clip-rule') || (svgEl.style && svgEl.style.fillRule) || rootSvgStyle.fillRule;
+      if (rootFillRule && rootFillRule !== 'none') {
+        rootFillRule = rootFillRule.toLowerCase();
+      } else {
+        rootFillRule = undefined;
       }
+
+      for (const child of svgEl.children) {
+        parseNode(child, { fillRule: rootFillRule }, rootGroup);
+      }
+
+      const hasCurrentColor = paths.some(p => p.isCurrentColor);
+      const explicitColors = new Set();
+      const ctxColor = (style.color || '').toLowerCase().trim();
+      for (const p of paths) {
+        const isFillCC = p.currentColorType === 'fill' || p.currentColorType === 'both' || (p.isCurrentColor && !p.currentColorType && (p.fill === 'currentColor' || (ctxColor && p.fill && p.fill.toLowerCase() === ctxColor)));
+        const isStrokeCC = p.currentColorType === 'stroke' || p.currentColorType === 'both' || (p.isCurrentColor && !p.currentColorType && (p.stroke === 'currentColor' || (ctxColor && p.stroke && p.stroke.toLowerCase() === ctxColor)));
+
+        if (!isFillCC && p.fill && p.fill !== 'none' && p.fill.toLowerCase() !== 'currentcolor') {
+          explicitColors.add(p.fill.toLowerCase());
+        }
+        if (!isStrokeCC && p.stroke && p.stroke !== 'none' && p.stroke.toLowerCase() !== 'currentcolor') {
+          explicitColors.add(p.stroke.toLowerCase());
+        }
+      }
+      const hasGradient = /<(linearGradient|radialGradient|stop)\b/i.test(svgEl.outerHTML);
+      const isMultiColor = hasGradient || explicitColors.size >= 2 || (explicitColors.size >= 1 && hasCurrentColor && !explicitColors.has('#000000') && !explicitColors.has('#1a1a1a'));
 
       return {
         rawSvg: svgEl.outerHTML,
         viewBox,
         width: Math.round(w * 10) / 10,
         height: Math.round(h * 10) / 10,
-        paths
+        paths,
+        groups: rootGroup.groups,
+        children: rootGroup.children,
+        elements: rootGroup.children,
+        hasCurrentColor,
+        isCurrentColor: hasCurrentColor,
+        contextualColor: style.color || '#1A1A1A',
+        isMultiColor,
+        isMonochrome: !isMultiColor
       };
+    }
+
+    // --- Helper: Semantic icon name extractor (7-tier hierarchy) ---
+    function extractSemanticIconName(el, fallbackCounter = 1) {
+      if (!el) return `icon_${fallbackCounter}`;
+
+      // Tier 1: Dedicated data attributes
+      const dataIcon = (typeof el.getAttribute === 'function') ? (
+        el.getAttribute('data-icon') ||
+        el.getAttribute('data-lucide') ||
+        el.getAttribute('data-feather') ||
+        el.getAttribute('data-name')
+      ) : null;
+      if (dataIcon && dataIcon.trim()) return dataIcon.trim();
+
+      const testId = (typeof el.getAttribute === 'function') ? (
+        el.getAttribute('data-testid') || el.getAttribute('data-component')
+      ) : null;
+      if (testId && testId.trim()) {
+        const cleaned = testId.trim().replace(/^(?:icon|btn|button)[-_]+/i, '').replace(/[-_]+(?:icon|btn|button)$/i, '');
+        if (cleaned) return cleaned;
+      }
+
+      // Tier 2: CSS classes on the SVG
+      const rawClass = (typeof el.getAttribute === 'function' ? el.getAttribute('class') : null) || el.className || '';
+      const classStr = typeof rawClass === 'string' ? rawClass : (rawClass && rawClass.baseVal ? rawClass.baseVal : '');
+      if (classStr) {
+        const lucideMatch = classStr.match(/\blucide-([a-z0-9-]+)\b/i);
+        if (lucideMatch && lucideMatch[1]) return lucideMatch[1];
+
+        const featherMatch = classStr.match(/\bfeather-([a-z0-9-]+)\b/i);
+        if (featherMatch && featherMatch[1]) return featherMatch[1];
+
+        const tablerMatch = classStr.match(/\btabler-icon-([a-z0-9-]+)\b/i);
+        if (tablerMatch && tablerMatch[1]) return tablerMatch[1];
+
+        const heroMatch = classStr.match(/\bheroicon-(?:outline-|solid-|mini-)?([a-z0-9-]+)\b/i);
+        if (heroMatch && heroMatch[1]) return heroMatch[1];
+
+        const faMatch = classStr.match(/\bfa[srlbd]?-([a-z0-9-]+)\b/i);
+        if (faMatch && faMatch[1] && !/^(?:solid|regular|brands|light|fw|lg|\d+x)$/i.test(faMatch[1])) {
+          return faMatch[1];
+        }
+
+        const riMatch = classStr.match(/\bri-([a-z0-9-]+?)(?:-line|-fill)?\b/i);
+        if (riMatch && riMatch[1]) return riMatch[1];
+
+        const iconPrefixMatch = classStr.match(/\bicon[-_]([a-z0-9_-]+)\b/i);
+        if (iconPrefixMatch && iconPrefixMatch[1]) return iconPrefixMatch[1];
+
+        const iconSuffixMatch = classStr.match(/\b([a-z0-9_-]+)[-_]icon\b/i);
+        if (iconSuffixMatch && iconSuffixMatch[1] && !/^(?:svg|app)$/i.test(iconSuffixMatch[1])) {
+          return iconSuffixMatch[1];
+        }
+      }
+
+      // Tier 3: SVG child metadata (<title>, <desc>)
+      try {
+        if (typeof el.querySelector === 'function') {
+          const titleEl = el.querySelector('title');
+          if (titleEl && titleEl.textContent && titleEl.textContent.trim()) return titleEl.textContent.trim();
+          const descEl = el.querySelector('desc');
+          if (descEl && descEl.textContent && descEl.textContent.trim()) return descEl.textContent.trim();
+        }
+      } catch (_) {}
+
+      // Tier 4: Direct SVG accessibility
+      const ariaLabel = (typeof el.getAttribute === 'function') ? (
+        el.getAttribute('aria-label') || el.getAttribute('aria-roledescription')
+      ) : null;
+      if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+
+      // Tier 5: Enclosing interactive container (<button>, <a>, [role="button"])
+      try {
+        const btn = (typeof el.closest === 'function') ? el.closest('button, a, [role="button"]') : null;
+        if (btn) {
+          const btnAria = btn.getAttribute('aria-label') || btn.getAttribute('title');
+          if (btnAria && btnAria.trim()) return btnAria.trim();
+
+          const btnTestId = btn.getAttribute('data-testid');
+          if (btnTestId && btnTestId.trim()) {
+            const cleaned = btnTestId.trim().replace(/^(?:btn|button)[-_]+/i, '').replace(/[-_]+(?:btn|button)$/i, '');
+            if (cleaned) return cleaned;
+          }
+
+          let btnText = '';
+          if (btn.childNodes && btn.childNodes.length > 0) {
+            for (const cn of btn.childNodes) {
+              if (cn.nodeType === 3 || cn.nodeType === (typeof Node !== 'undefined' ? Node.TEXT_NODE : 3)) {
+                const t = (cn.textContent || '').trim();
+                if (t) btnText += (btnText ? ' ' : '') + t;
+              }
+            }
+          }
+          if (!btnText && (btn.innerText || btn.textContent)) {
+            btnText = (btn.innerText || btn.textContent || '').trim();
+          }
+          if (btnText && btnText.length <= 30 && !/^\d+$/.test(btnText)) {
+            return btnText;
+          }
+
+          const btnClass = btn.getAttribute('class') || '';
+          if (typeof btnClass === 'string') {
+            const btnClassMatch = btnClass.match(/\bbtn-([a-z0-9_-]+)\b/i);
+            if (btnClassMatch && btnClassMatch[1] && !/^(?:icon|primary|secondary|default|outline|danger|sm|md|lg|xs)$/i.test(btnClassMatch[1])) {
+              return btnClassMatch[1];
+            }
+          }
+        }
+      } catch (_) {}
+
+      // Tier 6: Enclosing container wrapper class (e.g. brand-logo, search-wrapper)
+      if (el.parentElement && typeof el.parentElement.getAttribute === 'function') {
+        const parentClass = el.parentElement.getAttribute('class') || '';
+        if (typeof parentClass === 'string') {
+          const wrapperMatch = parentClass.match(/\b([a-z0-9_-]+)-(?:wrapper|box|container)\b/i);
+          if (wrapperMatch && wrapperMatch[1] && !/^(?:icon|svg|metric|btn|button)$/i.test(wrapperMatch[1])) {
+            return wrapperMatch[1];
+          }
+          const brandMatch = parentClass.match(/\b(brand-logo|app-logo|company-logo)\b/i);
+          if (brandMatch) return brandMatch[1];
+        }
+      }
+
+      // Tier 7: Filtered SVG ID
+      const elId = (typeof el.getAttribute === 'function') ? el.getAttribute('id') : null;
+      if (elId && elId.trim() && !/^(?:layer|svg|vector|icon|clip|path|shape|g)[-_]?[0-9]*$/i.test(elId.trim()) && !/^[0-9a-f]{8}-[0-9a-f]{4}/i.test(elId.trim())) {
+        return elId.trim();
+      }
+
+      // Tier 8: Fallback
+      return `icon_${fallbackCounter}`;
     }
 
     // --- Main Recursive Walker Function ---
@@ -486,7 +857,9 @@ async function walkDOM(frame, options = {}) {
       if (isSvg) {
         svgCounter++;
         nodeObj.vectorId = `vector_${svgCounter}`;
-        nodeObj.vectorName = el.getAttribute('id') || el.getAttribute('data-icon') || el.getAttribute('aria-label') || `icon_${svgCounter}`;
+        const semanticName = extractSemanticIconName(el, svgCounter);
+        nodeObj.vectorName = semanticName;
+        nodeObj.semanticName = semanticName;
         nodeObj.vectorData = extractInlineSvgData(el);
       }
 
@@ -630,4 +1003,140 @@ function classifyComponent(el = {}, style = {}, rect = {}, children = [], direct
   return children.length > 0 ? 'Container' : 'Box';
 }
 
-module.exports = { walkDOM, classifyComponent };
+/**
+ * Standalone semantic icon name extractor for unit testing and DOM element inspection.
+ */
+function extractSemanticIconName(el, fallbackCounter = 1) {
+  if (!el) return `icon_${fallbackCounter}`;
+
+  // Tier 1: Dedicated data attributes
+  const getAttr = (name) => {
+    if (typeof el.getAttribute === 'function') return el.getAttribute(name);
+    if (el.attributes && el.attributes[name] !== undefined) return el.attributes[name];
+    return el[name];
+  };
+
+  const dataIcon = getAttr('data-icon') ||
+                   getAttr('data-lucide') ||
+                   getAttr('data-feather') ||
+                   getAttr('data-name');
+  if (dataIcon && typeof dataIcon === 'string' && dataIcon.trim()) return dataIcon.trim();
+
+  const testId = getAttr('data-testid') || getAttr('data-component');
+  if (testId && typeof testId === 'string' && testId.trim()) {
+    const cleaned = testId.trim().replace(/^(?:icon|btn|button)[-_]+/i, '').replace(/[-_]+(?:icon|btn|button)$/i, '');
+    if (cleaned) return cleaned;
+  }
+
+  // Tier 2: CSS classes on the SVG
+  const rawClass = getAttr('class') || el.className || '';
+  const classStr = typeof rawClass === 'string' ? rawClass : (rawClass && rawClass.baseVal ? rawClass.baseVal : '');
+  if (classStr) {
+    const lucideMatch = classStr.match(/\blucide-([a-z0-9-]+)\b/i);
+    if (lucideMatch && lucideMatch[1]) return lucideMatch[1];
+
+    const featherMatch = classStr.match(/\bfeather-([a-z0-9-]+)\b/i);
+    if (featherMatch && featherMatch[1]) return featherMatch[1];
+
+    const tablerMatch = classStr.match(/\btabler-icon-([a-z0-9-]+)\b/i);
+    if (tablerMatch && tablerMatch[1]) return tablerMatch[1];
+
+    const heroMatch = classStr.match(/\bheroicon-(?:outline-|solid-|mini-)?([a-z0-9-]+)\b/i);
+    if (heroMatch && heroMatch[1]) return heroMatch[1];
+
+    const faMatch = classStr.match(/\bfa[srlbd]?-([a-z0-9-]+)\b/i);
+    if (faMatch && faMatch[1] && !/^(?:solid|regular|brands|light|fw|lg|\d+x)$/i.test(faMatch[1])) {
+      return faMatch[1];
+    }
+
+    const riMatch = classStr.match(/\bri-([a-z0-9-]+?)(?:-line|-fill)?\b/i);
+    if (riMatch && riMatch[1]) return riMatch[1];
+
+    const iconPrefixMatch = classStr.match(/\bicon[-_]([a-z0-9_-]+)\b/i);
+    if (iconPrefixMatch && iconPrefixMatch[1]) return iconPrefixMatch[1];
+
+    const iconSuffixMatch = classStr.match(/\b([a-z0-9_-]+)[-_]icon\b/i);
+    if (iconSuffixMatch && iconSuffixMatch[1] && !/^(?:svg|app)$/i.test(iconSuffixMatch[1])) {
+      return iconSuffixMatch[1];
+    }
+  }
+
+  // Tier 3: SVG child metadata (<title>, <desc>)
+  try {
+    if (typeof el.querySelector === 'function') {
+      const titleEl = el.querySelector('title');
+      if (titleEl && titleEl.textContent && titleEl.textContent.trim()) return titleEl.textContent.trim();
+      const descEl = el.querySelector('desc');
+      if (descEl && descEl.textContent && descEl.textContent.trim()) return descEl.textContent.trim();
+    }
+  } catch (_) {}
+
+  // Tier 4: Direct SVG accessibility
+  const ariaLabel = getAttr('aria-label') || getAttr('aria-roledescription');
+  if (ariaLabel && typeof ariaLabel === 'string' && ariaLabel.trim()) return ariaLabel.trim();
+
+  // Tier 5: Enclosing interactive container (<button>, <a>, [role="button"])
+  try {
+    const btn = (typeof el.closest === 'function') ? el.closest('button, a, [role="button"]') : (el.parentElement && (el.parentElement.tagName === 'BUTTON' || el.parentElement.tagName === 'A' || el.parentElement.tag === 'button') ? el.parentElement : null);
+    if (btn) {
+      const btnGetAttr = (n) => (typeof btn.getAttribute === 'function' ? btn.getAttribute(n) : (btn.attributes && btn.attributes[n] !== undefined ? btn.attributes[n] : btn[n]));
+      const btnAria = btnGetAttr('aria-label') || btnGetAttr('title');
+      if (btnAria && typeof btnAria === 'string' && btnAria.trim()) return btnAria.trim();
+
+      const btnTestId = btnGetAttr('data-testid');
+      if (btnTestId && typeof btnTestId === 'string' && btnTestId.trim()) {
+        const cleaned = btnTestId.trim().replace(/^(?:btn|button)[-_]+/i, '').replace(/[-_]+(?:btn|button)$/i, '');
+        if (cleaned) return cleaned;
+      }
+
+      let btnText = '';
+      if (btn.childNodes && btn.childNodes.length > 0) {
+        for (const cn of btn.childNodes) {
+          if (cn.nodeType === 3 || cn.nodeType === (typeof Node !== 'undefined' ? Node.TEXT_NODE : 3)) {
+            const t = (cn.textContent || '').trim();
+            if (t) btnText += (btnText ? ' ' : '') + t;
+          }
+        }
+      }
+      if (!btnText && (btn.textContent || btn.innerText)) {
+        btnText = (btn.textContent || btn.innerText || '').trim();
+      }
+      if (btnText && btnText.length <= 30 && !/^\d+$/.test(btnText)) {
+        return btnText;
+      }
+
+      const btnClass = btnGetAttr('class') || btn.className || '';
+      if (typeof btnClass === 'string') {
+        const btnClassMatch = btnClass.match(/\bbtn-([a-z0-9_-]+)\b/i);
+        if (btnClassMatch && btnClassMatch[1] && !/^(?:icon|primary|secondary|default|outline|danger|sm|md|lg|xs)$/i.test(btnClassMatch[1])) {
+          return btnClassMatch[1];
+        }
+      }
+    }
+  } catch (_) {}
+
+  // Tier 6: Enclosing container wrapper class (e.g. brand-logo, search-wrapper)
+  if (el.parentElement) {
+    const parentGetAttr = (n) => (typeof el.parentElement.getAttribute === 'function' ? el.parentElement.getAttribute(n) : (el.parentElement.attributes && el.parentElement.attributes[n] !== undefined ? el.parentElement.attributes[n] : el.parentElement[n]));
+    const parentClass = parentGetAttr('class') || el.parentElement.className || '';
+    if (typeof parentClass === 'string') {
+      const wrapperMatch = parentClass.match(/\b([a-z0-9_-]+)-(?:wrapper|box|container)\b/i);
+      if (wrapperMatch && wrapperMatch[1] && !/^(?:icon|svg|metric|btn|button)$/i.test(wrapperMatch[1])) {
+        return wrapperMatch[1];
+      }
+      const brandMatch = parentClass.match(/\b(brand-logo|app-logo|company-logo)\b/i);
+      if (brandMatch) return brandMatch[1];
+    }
+  }
+
+  // Tier 7: Filtered SVG ID
+  const elId = getAttr('id');
+  if (elId && typeof elId === 'string' && elId.trim() && !/^(?:layer|svg|vector|icon|clip|path|shape|g)[-_]?[0-9]*$/i.test(elId.trim()) && !/^[0-9a-f]{8}-[0-9a-f]{4}/i.test(elId.trim())) {
+    return elId.trim();
+  }
+
+  // Tier 8: Fallback
+  return `icon_${fallbackCounter}`;
+}
+
+module.exports = { walkDOM, classifyComponent, extractSemanticIconName };

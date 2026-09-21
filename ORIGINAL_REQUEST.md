@@ -141,3 +141,48 @@ Please incorporate the critical findings from the adversarial review into the cu
 7. P2 Closed-Loop Tuner: Iterate Compose layout modifiers and control points against headless Skia-on-Robolectric renders until red ghosting is eliminated.
 
 Please acknowledge and incorporate these priorities into Milestones 2-5 execution.
+
+## 2026-09-21T16:40:19Z
+
+Build four concrete architectural capabilities into the claude-to-compose pipeline to autonomously extract, transform, synthesize, and verify compound SVG glyphs and multi-path action icons without human intervention or loss of detail.
+
+Working directory: /Users/anjan/.gemini/antigravity/scratch/claude_to_compose
+Integrity mode: development
+
+## Requirements
+
+### R1. SVG Transform Decomposition & Matrix Baking Engine
+Extract and parse all SVG transformation attributes (matrix, translate, scale, rotate, skewX, skewY) across nested <g> group hierarchies and individual path elements. Provide mathematical affine matrix concatenation and optional coordinate baking directly into path coordinates (x', y') = M · (x, y) to guarantee coordinate fidelity across all Android platforms.
+
+### R2. Hierarchical Compose group() & Fill-Rule DSL Synthesizer
+Synthesize idiomatic Jetpack Compose ImageVector.Builder definitions preserving nested group(translationX, translationY, scaleX, scaleY, rotation, pivotX, pivotY) hierarchies, and emit PathFillType.EvenOdd for complex shapes with holes, intersections, or action badges. Generate matching Android VectorDrawable XML drawables.
+
+### R3. Deterministic Semantic Vector Binding & Catalog Generator
+Eliminate generic placeholder icon fallbacks by establishing a deterministic mapping from DOM SVG/icon elements to extracted vector assets. Synthesize an extensible ClaudeIcons object containing semantic icon definitions (e.g. DocumentPlusIcon, ChevronDownIcon) with currentColor tinting bound to contextual text color tokens.
+
+### R4. Sub-Glyph Semantic Path Completeness Linter & Verification Gate
+Implement an automated pre-flight vector verification gate that compares closed sub-path counts, bounding boxes, and ink centroids between the source SVG and synthesized Compose vector. Automatically flag and veto any compilation where an action badge, corner fold, or sub-path is dropped or collapsed.
+
+## Acceptance Criteria
+
+### Vector Extraction & Coordinate Baking
+- [ ] Successfully parses chained 2D affine transformations and nested <g> groups without dropping matrices.
+- [ ] Bakes matrix transforms into path coordinates when targeted for flat ImageVector output.
+- [ ] Normalizes primitive SVG elements (<rect>, <circle>, <polygon>, <line>) into valid path data.
+
+### Compose Synthesis & Android XML Drawables
+- [ ] Generates valid Jetpack Compose ImageVector code utilizing group() and PathFillType.EvenOdd that compiles cleanly via Gradle.
+- [ ] Emits valid Android VectorDrawable XML drawables with <group> tags and android:fillType="evenOdd".
+
+### Semantic Icon Binding
+- [ ] Maps DOM icon elements to specific ClaudeIcons vector symbols rather than generic placeholders.
+- [ ] Correctly binds currentColor to contextual CSS color tokens.
+
+### Sub-Path Completeness Linter
+- [ ] Programmatic linter verifies that all closed sub-paths in source SVGs exist in synthesized vectors.
+- [ ] Successfully detects and flags intentionally pruned sub-paths (e.g. missing + badge) with a failing exit code.
+
+### Test Suite & Repository Regression Protection
+- [ ] All new capabilities covered by unit and integration tests passing 100% green.
+- [ ] Existing 48/48 e2e tests, 284 core tests, and Gradle unit tests continue to pass with zero regressions.
+
