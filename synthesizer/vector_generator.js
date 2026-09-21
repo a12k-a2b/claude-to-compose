@@ -564,77 +564,182 @@ class VectorGenerator {
 
   /**
    * Parses an SVG transform attribute string into numeric decomposition.
-   * Supports matrix(a,b,c,d,e,f), translate(tx,[ty]), scale(sx,[sy]), rotate(deg,[cx,cy]).
+   * Supports matrix(a,b,c,d,e,f), translate(tx,[ty]), scale(sx,[sy]), rotate(deg,[cx,cy]),
+   * including chained transforms with 2D affine matrix multiplication.
    * @param {string} transformStr
    * @returns {Object|null}
    */
   static parseTransform(transformStr) {
     if (!transformStr || typeof transformStr !== 'string') return null;
     const t = transformStr.trim();
+    if (!t) return null;
 
-    // matrix(a, b, c, d, e, f)
-    const matrixMatch = t.match(/matrix\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)\s*\)/i);
-    if (matrixMatch) {
-      const a = parseFloat(matrixMatch[1]);
-      const b = parseFloat(matrixMatch[2]);
-      const c = parseFloat(matrixMatch[3]);
-      const d = parseFloat(matrixMatch[4]);
-      const e = parseFloat(matrixMatch[5]);
-      const f = parseFloat(matrixMatch[6]);
-      return {
-        type: 'matrix',
-        a, b, c, d, e, f,
-        translationX: Math.round(e * 1000) / 1000,
-        translationY: Math.round(f * 1000) / 1000,
-        scaleX: Math.round(a * 1000) / 1000,
-        scaleY: Math.round(d * 1000) / 1000,
-        hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
-        hasScale: Math.abs(a - 1) > 0.0001 || Math.abs(d - 1) > 0.0001
-      };
+    const fnRegex = /([a-zA-Z]+)\s*\(([^)]*)\)/g;
+    const matches = [];
+    let m;
+    while ((m = fnRegex.exec(t)) !== null) {
+      matches.push({ name: m[1].toLowerCase(), rawArgs: m[2] });
     }
 
-    // translate(tx, [ty])
-    const translateMatch = t.match(/translate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
-    if (translateMatch) {
-      const tx = parseFloat(translateMatch[1]);
-      const ty = translateMatch[2] !== undefined ? parseFloat(translateMatch[2]) : 0;
-      return {
-        type: 'translate',
-        translationX: Math.round(tx * 1000) / 1000,
-        translationY: Math.round(ty * 1000) / 1000,
-        hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001
-      };
+    if (matches.length === 0) return null;
+
+    const parseArgs = (raw) => {
+      const parts = raw.trim().split(/[\s,]+/).filter(Boolean);
+      return parts.map(Number);
+    };
+
+    // Fast-path / backward compatibility for single non-chained transform
+    if (matches.length === 1) {
+      const match = matches[0];
+      const args = parseArgs(match.rawArgs);
+
+      if (match.name === 'matrix' && args.length >= 6) {
+        const [a, b, c, d, e, f] = args;
+        const det = a * d - b * c;
+        const scaleX = Math.round(Math.hypot(a, b) * 1000) / 1000;
+        const scaleY = scaleX !== 0 ? Math.round((det / scaleX) * 1000) / 1000 : Math.round(Math.hypot(c, d) * 1000) / 1000;
+        const rad = Math.atan2(b, a);
+        const deg = Math.round((rad * 180 / Math.PI) * 1000) / 1000;
+        return {
+          type: 'matrix',
+          a, b, c, d, e, f,
+          translationX: Math.round(e * 1000) / 1000,
+          translationY: Math.round(f * 1000) / 1000,
+          scaleX,
+          scaleY,
+          rotate: deg,
+          rotation: deg,
+          hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
+          hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
+          hasRotate: Math.abs(deg) > 0.0001
+        };
+      }
+
+      if (match.name === 'translate') {
+        const tx = args[0] || 0;
+        const ty = args[1] !== undefined ? args[1] : 0;
+        return {
+          type: 'translate',
+          translationX: Math.round(tx * 1000) / 1000,
+          translationY: Math.round(ty * 1000) / 1000,
+          scaleX: 1,
+          scaleY: 1,
+          rotate: 0,
+          rotation: 0,
+          hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001,
+          hasScale: false,
+          hasRotate: false
+        };
+      }
+
+      if (match.name === 'scale') {
+        const sx = args[0] !== undefined ? args[0] : 1;
+        const sy = args[1] !== undefined ? args[1] : sx;
+        return {
+          type: 'scale',
+          scaleX: Math.round(sx * 1000) / 1000,
+          scaleY: Math.round(sy * 1000) / 1000,
+          translationX: 0,
+          translationY: 0,
+          rotate: 0,
+          rotation: 0,
+          hasTranslation: false,
+          hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001,
+          hasRotate: false
+        };
+      }
+
+      if (match.name === 'rotate') {
+        const deg = args[0] || 0;
+        const cx = args[1] !== undefined ? args[1] : 0;
+        const cy = args[2] !== undefined ? args[2] : 0;
+        return {
+          type: 'rotate',
+          rotate: Math.round(deg * 1000) / 1000,
+          rotation: Math.round(deg * 1000) / 1000,
+          pivotX: Math.round(cx * 1000) / 1000,
+          pivotY: Math.round(cy * 1000) / 1000,
+          translationX: 0,
+          translationY: 0,
+          scaleX: 1,
+          scaleY: 1,
+          hasTranslation: false,
+          hasScale: false,
+          hasRotate: Math.abs(deg) > 0.0001
+        };
+      }
     }
 
-    // scale(sx, [sy])
-    const scaleMatch = t.match(/scale\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
-    if (scaleMatch) {
-      const sx = parseFloat(scaleMatch[1]);
-      const sy = scaleMatch[2] !== undefined ? parseFloat(scaleMatch[2]) : sx;
-      return {
-        type: 'scale',
-        scaleX: Math.round(sx * 1000) / 1000,
-        scaleY: Math.round(sy * 1000) / 1000,
-        hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001
-      };
+    // Chained transforms: 2D affine matrix multiplication
+    let curr = [1, 0, 0, 1, 0, 0];
+
+    const multiply = (m1, m2) => [
+      m1[0] * m2[0] + m1[2] * m2[1],
+      m1[1] * m2[0] + m1[3] * m2[1],
+      m1[0] * m2[2] + m1[2] * m2[3],
+      m1[1] * m2[2] + m1[3] * m2[3],
+      m1[0] * m2[4] + m1[2] * m2[5] + m1[4],
+      m1[1] * m2[4] + m1[3] * m2[5] + m1[5]
+    ];
+
+    for (const match of matches) {
+      const args = parseArgs(match.rawArgs);
+      let stepMatrix = [1, 0, 0, 1, 0, 0];
+
+      if (match.name === 'matrix' && args.length >= 6) {
+        stepMatrix = [args[0], args[1], args[2], args[3], args[4], args[5]];
+      } else if (match.name === 'translate') {
+        const tx = args[0] || 0;
+        const ty = args[1] !== undefined ? args[1] : 0;
+        stepMatrix = [1, 0, 0, 1, tx, ty];
+      } else if (match.name === 'scale') {
+        const sx = args[0] !== undefined ? args[0] : 1;
+        const sy = args[1] !== undefined ? args[1] : sx;
+        stepMatrix = [sx, 0, 0, sy, 0, 0];
+      } else if (match.name === 'rotate') {
+        const deg = args[0] || 0;
+        const cx = args[1] !== undefined ? args[1] : 0;
+        const cy = args[2] !== undefined ? args[2] : 0;
+        const rad = deg * Math.PI / 180;
+        const cos = Math.cos(rad);
+        const sin = Math.sin(rad);
+        if (cx !== 0 || cy !== 0) {
+          const e = cx - cx * cos + cy * sin;
+          const f = cy - cx * sin - cy * cos;
+          stepMatrix = [cos, sin, -sin, cos, e, f];
+        } else {
+          stepMatrix = [cos, sin, -sin, cos, 0, 0];
+        }
+      }
+
+      curr = multiply(curr, stepMatrix);
     }
 
-    // rotate(deg, [cx, cy])
-    const rotateMatch = t.match(/rotate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
-    if (rotateMatch) {
-      const deg = parseFloat(rotateMatch[1]);
-      const cx = rotateMatch[2] !== undefined ? parseFloat(rotateMatch[2]) : 0;
-      const cy = rotateMatch[3] !== undefined ? parseFloat(rotateMatch[3]) : 0;
-      return {
-        type: 'rotate',
-        rotate: Math.round(deg * 1000) / 1000,
-        pivotX: Math.round(cx * 1000) / 1000,
-        pivotY: Math.round(cy * 1000) / 1000,
-        hasRotate: Math.abs(deg) > 0.0001
-      };
-    }
+    const [a, b, c, d, e, f] = curr;
+    const det = a * d - b * c;
+    const scaleX = Math.round(Math.hypot(a, b) * 1000) / 1000;
+    const scaleY = scaleX !== 0 ? Math.round((det / scaleX) * 1000) / 1000 : Math.round(Math.hypot(c, d) * 1000) / 1000;
+    const rad = Math.atan2(b, a);
+    const deg = Math.round((rad * 180 / Math.PI) * 1000) / 1000;
 
-    return null;
+    return {
+      type: 'matrix',
+      a: Math.round(a * 1000) / 1000,
+      b: Math.round(b * 1000) / 1000,
+      c: Math.round(c * 1000) / 1000,
+      d: Math.round(d * 1000) / 1000,
+      e: Math.round(e * 1000) / 1000,
+      f: Math.round(f * 1000) / 1000,
+      translationX: Math.round(e * 1000) / 1000,
+      translationY: Math.round(f * 1000) / 1000,
+      scaleX,
+      scaleY,
+      rotate: deg,
+      rotation: deg,
+      hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
+      hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
+      hasRotate: Math.abs(deg) > 0.0001
+    };
   }
 }
 

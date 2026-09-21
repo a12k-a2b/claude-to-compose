@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
+
 package com.claude.compose.theme
 
 import androidx.compose.material3.Typography
@@ -6,6 +8,7 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -13,17 +16,28 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.claude.compose.R
 
+// Optical sizing helper for variable fonts across display sizes (16..48)
+fun createOpticalFontFamily(resId: Int, opsz: Float = 32f): FontFamily {
+    val clampedOpsz = opsz.coerceIn(16f, 48f)
+    return FontFamily(
+        Font(resId, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz)))
+    )
+}
+
 val AbcArizonaFlare = FontFamily(
-    Font(R.font.abc_arizona_flare, FontWeight.Normal),
-    Font(R.font.abc_arizona_flare, FontWeight.Medium),
-    Font(R.font.abc_arizona_flare, FontWeight.Bold)
+    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f)))
 )
 
 val AbcArizonaSans = FontFamily(
-    Font(R.font.abc_arizona_sans, FontWeight.Normal),
-    Font(R.font.abc_arizona_sans, FontWeight.Medium),
-    Font(R.font.abc_arizona_sans, FontWeight.SemiBold),
-    Font(R.font.abc_arizona_sans, FontWeight.Bold)
+    Font(R.font.abc_arizona_sans, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f)))
 )
 
 val AbcRomMono = FontFamily(
@@ -40,7 +54,7 @@ val BasePlatformTextStyle = PlatformTextStyle(
 
 val BaseLineHeightStyle = LineHeightStyle(
     alignment = LineHeightStyle.Alignment.Center,
-    trim = LineHeightStyle.Trim.Both
+    trim = LineHeightStyle.Trim.None
 )
 
 val BaseTextStyle = TextStyle(

@@ -225,29 +225,6 @@ fun Da63DesignScreen(
                     .background(Color.White.copy(alpha = 0.79f))
             )
 
-            // Background Ruled Paper Lines on Scrim (every 56dp starting at y = 55dp, #F0F0F0, 1dp stroke)
-            Canvas(
-                modifier = Modifier
-                    .width(1184.dp)
-                    .fillMaxHeight()
-            ) {
-                val stepPx = 56.dp.toPx()
-                var yPx = 55.dp.toPx()
-                val endXPx = 1184.dp.toPx()
-                val strokeWidthPx = 1.dp.toPx()
-                val lineColor = Color(0xFFF0F0F0)
-
-                while (yPx < size.height) {
-                    drawLine(
-                        color = lineColor,
-                        start = Offset(0f, yPx),
-                        end = Offset(endXPx, yPx),
-                        strokeWidth = strokeWidthPx
-                    )
-                    yPx += stepPx
-                }
-            }
-
             // LAYER 3: Handwritten Ink & Highlighter Vector Annotations
             Canvas(modifier = Modifier.fillMaxSize()) {
                 // 1. Highlighter rectangle over article text
@@ -306,7 +283,7 @@ fun Da63DesignScreen(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
                     shadowElevation = 4.dp,
-                    border = BorderStroke(1.dp, Color(0xFFE5E5E5)),
+                    border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
                     modifier = Modifier.size(width = 249.5.dp, height = 80.dp)
                 ) {
                     Row(
@@ -381,9 +358,9 @@ fun Da63DesignScreen(
                             Canvas(modifier = Modifier.size(18.dp).offset(x = 0.15.dp, y = 0.0.dp)) {
                                 drawSvgPath(
                                     this,
-                                    "M 5 5 L 4.293 5.707 L 5 6.414 L 5.707 5.707 L 5 5 Z M 10.707 10.707 L 11.414 10 L 10.707 9.293 L 10 10 L 10.707 10.707 Z M 15 5 L 14.293 5.707 L 15 6.414 L 15.707 5.707 L 15 5 Z M 5.707 4.293 L 4.293 5.707 L 5.707 7.121 L 7.121 5.707 L 5.707 4.293 Z M 4.293 5.707 L 10 11.414 L 11.414 10 L 5.707 4.293 L 4.293 5.707 Z M 10 11.414 L 15.707 5.707 L 14.293 4.293 L 8.586 10 L 10 11.414 Z M 15.707 5.707 L 14.293 4.293 L 12.879 5.707 L 14.293 7.121 L 15.707 5.707 Z",
+                                    "M 5 5 L 4.293 5.707 L 5 6.414 L 5.707 5.707 L 5 5 Z M -0.707 0.707 L 4.293 5.707 L 5.707 4.293 L 0.707 -0.707 L -0.707 0.707 Z M 5.707 5.707 L 10.707 0.707 L 9.293 -0.707 L 4.293 4.293 L 5.707 5.707 Z",
                                     Color(0xFF1A1A1A),
-                                    floatArrayOf(1f, 0f, 0f, 1f, 7f, 7f),
+                                    floatArrayOf(1f, 0f, 0f, 1f, 7f, 9.5f),
                                     viewBoxSize = 24f,
                                     targetSizeDp = 18f
                                 )
@@ -397,7 +374,7 @@ fun Da63DesignScreen(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
                     shadowElevation = 4.dp,
-                    border = BorderStroke(1.dp, Color(0xFFE5E5E5)),
+                    border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
                     modifier = Modifier.size(width = 506.dp, height = 80.dp)
                 ) {
                     Row(
@@ -665,7 +642,7 @@ fun Da63DesignScreen(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
                     shadowElevation = 4.dp,
-                    border = BorderStroke(1.dp, Color(0xFFE5E5E5)),
+                    border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
                     modifier = Modifier.size(width = 227.dp, height = 80.dp)
                 ) {
                     Row(
@@ -780,7 +757,7 @@ fun Da63DesignScreen(
         Surface(
             shape = CircleShape,
             color = Color.White,
-            border = BorderStroke(1.dp, Color(0x1A000000)),
+            border = BorderStroke(0.5.dp, Color(0x1A000000)),
             shadowElevation = 2.dp,
             modifier = Modifier
                 .align(Alignment.BottomEnd)

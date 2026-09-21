@@ -80,6 +80,26 @@ describe('SvgParser Unit Tests', () => {
     assert.equal(rotate.pivotX, 12);
     assert.equal(rotate.pivotY, 12);
   });
+
+  test('parseTransform chains multiple affine transform functions via 2D matrix multiplication', () => {
+    // Chain: matrix(1 0 0 1 2 2) matrix(1 0 0 1 5 7.500) -> cumulative translation (7, 9.5)
+    const chained = SvgParser.parseTransform('matrix(1 0 0 1 2 2) matrix(1 0 0 1 5 7.500)');
+    assert.equal(chained.type, 'matrix');
+    assert.equal(chained.translationX, 7);
+    assert.equal(chained.translationY, 9.5);
+    assert.equal(chained.scaleX, 1);
+    assert.equal(chained.scaleY, 1);
+    assert.equal(chained.hasTranslation, true);
+
+    // Chain: translate(10, 20) scale(2, 2)
+    const chainedTranslateScale = SvgParser.parseTransform('translate(10, 20) scale(2, 2)');
+    assert.equal(chainedTranslateScale.translationX, 10);
+    assert.equal(chainedTranslateScale.translationY, 20);
+    assert.equal(chainedTranslateScale.scaleX, 2);
+    assert.equal(chainedTranslateScale.scaleY, 2);
+    assert.equal(chainedTranslateScale.hasTranslation, true);
+    assert.equal(chainedTranslateScale.hasScale, true);
+  });
 });
 
 describe('SpecBuilder & Schema Validation Unit Tests', () => {

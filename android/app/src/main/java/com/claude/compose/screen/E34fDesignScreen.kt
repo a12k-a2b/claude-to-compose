@@ -218,7 +218,7 @@ fun E34fDesignScreen(
                         PillItem("m · The mildliner", SolOsOrange, Color.White, false)
                     ),
                     spacing = 8.0.dp,
-                    categoryColumnWidth = 108.5.dp,
+                    categoryColumnWidth = 140.dp,
                     labelModifier = Modifier.offset(y = (-0.5).dp),
                     categoryFontSize = 12.sp,
                     categoryLetterSpacing = 0.75.sp
@@ -242,7 +242,7 @@ fun E34fDesignScreen(
         Surface(
             shape = CircleShape,
             color = Color.White,
-            border = BorderStroke(1.dp, Color(0x1A000000)),
+            border = BorderStroke(0.5.dp, Color(0x1A000000)),
             shadowElevation = 2.dp,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -307,14 +307,14 @@ private data class PillItem(
     val hasBorder: Boolean
 )
 
-// Category row component: guarantees unified 170.5dp horizontal pill baseline via categoryColumnWidth
+// Category row component: guarantees unified 140dp horizontal pill baseline via categoryColumnWidth
 @Composable
 private fun PillCategoryRow(
     category: String,
     items: List<PillItem>,
     spacing: Dp = 10.5.dp,
     labelModifier: Modifier = Modifier,
-    categoryColumnWidth: Dp = 98.5.dp,
+    categoryColumnWidth: Dp = 140.dp,
     categoryFontSize: androidx.compose.ui.unit.TextUnit = 11.5.sp,
     categoryLetterSpacing: androidx.compose.ui.unit.TextUnit = 1.25.sp
 ) {
@@ -338,6 +338,7 @@ private fun PillCategoryRow(
                 maxLines = 1,
                 softWrap = false,
                 modifier = labelModifier
+                    .width(140.dp)
                     .padding(start = 3.0.dp),
                 style = BaseTextStyle
             )
@@ -351,7 +352,7 @@ private fun PillCategoryRow(
                 Surface(
                     shape = CircleShape,
                     color = pill.bg,
-                    border = if (pill.hasBorder) BorderStroke(1.dp, Color(0x20000000)) else null,
+                    border = if (pill.hasBorder) BorderStroke(0.5.dp, Color(0x20000000)) else null,
                     shadowElevation = if (pill.hasBorder) 1.dp else 0.dp
                 ) {
                     Text(
