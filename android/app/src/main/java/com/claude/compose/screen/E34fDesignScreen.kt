@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.claude.compose.theme.AbcArizonaFlare
+import com.claude.compose.theme.AbcArizonaFlareHeadline
 import com.claude.compose.theme.AbcArizonaSans
 import com.claude.compose.theme.AbcRomMono
 import com.claude.compose.theme.BaseTextStyle
@@ -66,13 +67,13 @@ fun E34fDesignScreen(
             // Screen Headline: A sheet of glass (Box with exact word offsets)
             Box(
                 modifier = Modifier
-                    .offset(x = (-1.0).dp, y = 1.3.dp)
+                    .offset(x = (-1.0).dp, y = 1.8.dp)
                     .padding(bottom = 13.0.dp)
             ) {
                 Text(
                     text = "A",
-                    modifier = Modifier.offset(x = 0.0.dp, y = (-1.0).dp),
-                    fontFamily = AbcArizonaFlare,
+                    modifier = Modifier.offset(x = (-2.5).dp, y = (-1.0).dp),
+                    fontFamily = AbcArizonaFlareHeadline,
                     fontSize = 74.5.sp,
                     lineHeight = 77.52.sp,
                     color = Color(0xFF17190F),
@@ -80,8 +81,8 @@ fun E34fDesignScreen(
                 )
                 Text(
                     text = "sheet",
-                    modifier = Modifier.offset(x = 67.2.dp, y = (-1.0).dp),
-                    fontFamily = AbcArizonaFlare,
+                    modifier = Modifier.offset(x = 66.2.dp, y = (-1.0).dp),
+                    fontFamily = AbcArizonaFlareHeadline,
                     fontSize = 76.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-7.2).sp,
@@ -91,7 +92,7 @@ fun E34fDesignScreen(
                 Text(
                     text = "of",
                     modifier = Modifier.offset(x = 236.9.dp, y = (-0.5).dp),
-                    fontFamily = AbcArizonaFlare,
+                    fontFamily = AbcArizonaFlareHeadline,
                     fontSize = 74.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-6.4).sp,
@@ -100,8 +101,8 @@ fun E34fDesignScreen(
                 )
                 Text(
                     text = "glass",
-                    modifier = Modifier.offset(x = 310.5.dp, y = (-0.5).dp),
-                    fontFamily = AbcArizonaFlare,
+                    modifier = Modifier.offset(x = 311.0.dp, y = (-0.5).dp),
+                    fontFamily = AbcArizonaFlareHeadline,
                     fontSize = 74.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-5.2).sp,

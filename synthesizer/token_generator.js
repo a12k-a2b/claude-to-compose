@@ -191,8 +191,7 @@ function generateTypeFile(theme, packageName) {
     const weight = normalizeFontWeight(item.fontWeight || fallbackWeight);
     const line = item.lineHeight || fallbackLine;
     const letter = item.letterSpacing !== undefined ? item.letterSpacing : 0;
-    return `    ${name} = TextStyle(
-        fontFamily = FontFamily.Default,
+    return `    ${name} = BaseTextStyle.copy(
         fontWeight = ${weight},
         fontSize = ${formatSp(size)},
         lineHeight = ${formatSp(line)},
@@ -200,13 +199,99 @@ function generateTypeFile(theme, packageName) {
     )`;
   };
 
-  return `package ${packageName}.theme
+  return `@file:OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
+
+package ${packageName}.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.claude.compose.R
+
+// Optical sizing helper for variable fonts across display sizes (16..48)
+fun createOpticalFontFamily(resId: Int, opsz: Float = 32f): FontFamily {
+    val clampedOpsz = opsz.coerceIn(16f, 48f)
+    return FontFamily(
+        Font(resId, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz)))
+    )
+}
+
+val AbcArizonaFlare = FontFamily(
+    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f)))
+)
+
+val AbcArizonaFlareHeadline = FontFamily(
+    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f)))
+)
+
+val AbcArizonaSans = FontFamily(
+    Font(R.font.abc_arizona_sans, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f)))
+)
+
+val AbcRom = FontFamily(
+    Font(R.font.abc_rom, FontWeight.Normal)
+)
+
+val AbcRomMono = FontFamily(
+    Font(R.font.abc_rom_mono, FontWeight.Normal),
+    Font(R.font.abc_rom_mono, FontWeight.Medium),
+    Font(R.font.abc_rom_mono, FontWeight.SemiBold),
+    Font(R.font.abc_rom_mono, FontWeight.Bold)
+)
+
+@Suppress("DEPRECATION")
+val BasePlatformTextStyle = PlatformTextStyle(
+    includeFontPadding = false
+)
+
+val BaseLineHeightStyle = LineHeightStyle(
+    alignment = LineHeightStyle.Alignment.Center,
+    trim = LineHeightStyle.Trim.None
+)
+
+val BaseTextStyle = TextStyle(
+    platformStyle = BasePlatformTextStyle,
+    lineHeightStyle = BaseLineHeightStyle
+)
+
+fun claudeTextStyle(
+    fontFamily: FontFamily = AbcArizonaSans,
+    fontWeight: FontWeight = FontWeight.Normal,
+    fontSize: TextUnit = 14.sp,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    letterSpacing: TextUnit = 0.sp,
+    baselineShift: BaselineShift? = null,
+    color: Color = Color.Unspecified
+): TextStyle = TextStyle(
+    fontFamily = fontFamily,
+    fontWeight = fontWeight,
+    fontSize = fontSize,
+    lineHeight = if (lineHeight != TextUnit.Unspecified) lineHeight else (fontSize.value * 1.3).sp,
+    letterSpacing = letterSpacing,
+    baselineShift = baselineShift,
+    color = color,
+    platformStyle = BasePlatformTextStyle,
+    lineHeightStyle = BaseLineHeightStyle
+)
 
 val ClaudeTypography = Typography(
 ${s('displayLarge', 36, 700, 44)},

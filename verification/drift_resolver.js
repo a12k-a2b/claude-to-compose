@@ -271,6 +271,11 @@ class DriftResolver {
         };
 
         const params = [];
+        if (resolvedFontSize !== null && resolvedFontSize >= 36) {
+          params.push('fontFamily = AbcArizonaFlareHeadline');
+          typo.fontFamily = 'AbcArizonaFlareHeadline';
+          typo.opticalSize = 48;
+        }
         if (resolvedFontSize !== null) params.push(`fontSize = ${formatSp(resolvedFontSize)}`);
         if (resolvedLineHeight !== null) params.push(`lineHeight = ${formatSp(resolvedLineHeight)}`);
         if (resolvedLetterSpacing !== null) params.push(`letterSpacing = ${formatSp(resolvedLetterSpacing)}`);

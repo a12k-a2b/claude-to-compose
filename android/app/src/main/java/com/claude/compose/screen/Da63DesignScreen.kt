@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.asComposePath
 import androidx.core.graphics.PathParser
 import com.claude.compose.theme.AbcArizonaFlare
+import com.claude.compose.theme.AbcArizonaFlareHeadline
 import com.claude.compose.theme.AbcArizonaSans
+import com.claude.compose.theme.AbcRom
 import com.claude.compose.theme.AbcRomMono
 import com.claude.compose.theme.BaseTextStyle
 
@@ -80,9 +82,9 @@ fun Da63DesignScreen(
                         Text("World", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
                         Spacer(modifier = Modifier.width(31.0.dp))
                         Text("Cities", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
-                        Spacer(modifier = Modifier.width(23.25.dp))
+                        Spacer(modifier = Modifier.width(24.5.dp))
                         Text("Climate", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
-                        Spacer(modifier = Modifier.width(24.25.dp))
+                        Spacer(modifier = Modifier.width(23.5.dp))
                         Text("Ideas", modifier = Modifier.offset(y = (-1.75).dp), fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
                     }
                 }
@@ -154,7 +156,7 @@ fun Da63DesignScreen(
                     }
                     Text(
                         text = headlineText,
-                        fontFamily = AbcArizonaFlare,
+                        fontFamily = AbcArizonaFlareHeadline,
                         fontSize = 58.sp,
                         lineHeight = 63.0.sp,
                         color = Color(0xFF1A1A1A),
@@ -233,8 +235,8 @@ fun Da63DesignScreen(
             ) {
                 val stepPx = 56.dp.toPx()
                 var yPx = 55.25.dp.toPx()
-                val endXPx = 1184.dp.toPx()
-                val strokeWidthPx = 1.5.dp.toPx()
+                val endXPx = 1183.5.dp.toPx()
+                val strokeWidthPx = 1.dp.toPx()
                 val lineColor = Color(0xFFF0F0F0)
 
                 while (yPx < size.height) {

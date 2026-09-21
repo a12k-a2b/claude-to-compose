@@ -804,6 +804,17 @@ class KotlinComposeMutator {
       }
     }
 
+    if (typoParams.fontFamily) {
+      const ffRegex = /fontFamily\s*=\s*([a-zA-Z0-9_.]+)/;
+      if (ffRegex.test(argText)) {
+        argText = argText.replace(ffRegex, `fontFamily = ${typoParams.fontFamily}`);
+        modified = true;
+      } else {
+        argText = `\n    fontFamily = ${typoParams.fontFamily},` + argText;
+        modified = true;
+      }
+    }
+
     if (modified) {
       this.source = this.source.slice(0, call.openParen + 1) + argText + this.source.slice(call.closeParen);
       return true;

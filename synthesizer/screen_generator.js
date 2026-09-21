@@ -272,13 +272,26 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   // 1. Text Component
   if (type === 'Text') {
     const safeText = JSON.stringify(textContent || '');
+    const isHeading = node.text?.fontWeight >= 700 || node.tag === 'h1' || node.tag === 'h2' || (node.text?.fontSize && node.text.fontSize >= 32);
     let textStyle = 'MaterialTheme.typography.bodyMedium';
-    if (node.text?.fontWeight >= 700 || node.tag === 'h1' || node.tag === 'h2') {
+    let extraParams = [];
+
+    if (isHeading) {
       textStyle = 'MaterialTheme.typography.titleLarge';
+      if (node.text?.opticalSize >= 36 || (node.text?.fontSize && node.text.fontSize >= 36)) {
+        extraParams.push(`${indent}    fontFamily = AbcArizonaFlareHeadline`);
+      }
     } else if (node.text?.fontSize <= 12) {
       textStyle = 'MaterialTheme.typography.bodySmall';
     }
-    return `${indent}Text(\n${indent}    text = ${safeText},\n${indent}    style = ${textStyle}\n${indent})\n`;
+
+    if (node.text?.letterSpacing !== undefined && node.text.letterSpacing !== 0) {
+      const lsVal = parseFloat(Number(node.text.letterSpacing).toFixed(2));
+      extraParams.push(`${indent}    letterSpacing = ${lsVal < 0 ? `(-${Math.abs(lsVal)}).sp` : `${lsVal}.sp`}`);
+    }
+
+    const extraStr = extraParams.length > 0 ? `,\n${extraParams.join(',\n')}` : '';
+    return `${indent}Text(\n${indent}    text = ${safeText},\n${indent}    style = ${textStyle}${extraStr}\n${indent})\n`;
   }
 
   // 2. Button Component

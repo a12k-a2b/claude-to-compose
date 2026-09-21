@@ -458,15 +458,28 @@ async function walkDOM(frame, options = {}) {
       };
 
       if (directText) {
+        const parsedFontSize = parseFloat(style.fontSize) || 14;
+        const fontOpticalSizing = style.fontOpticalSizing || undefined;
+        const fontVariationSettings = style.fontVariationSettings || undefined;
+        const explicitOpszMatch = fontVariationSettings ? fontVariationSettings.match(/["']opsz["']\s+([\d.]+)/) : null;
+        const explicitOpsz = explicitOpszMatch ? parseFloat(explicitOpszMatch[1]) : undefined;
+        const isAutoOptical = fontOpticalSizing !== 'none';
+        const computedOpsz = explicitOpsz !== undefined
+          ? explicitOpsz
+          : (isAutoOptical ? Math.min(48, Math.max(16, Math.round(parsedFontSize))) : undefined);
+
         nodeObj.text = {
           content: directText,
           fontFamily: normalizeFontFamily(style.fontFamily),
-          fontSize: parseFloat(style.fontSize) || 14,
+          fontSize: parsedFontSize,
           fontWeight: parseInt(style.fontWeight, 10) || 400,
-          lineHeight: parseFloat(style.lineHeight) || Math.round((parseFloat(style.fontSize) || 14) * 1.3),
+          lineHeight: parseFloat(style.lineHeight) || Math.round(parsedFontSize * 1.3),
           letterSpacing: parseFloat(style.letterSpacing) || 0,
           color: parsedTextColor.hex || '#000000',
-          textAlign: style.textAlign || 'left'
+          textAlign: style.textAlign || 'left',
+          fontOpticalSizing,
+          fontVariationSettings,
+          opticalSize: computedOpsz
         };
       }
 
