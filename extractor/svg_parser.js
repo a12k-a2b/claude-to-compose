@@ -46,6 +46,9 @@ class SvgParser {
       const strokeWidthMatch = attrs.match(/\bstroke-width=["']([^"']+)["']/i);
       const linecapMatch = attrs.match(/\bstroke-linecap=["']([^"']+)["']/i);
       const linejoinMatch = attrs.match(/\bstroke-linejoin=["']([^"']+)["']/i);
+      const transformMatch = attrs.match(/\btransform=["']([^"']+)["']/i);
+      const fillRuleMatch = attrs.match(/\bfill-rule=["']([^"']+)["']/i);
+      const clipRuleMatch = attrs.match(/\bclip-rule=["']([^"']+)["']/i);
 
       let fill = fillMatch ? fillMatch[1] : undefined;
       let stroke = strokeMatch ? strokeMatch[1] : undefined;
@@ -53,14 +56,19 @@ class SvgParser {
       if (fill === 'currentColor') fill = computedContext.color || '#000000';
       if (stroke === 'currentColor') stroke = computedContext.color || '#000000';
 
-      paths.push({
+      const pathObj = {
         d: dMatch[1].trim(),
         fill: fill !== 'none' ? fill : undefined,
         stroke: stroke !== 'none' ? stroke : undefined,
         strokeWidth: strokeWidthMatch ? parseFloat(strokeWidthMatch[1]) : undefined,
         strokeLinecap: linecapMatch ? linecapMatch[1].toLowerCase() : undefined,
         strokeLinejoin: linejoinMatch ? linejoinMatch[1].toLowerCase() : undefined
-      });
+      };
+      if (transformMatch) pathObj.transform = transformMatch[1].trim();
+      const fillRule = fillRuleMatch ? fillRuleMatch[1].toLowerCase() : (clipRuleMatch ? clipRuleMatch[1].toLowerCase() : undefined);
+      if (fillRule) pathObj.fillRule = fillRule;
+
+      paths.push(pathObj);
     }
 
     // Extract circles
@@ -250,7 +258,7 @@ class SvgParser {
 
         // Traverse child shapes
         const paths = [];
-        function parseNode(node) {
+        function parseNode(node, inherited = {}) {
           if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
           const nodeTag = node.tagName.toLowerCase();
           const nodeStyle = window.getComputedStyle(node);
@@ -266,6 +274,13 @@ class SvgParser {
           if (stroke === 'currentColor') {
             stroke = nodeStyle.color || style.color;
           }
+
+          const rawTransform = node.getAttribute('transform');
+          const transform = rawTransform || inherited.transform;
+          const rawFillRule = node.getAttribute('fill-rule') || node.getAttribute('clip-rule') || nodeStyle.fillRule;
+          const fillRule = (rawFillRule && rawFillRule !== 'none') ? rawFillRule : inherited.fillRule;
+
+          const nextInherited = { transform, fillRule };
 
           let d = '';
           if (nodeTag === 'path') {
@@ -313,17 +328,19 @@ class SvgParser {
               d,
               fill: fill && fill !== 'none' ? fill : undefined,
               stroke: stroke && stroke !== 'none' ? stroke : undefined,
-              strokeWidth
+              strokeWidth,
+              transform: transform || undefined,
+              fillRule: fillRule ? fillRule.toLowerCase() : undefined
             });
           }
 
           for (const child of node.children) {
-            parseNode(child);
+            parseNode(child, nextInherited);
           }
         }
 
         for (const child of svgEl.children) {
-          parseNode(child);
+          parseNode(child, {});
         }
 
         const nameHint = svgEl.getAttribute('id') || svgEl.getAttribute('data-icon') || svgEl.getAttribute('aria-label') || `icon_${idx + 1}`;
@@ -361,10 +378,86 @@ class SvgParser {
 
     return vectorAssets;
   }
+
+  /**
+   * Parses an SVG transform attribute string into numeric decomposition.
+   * Supports matrix(a,b,c,d,e,f), translate(tx,[ty]), scale(sx,[sy]), rotate(deg,[cx,cy]).
+   * @param {string} transformStr
+   * @returns {Object|null}
+   */
+  static parseTransform(transformStr) {
+    if (!transformStr || typeof transformStr !== 'string') return null;
+    const t = transformStr.trim();
+
+    // matrix(a, b, c, d, e, f)
+    const matrixMatch = t.match(/matrix\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)\s*\)/i);
+    if (matrixMatch) {
+      const a = parseFloat(matrixMatch[1]);
+      const b = parseFloat(matrixMatch[2]);
+      const c = parseFloat(matrixMatch[3]);
+      const d = parseFloat(matrixMatch[4]);
+      const e = parseFloat(matrixMatch[5]);
+      const f = parseFloat(matrixMatch[6]);
+      return {
+        type: 'matrix',
+        a, b, c, d, e, f,
+        translationX: Math.round(e * 1000) / 1000,
+        translationY: Math.round(f * 1000) / 1000,
+        scaleX: Math.round(a * 1000) / 1000,
+        scaleY: Math.round(d * 1000) / 1000,
+        hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
+        hasScale: Math.abs(a - 1) > 0.0001 || Math.abs(d - 1) > 0.0001
+      };
+    }
+
+    // translate(tx, [ty])
+    const translateMatch = t.match(/translate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (translateMatch) {
+      const tx = parseFloat(translateMatch[1]);
+      const ty = translateMatch[2] !== undefined ? parseFloat(translateMatch[2]) : 0;
+      return {
+        type: 'translate',
+        translationX: Math.round(tx * 1000) / 1000,
+        translationY: Math.round(ty * 1000) / 1000,
+        hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001
+      };
+    }
+
+    // scale(sx, [sy])
+    const scaleMatch = t.match(/scale\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (scaleMatch) {
+      const sx = parseFloat(scaleMatch[1]);
+      const sy = scaleMatch[2] !== undefined ? parseFloat(scaleMatch[2]) : sx;
+      return {
+        type: 'scale',
+        scaleX: Math.round(sx * 1000) / 1000,
+        scaleY: Math.round(sy * 1000) / 1000,
+        hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001
+      };
+    }
+
+    // rotate(deg, [cx, cy])
+    const rotateMatch = t.match(/rotate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (rotateMatch) {
+      const deg = parseFloat(rotateMatch[1]);
+      const cx = rotateMatch[2] !== undefined ? parseFloat(rotateMatch[2]) : 0;
+      const cy = rotateMatch[3] !== undefined ? parseFloat(rotateMatch[3]) : 0;
+      return {
+        type: 'rotate',
+        rotate: Math.round(deg * 1000) / 1000,
+        pivotX: Math.round(cx * 1000) / 1000,
+        pivotY: Math.round(cy * 1000) / 1000,
+        hasRotate: Math.abs(deg) > 0.0001
+      };
+    }
+
+    return null;
+  }
 }
 
 // Module exports
 module.exports = {
   SvgParser,
-  extractSVGs: SvgParser.extractSVGs
+  extractSVGs: SvgParser.extractSVGs,
+  parseTransform: SvgParser.parseTransform
 };

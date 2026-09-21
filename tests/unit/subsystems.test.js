@@ -18,6 +18,7 @@ const { getCanvasInterceptionScript } = require('../../extractor/canvas_intercep
 const { transpileCanvasToCompose, mapStrokeCap, mapStrokeJoin, mapColorToCompose } = require('../../synthesizer/canvas_transpiler');
 const { sanitizeAndroidFontName, FontExtractor } = require('../../extractor/font_extractor');
 const { VectorGenerator } = require('../../synthesizer/vector_generator');
+const { ScreenGenerator } = require('../../synthesizer/screen_generator');
 const { computeInkCentroid, computeZonalInkMetrics, DEFAULT_DC1_ZONES, parseDesignSpecElements, computeElementDriftAndIoU } = require('../../verification/zonal_diff');
 const { computeInkMetrics, detectBackgroundPalette, computeSobelEdges, evaluateContourAlignment, generateEdgeDiffOverlay } = require('../../verification/run_diff');
 const { AutoTuner } = require('../../verification/auto_tuner');
@@ -102,6 +103,87 @@ describe('Subsystem 3: Stroke Cap & Junction Semantics Parser', () => {
     assert.equal(VectorGenerator.mapXmlStrokeJoin('round'), 'round');
     assert.equal(VectorGenerator.mapXmlStrokeJoin('bevel'), 'bevel');
     assert.equal(VectorGenerator.mapXmlStrokeJoin('miter'), 'miter');
+  });
+
+  it('emits Compose group() and PathFillType.EvenOdd for transformed SVG paths', () => {
+    const vectors = [
+      {
+        name: 'notebook_icon',
+        width: 20,
+        height: 20,
+        paths: [
+          {
+            d: 'M 3.375 0 L 3.375 8.75',
+            fill: '#1A1A1A',
+            fillRule: 'evenodd',
+            transform: 'matrix(1 0 0 1 11.250 10)'
+          }
+        ]
+      }
+    ];
+
+    const kotlin = VectorGenerator.generateImageVectorFile(vectors, { packageName: 'com.test.icons' });
+    assert.ok(kotlin.includes('import androidx.compose.ui.graphics.PathFillType'));
+    assert.ok(kotlin.includes('import androidx.compose.ui.graphics.vector.group'));
+    assert.ok(kotlin.includes('group('));
+    assert.ok(kotlin.includes('translationX = 11.25f'));
+    assert.ok(kotlin.includes('translationY = 10f'));
+    assert.ok(kotlin.includes('pathFillType = PathFillType.EvenOdd'));
+  });
+
+  it('emits Android VectorDrawable <group> and android:fillType="evenOdd" for transformed SVG paths', () => {
+    const vector = {
+      name: 'notebook_icon',
+      width: 20,
+      height: 20,
+      paths: [
+        {
+          d: 'M 3.375 0 L 3.375 8.75',
+          fill: '#1A1A1A',
+          fillRule: 'evenodd',
+          transform: 'matrix(1 0 0 1 11.250 10)'
+        }
+      ]
+    };
+
+    const xml = VectorGenerator.generateVectorDrawableXml(vector);
+    assert.ok(xml.includes('<group'));
+    assert.ok(xml.includes('android:translateX="11.25"'));
+    assert.ok(xml.includes('android:translateY="10"'));
+    assert.ok(xml.includes('android:fillType="evenOdd"'));
+  });
+
+  it('dynamically binds extracted vector icons in ScreenGenerator instead of static fallback', () => {
+    const spec = {
+      hierarchy: {
+        id: 'root',
+        type: 'SCREEN',
+        componentType: 'Screen',
+        children: [
+          {
+            id: 'btn_search',
+            componentType: 'IconButton',
+            children: [
+              { id: 'icon_search', componentType: 'Icon', vectorId: 'vector_1' }
+            ]
+          },
+          {
+            id: 'icon_notebook',
+            componentType: 'Icon',
+            vectorId: 'vector_2'
+          }
+        ]
+      },
+      vectors: [
+        { id: 'vector_1', name: 'search_action' },
+        { id: 'vector_2', name: 'notebook_badge' }
+      ]
+    };
+
+    const screenCode = ScreenGenerator.generateScreenFile(spec, 'com.test.screen');
+    assert.ok(screenCode.includes('ClaudeIcons.SearchActionIcon'));
+    assert.ok(screenCode.includes('ClaudeIcons.NotebookBadgeIcon'));
+    assert.ok(!screenCode.includes('ClaudeIcons.Icon1Icon'));
   });
 });
 

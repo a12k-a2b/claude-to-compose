@@ -7,6 +7,37 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { sanitizeIdentifier } = require('./component_generator');
 const { MotionGenerator } = require('./motion_generator');
+const { VectorGenerator } = require('./vector_generator');
+
+/**
+ * Resolves the appropriate ClaudeIcons.<IconName> property for a given node.
+ * @param {Object} targetNode
+ * @param {Object} iconContext
+ * @returns {string} e.g. "ClaudeIcons.Icon2Icon"
+ */
+function resolveIconVector(targetNode, iconContext) {
+  if (!iconContext || !iconContext.vectorList || iconContext.vectorList.length === 0) {
+    return 'ClaudeIcons.Icon1Icon';
+  }
+  if (targetNode?.vectorId && iconContext.vectorMap.has(targetNode.vectorId)) {
+    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.vectorId)}`;
+  }
+  if (targetNode?.vectorName && iconContext.vectorMap.has(targetNode.vectorName)) {
+    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.vectorName)}`;
+  }
+  if (targetNode?.name && iconContext.vectorMap.has(targetNode.name)) {
+    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.name)}`;
+  }
+  if (targetNode?.id && iconContext.vectorMap.has(targetNode.id)) {
+    return `ClaudeIcons.${iconContext.vectorMap.get(targetNode.id)}`;
+  }
+  if (iconContext.currentIndex < iconContext.vectorList.length) {
+    const prop = iconContext.vectorList[iconContext.currentIndex].propName;
+    iconContext.currentIndex++;
+    return `ClaudeIcons.${prop}`;
+  }
+  return 'ClaudeIcons.Icon1Icon';
+}
 
 /**
  * Collects interactive states required by elements in the hierarchy.
@@ -231,7 +262,7 @@ function buildContainerModifier(node, parentContext = {}, isRow = false) {
 /**
  * Recursively translates a DesignNode into Compose Kotlin code.
  */
-function translateNode(node, indent = '        ', stateMap = {}, parentContext = { inRow: false, siblingCount: 1, childIndex: 0 }) {
+function translateNode(node, indent = '        ', stateMap = {}, parentContext = { inRow: false, siblingCount: 1, childIndex: 0 }, iconContext = null) {
   if (!node) return `${indent}Box {}\n`;
 
   const type = node.componentType || 'Container';
@@ -261,7 +292,9 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
 
   // 3. IconButton Component
   if (type === 'IconButton') {
-    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ClaudeIcons.Icon1Icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)\n${indent}}\n`;
+    const iconTarget = (children.length > 0 && (children[0].componentType === 'Icon' || children[0].tag === 'svg')) ? children[0] : node;
+    const iconVector = resolveIconVector(iconTarget, iconContext);
+    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ${iconVector}, contentDescription = null, tint = MaterialTheme.colorScheme.primary)\n${indent}}\n`;
   }
 
   // 4. Card Component
@@ -272,7 +305,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
         inRow: false,
         siblingCount: children.length,
         childIndex: idx
-      })).join('');
+      }, iconContext)).join('');
     } else {
       inner = `${indent}        Text(text = ${JSON.stringify(textContent || 'Card Content')})\n`;
     }
@@ -315,7 +348,8 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
 
   // 9. Icon / SVG Component
   if (type === 'Icon' || node.tag === 'svg') {
-    return `${indent}Icon(\n${indent}    imageVector = ClaudeIcons.Icon1Icon,\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = MaterialTheme.colorScheme.primary\n${indent})\n`;
+    const iconVector = resolveIconVector(node, iconContext);
+    return `${indent}Icon(\n${indent}    imageVector = ${iconVector},\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = MaterialTheme.colorScheme.primary\n${indent})\n`;
   }
 
   // 10. Switch
@@ -348,7 +382,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inRow: true,
       siblingCount: children.length,
       childIndex: idx
-    })).join('');
+    }, iconContext)).join('');
     return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
@@ -358,7 +392,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inRow: true,
       siblingCount: children.length,
       childIndex: idx
-    })).join('');
+    }, iconContext)).join('');
     return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),\n${indent}    horizontalArrangement = Arrangement.spacedBy(8.dp),\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
@@ -368,7 +402,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inRow: false,
       siblingCount: children.length,
       childIndex: idx
-    })).join('');
+    }, iconContext)).join('');
     return `${indent}Box(\n${indent}    modifier = Modifier.fillMaxSize().background(Color(0x66000000)),\n${indent}    contentAlignment = Alignment.Center\n${indent}) {\n${indent}    AppCard(modifier = Modifier.padding(24.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
   }
 
@@ -399,7 +433,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inRow: true,
       siblingCount: children.length,
       childIndex: idx
-    })).join('');
+    }, iconContext)).join('');
     return `${indent}Row(${modArg}\n${indent}    horizontalArrangement = ${rowArrangement},\n${indent}    verticalAlignment = ${rowAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
   }
 
@@ -409,7 +443,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inRow: false,
       siblingCount: children.length,
       childIndex: idx
-    })}${indent}    }\n`).join('');
+    }, iconContext)}${indent}    }\n`).join('');
     return `${indent}LazyColumn(\n${indent}    modifier = Modifier.fillMaxSize()\n${indent}) {\n${childCode}${indent}}\n`;
   }
 
@@ -418,7 +452,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     inRow: false,
     siblingCount: children.length,
     childIndex: idx
-  })).join('');
+  }, iconContext)).join('');
   return `${indent}Column(${modArg}\n${indent}    verticalArrangement = ${colArrangement},\n${indent}    horizontalAlignment = ${colAlignment}\n${indent}) {\n${childCode}${indent}}\n`;
 }
 
@@ -486,11 +520,38 @@ fun ClaudeDesignScreen(
     }
   }
 
+  // Build icon context from spec.vectors for dynamic icon binding
+  const vectorList = [];
+  const vectorMap = new Map();
+  const generatedNames = new Set();
+  const safeVectors = (spec?.vectors || []).filter(v => v && typeof v === 'object');
+
+  for (let idx = 0; idx < safeVectors.length; idx++) {
+    const vec = safeVectors[idx];
+    let baseName = VectorGenerator.toPascalCase(vec.name || `Icon_${idx + 1}`);
+    if (!baseName.endsWith('Icon')) baseName += 'Icon';
+
+    let propName = baseName;
+    let counter = 1;
+    while (generatedNames.has(propName)) {
+      propName = `${baseName}_${++counter}`;
+    }
+    generatedNames.add(propName);
+    const safeProp = /^[0-9]/.test(propName) ? `\`${propName}\`` : propName;
+
+    vectorList.push({ id: vec.id, name: vec.name, propName: safeProp });
+    if (vec.id) vectorMap.set(vec.id, safeProp);
+    if (vec.name) vectorMap.set(vec.name, safeProp);
+    vectorMap.set(`index_${idx}`, safeProp);
+  }
+
+  const iconContext = { vectorList, vectorMap, currentIndex: 0 };
+
   const contentCode = translateNode(root, '            ', stateMap, {
     inRow: false,
     siblingCount: 1,
     childIndex: 0
-  });
+  }, iconContext);
 
   const hasAbsoluteChildren = Array.isArray(root?.children) && root.children.some(c => 
     c?.style?.position === 'absolute' || 
@@ -660,6 +721,14 @@ fun ClaudeDesignScreenPreview() {
 }
 
 class ScreenGenerator {
+  static generateScreenFile(spec, packageName) {
+    return generateScreenFile(spec, packageName);
+  }
+
+  static generatePreviewFile(packageName) {
+    return generatePreviewFile(packageName);
+  }
+
   /**
    * Main screen synthesis driver.
    * @param {Object} spec design_spec.json

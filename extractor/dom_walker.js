@@ -14,6 +14,7 @@ async function walkDOM(frame, options = {}) {
 
   const serialized = await frame.evaluate(({ rootSelector }) => {
     let idCounter = 0;
+    let svgCounter = 0;
 
     // --- Helper: Font family normalizer ---
     function normalizeFontFamily(raw) {
@@ -269,7 +270,7 @@ async function walkDOM(frame, options = {}) {
       }
 
       const paths = [];
-      function parseNode(node) {
+      function parseNode(node, inherited = {}) {
         if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
         const nodeTag = node.tagName.toLowerCase();
         const nodeStyle = window.getComputedStyle(node);
@@ -279,6 +280,13 @@ async function walkDOM(frame, options = {}) {
 
         if (fill === 'currentColor') fill = parseColor(nodeStyle.color || style.color).hex;
         if (stroke === 'currentColor') stroke = parseColor(nodeStyle.color || style.color).hex;
+
+        const rawTransform = node.getAttribute('transform');
+        const transform = rawTransform || inherited.transform;
+        const rawFillRule = node.getAttribute('fill-rule') || node.getAttribute('clip-rule') || nodeStyle.fillRule;
+        const fillRule = (rawFillRule && rawFillRule !== 'none') ? rawFillRule : inherited.fillRule;
+
+        const nextInherited = { transform, fillRule };
 
         let d = '';
         if (nodeTag === 'path') {
@@ -326,17 +334,19 @@ async function walkDOM(frame, options = {}) {
             d,
             fill: fill && fill !== 'none' ? fill : undefined,
             stroke: stroke && stroke !== 'none' ? stroke : undefined,
-            strokeWidth
+            strokeWidth,
+            transform: transform || undefined,
+            fillRule: fillRule ? fillRule.toLowerCase() : undefined
           });
         }
 
         for (const child of node.children) {
-          parseNode(child);
+          parseNode(child, nextInherited);
         }
       }
 
       for (const child of svgEl.children) {
-        parseNode(child);
+        parseNode(child, {});
       }
 
       return {
@@ -461,6 +471,9 @@ async function walkDOM(frame, options = {}) {
       }
 
       if (isSvg) {
+        svgCounter++;
+        nodeObj.vectorId = `vector_${svgCounter}`;
+        nodeObj.vectorName = el.getAttribute('id') || el.getAttribute('data-icon') || el.getAttribute('aria-label') || `icon_${svgCounter}`;
         nodeObj.vectorData = extractInlineSvgData(el);
       }
 

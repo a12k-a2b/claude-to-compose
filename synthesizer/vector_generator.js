@@ -344,15 +344,44 @@ class VectorGenerator {
         const strokeCap = VectorGenerator.mapXmlStrokeCap(p.strokeLinecap);
         const strokeJoin = VectorGenerator.mapXmlStrokeJoin(p.strokeLinejoin);
 
-        xml += `    <path\n`;
-        if (fillColor) xml += `        android:fillColor="${fillColor}"\n`;
-        if (strokeColor) {
-          xml += `        android:strokeColor="${strokeColor}"\n`;
-          xml += `        android:strokeWidth="${strokeWidth}"\n`;
-          xml += `        android:strokeLineCap="${strokeCap}"\n`;
-          xml += `        android:strokeLineJoin="${strokeJoin}"\n`;
+        const t = VectorGenerator.parseTransform(p.transform);
+        const hasGroup = t && (t.hasTranslation || t.hasScale || t.hasRotate);
+
+        const pathIndent = hasGroup ? '        ' : '    ';
+        if (hasGroup) {
+          const groupAttrs = [];
+          if (t.hasTranslation) {
+            if (t.translationX !== 0) groupAttrs.push(`android:translateX="${t.translationX}"`);
+            if (t.translationY !== 0) groupAttrs.push(`android:translateY="${t.translationY}"`);
+          }
+          if (t.hasScale) {
+            if (t.scaleX !== 1) groupAttrs.push(`android:scaleX="${t.scaleX}"`);
+            if (t.scaleY !== 1) groupAttrs.push(`android:scaleY="${t.scaleY}"`);
+          }
+          if (t.hasRotate) {
+            groupAttrs.push(`android:rotation="${t.rotate}"`);
+            if (t.pivotX !== 0) groupAttrs.push(`android:pivotX="${t.pivotX}"`);
+            if (t.pivotY !== 0) groupAttrs.push(`android:pivotY="${t.pivotY}"`);
+          }
+          xml += `    <group\n        ${groupAttrs.join('\n        ')}>\n`;
         }
-        xml += `        android:pathData="${escapedPathData}" />\n`;
+
+        const isEvenOdd = p.fillRule === 'evenodd' || p.clipRule === 'evenodd';
+        const fillTypeAttr = isEvenOdd ? `\n${pathIndent}        android:fillType="evenOdd"` : '';
+
+        xml += `${pathIndent}<path\n`;
+        if (fillColor) xml += `${pathIndent}    android:fillColor="${fillColor}"\n`;
+        if (strokeColor) {
+          xml += `${pathIndent}    android:strokeColor="${strokeColor}"\n`;
+          xml += `${pathIndent}    android:strokeWidth="${strokeWidth}"\n`;
+          xml += `${pathIndent}    android:strokeLineCap="${strokeCap}"\n`;
+          xml += `${pathIndent}    android:strokeLineJoin="${strokeJoin}"\n`;
+        }
+        xml += `${pathIndent}    android:pathData="${escapedPathData}"${fillTypeAttr} />\n`;
+
+        if (hasGroup) {
+          xml += `    </group>\n`;
+        }
       }
     }
 
@@ -372,11 +401,13 @@ class VectorGenerator {
 
     let code = `package ${packageName}\n\n`;
     code += `import androidx.compose.ui.graphics.Color\n`;
+    code += `import androidx.compose.ui.graphics.PathFillType\n`;
     code += `import androidx.compose.ui.graphics.SolidColor\n`;
     code += `import androidx.compose.ui.graphics.StrokeCap\n`;
     code += `import androidx.compose.ui.graphics.StrokeJoin\n`;
     code += `import androidx.compose.ui.graphics.vector.ImageVector\n`;
     code += `import androidx.compose.ui.graphics.vector.PathBuilder\n`;
+    code += `import androidx.compose.ui.graphics.vector.group\n`;
     code += `import androidx.compose.ui.graphics.vector.path\n`;
     code += `import androidx.compose.ui.unit.dp\n\n`;
     code += `public object ${className}\n\n`;
@@ -433,25 +464,56 @@ class VectorGenerator {
           const composeCap = VectorGenerator.mapComposeStrokeCap(p.strokeLinecap);
           const composeJoin = VectorGenerator.mapComposeStrokeJoin(p.strokeLinejoin);
 
-          code += `            path(\n`;
-          code += `                fill = ${fillExpr},\n`;
-          code += `                stroke = ${strokeExpr},\n`;
-          code += `                strokeLineWidth = ${strokeWidth}f,\n`;
-          code += `                strokeLineCap = ${composeCap},\n`;
-          code += `                strokeLineJoin = ${composeJoin}\n`;
-          code += `            ) {\n`;
+          const t = VectorGenerator.parseTransform(p.transform);
+          const hasGroup = t && (t.hasTranslation || t.hasScale || t.hasRotate);
+
+          const groupIndent = hasGroup ? '                ' : '            ';
+          if (hasGroup) {
+            const groupArgs = [];
+            if (t.hasTranslation) {
+              if (t.translationX !== 0) groupArgs.push(`translationX = ${t.translationX}f`);
+              if (t.translationY !== 0) groupArgs.push(`translationY = ${t.translationY}f`);
+            }
+            if (t.hasScale) {
+              if (t.scaleX !== 1) groupArgs.push(`scaleX = ${t.scaleX}f`);
+              if (t.scaleY !== 1) groupArgs.push(`scaleY = ${t.scaleY}f`);
+            }
+            if (t.hasRotate) {
+              groupArgs.push(`rotate = ${t.rotate}f`);
+              if (t.pivotX !== 0) groupArgs.push(`pivotX = ${t.pivotX}f`);
+              if (t.pivotY !== 0) groupArgs.push(`pivotY = ${t.pivotY}f`);
+            }
+            code += `            group(\n                ${groupArgs.join(',\n                ')}\n            ) {\n`;
+          }
+
+          const isEvenOdd = p.fillRule === 'evenodd' || p.clipRule === 'evenodd';
+          const fillRuleAttr = isEvenOdd
+            ? `,\n${groupIndent}    pathFillType = PathFillType.EvenOdd`
+            : '';
+
+          code += `${groupIndent}path(\n`;
+          code += `${groupIndent}    fill = ${fillExpr},\n`;
+          code += `${groupIndent}    stroke = ${strokeExpr},\n`;
+          code += `${groupIndent}    strokeLineWidth = ${strokeWidth}f,\n`;
+          code += `${groupIndent}    strokeLineCap = ${composeCap},\n`;
+          code += `${groupIndent}    strokeLineJoin = ${composeJoin}${fillRuleAttr}\n`;
+          code += `${groupIndent}) {\n`;
 
           const dslLines = VectorGenerator.pathToComposeDsl(p.d || '');
           if (dslLines.length === 0) {
-            code += `                moveTo(0f, 0f)\n`;
-            code += `                close()\n`;
+            code += `${groupIndent}    moveTo(0f, 0f)\n`;
+            code += `${groupIndent}    close()\n`;
           } else {
             for (const line of dslLines) {
-              code += `                ${line}\n`;
+              code += `${groupIndent}    ${line}\n`;
             }
           }
 
-          code += `            }\n`;
+          code += `${groupIndent}}\n`;
+
+          if (hasGroup) {
+            code += `            }\n`;
+          }
         }
       }
 
@@ -499,6 +561,81 @@ class VectorGenerator {
       default: return 'round';
     }
   }
+
+  /**
+   * Parses an SVG transform attribute string into numeric decomposition.
+   * Supports matrix(a,b,c,d,e,f), translate(tx,[ty]), scale(sx,[sy]), rotate(deg,[cx,cy]).
+   * @param {string} transformStr
+   * @returns {Object|null}
+   */
+  static parseTransform(transformStr) {
+    if (!transformStr || typeof transformStr !== 'string') return null;
+    const t = transformStr.trim();
+
+    // matrix(a, b, c, d, e, f)
+    const matrixMatch = t.match(/matrix\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)\s*\)/i);
+    if (matrixMatch) {
+      const a = parseFloat(matrixMatch[1]);
+      const b = parseFloat(matrixMatch[2]);
+      const c = parseFloat(matrixMatch[3]);
+      const d = parseFloat(matrixMatch[4]);
+      const e = parseFloat(matrixMatch[5]);
+      const f = parseFloat(matrixMatch[6]);
+      return {
+        type: 'matrix',
+        a, b, c, d, e, f,
+        translationX: Math.round(e * 1000) / 1000,
+        translationY: Math.round(f * 1000) / 1000,
+        scaleX: Math.round(a * 1000) / 1000,
+        scaleY: Math.round(d * 1000) / 1000,
+        hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
+        hasScale: Math.abs(a - 1) > 0.0001 || Math.abs(d - 1) > 0.0001
+      };
+    }
+
+    // translate(tx, [ty])
+    const translateMatch = t.match(/translate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (translateMatch) {
+      const tx = parseFloat(translateMatch[1]);
+      const ty = translateMatch[2] !== undefined ? parseFloat(translateMatch[2]) : 0;
+      return {
+        type: 'translate',
+        translationX: Math.round(tx * 1000) / 1000,
+        translationY: Math.round(ty * 1000) / 1000,
+        hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001
+      };
+    }
+
+    // scale(sx, [sy])
+    const scaleMatch = t.match(/scale\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (scaleMatch) {
+      const sx = parseFloat(scaleMatch[1]);
+      const sy = scaleMatch[2] !== undefined ? parseFloat(scaleMatch[2]) : sx;
+      return {
+        type: 'scale',
+        scaleX: Math.round(sx * 1000) / 1000,
+        scaleY: Math.round(sy * 1000) / 1000,
+        hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001
+      };
+    }
+
+    // rotate(deg, [cx, cy])
+    const rotateMatch = t.match(/rotate\(\s*([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)(?:[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?)[,\s]+([+-]?(?:\d*\.\d+|\d+)(?:[eE][+-]?\d+)?))?\s*\)/i);
+    if (rotateMatch) {
+      const deg = parseFloat(rotateMatch[1]);
+      const cx = rotateMatch[2] !== undefined ? parseFloat(rotateMatch[2]) : 0;
+      const cy = rotateMatch[3] !== undefined ? parseFloat(rotateMatch[3]) : 0;
+      return {
+        type: 'rotate',
+        rotate: Math.round(deg * 1000) / 1000,
+        pivotX: Math.round(cx * 1000) / 1000,
+        pivotY: Math.round(cy * 1000) / 1000,
+        hasRotate: Math.abs(deg) > 0.0001
+      };
+    }
+
+    return null;
+  }
 }
 
 module.exports = {
@@ -509,5 +646,6 @@ module.exports = {
   tokenizePath: VectorGenerator.tokenizePath,
   pathToComposeDsl: VectorGenerator.pathToComposeDsl,
   generateImageVectorFile: VectorGenerator.generateImageVectorFile,
-  generateVectorDrawableXml: VectorGenerator.generateVectorDrawableXml
+  generateVectorDrawableXml: VectorGenerator.generateVectorDrawableXml,
+  parseTransform: VectorGenerator.parseTransform
 };

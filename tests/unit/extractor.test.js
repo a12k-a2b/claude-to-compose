@@ -46,6 +46,40 @@ describe('SvgParser Unit Tests', () => {
     const parsed = SvgParser.parseSvgString(rawSvg, { color: '#6366F1' });
     assert.equal(parsed.paths[0].stroke, '#6366F1');
   });
+
+  test('extracts transform and fillRule attributes on SVG paths', () => {
+    const rawSvg = '<svg width="20" height="20"><path d="M 0 0 L 10 10" fill="#000" fill-rule="evenodd" transform="matrix(1 0 0 1 11.250 10)"/></svg>';
+    const parsed = SvgParser.parseSvgString(rawSvg);
+    assert.equal(parsed.paths.length, 1);
+    assert.equal(parsed.paths[0].transform, 'matrix(1 0 0 1 11.250 10)');
+    assert.equal(parsed.paths[0].fillRule, 'evenodd');
+  });
+
+  test('parseTransform decomposes affine transform strings', () => {
+    const matrix = SvgParser.parseTransform('matrix(1 0 0 1 11.250 10)');
+    assert.equal(matrix.type, 'matrix');
+    assert.equal(matrix.translationX, 11.25);
+    assert.equal(matrix.translationY, 10);
+    assert.equal(matrix.scaleX, 1);
+    assert.equal(matrix.scaleY, 1);
+    assert.equal(matrix.hasTranslation, true);
+
+    const translate = SvgParser.parseTransform('translate(14.5, 22.0)');
+    assert.equal(translate.type, 'translate');
+    assert.equal(translate.translationX, 14.5);
+    assert.equal(translate.translationY, 22);
+
+    const scale = SvgParser.parseTransform('scale(2, 3)');
+    assert.equal(scale.type, 'scale');
+    assert.equal(scale.scaleX, 2);
+    assert.equal(scale.scaleY, 3);
+
+    const rotate = SvgParser.parseTransform('rotate(45, 12, 12)');
+    assert.equal(rotate.type, 'rotate');
+    assert.equal(rotate.rotate, 45);
+    assert.equal(rotate.pivotX, 12);
+    assert.equal(rotate.pivotY, 12);
+  });
 });
 
 describe('SpecBuilder & Schema Validation Unit Tests', () => {

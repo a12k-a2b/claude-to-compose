@@ -174,8 +174,7 @@ fun E34fDesignScreen(
                         PillItem("3 · Floating slips", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("4 · Loose coins", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 10.7.dp,
-                    spacerWidth = 14.25.dp
+                    spacing = 10.5.dp
                 )
 
                 // Row 2: BOLDER IDEAS
@@ -186,8 +185,7 @@ fun E34fDesignScreen(
                         PillItem("3c · The dial", SolOsOrange, Color.White, false),
                         PillItem("6d · Ledger band", SolOsOrange, Color.White, false)
                     ),
-                    spacing = 7.7.dp,
-                    spacerWidth = 12.25.dp
+                    spacing = 8.0.dp
                 )
 
                 // Row 3: EVALUATE
@@ -196,8 +194,7 @@ fun E34fDesignScreen(
                     items = listOf(
                         PillItem("5 · Rotation / landscape check", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 11.0.dp,
-                    spacerWidth = 12.0.dp
+                    spacing = 11.0.dp
                 )
 
                 // Row 4: BEYOND THE BAR
@@ -211,8 +208,7 @@ fun E34fDesignScreen(
                         PillItem("g5 · Pages", SolOsDarkPill, Color.White, false),
                         PillItem("g6 · First stroke", SolOsDarkPill, Color.White, false)
                     ),
-                    spacing = 10.2.dp,
-                    spacerWidth = 14.75.dp
+                    spacing = 10.2.dp
                 )
 
                 // Row 5: MILDLINER
@@ -222,7 +218,7 @@ fun E34fDesignScreen(
                         PillItem("m · The mildliner", SolOsOrange, Color.White, false)
                     ),
                     spacing = 8.0.dp,
-                    spacerWidth = 11.5.dp,
+                    categoryColumnWidth = 108.5.dp,
                     labelModifier = Modifier.offset(y = (-0.5).dp),
                     categoryFontSize = 12.sp,
                     categoryLetterSpacing = 0.75.sp
@@ -238,8 +234,7 @@ fun E34fDesignScreen(
                         PillItem("small", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("onboard", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 9.0.dp,
-                    spacerWidth = 13.0.dp
+                    spacing = 9.0.dp
                 )
             }
         }
@@ -312,14 +307,14 @@ private data class PillItem(
     val hasBorder: Boolean
 )
 
-// Category row component: prevents label wrapping via softWrap = false without artificial width(140.dp) truncation
+// Category row component: guarantees unified 170.5dp horizontal pill baseline via categoryColumnWidth
 @Composable
 private fun PillCategoryRow(
     category: String,
     items: List<PillItem>,
     spacing: Dp = 10.5.dp,
     labelModifier: Modifier = Modifier,
-    spacerWidth: Dp = 11.0.dp,
+    categoryColumnWidth: Dp = 98.5.dp,
     categoryFontSize: androidx.compose.ui.unit.TextUnit = 11.5.sp,
     categoryLetterSpacing: androidx.compose.ui.unit.TextUnit = 1.25.sp
 ) {
@@ -329,20 +324,24 @@ private fun PillCategoryRow(
             .height(50.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = category,
-            fontFamily = AbcRomMono,
-            fontSize = categoryFontSize,
-            fontWeight = FontWeight.Normal,
-            letterSpacing = categoryLetterSpacing,
-            color = Color(0xFF9A968F),
-            maxLines = 1,
-            softWrap = false,
-            modifier = labelModifier
-                .padding(start = 3.0.dp),
-            style = BaseTextStyle
-        )
-        Spacer(modifier = Modifier.width(spacerWidth))
+        Box(
+            modifier = Modifier.width(categoryColumnWidth),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = category,
+                fontFamily = AbcRomMono,
+                fontSize = categoryFontSize,
+                fontWeight = FontWeight.Normal,
+                letterSpacing = categoryLetterSpacing,
+                color = Color(0xFF9A968F),
+                maxLines = 1,
+                softWrap = false,
+                modifier = labelModifier
+                    .padding(start = 3.0.dp),
+                style = BaseTextStyle
+            )
+        }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(spacing),
