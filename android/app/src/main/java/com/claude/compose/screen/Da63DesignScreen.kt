@@ -319,32 +319,33 @@ fun Da63DesignScreen(
                             modifier = Modifier.size(64.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Canvas(modifier = Modifier.size(23.dp).offset(x = 1.0.dp, y = 0.5.dp)) {
-                                val w = size.width
-                                val h = size.height
-                                val fold = 7.dp.toPx()
-                                val docPath = Path().apply {
-                                    moveTo(0f, 0f)
-                                    lineTo(w - fold, 0f)
-                                    lineTo(w, fold)
-                                    lineTo(w, h)
-                                    lineTo(0f, h)
-                                    close()
-                                }
-                                drawPath(
-                                    docPath,
-                                    color = Color(0xFF1A1A1A),
-                                    style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                            Canvas(modifier = Modifier.size(26.dp).offset(x = 0.3.dp, y = 0.05.dp)) {
+                                // Path 1: Plus sign action badge (+)
+                                drawSvgPath(
+                                    this,
+                                    "M 3.375 0 L 3.375 8.75 L 5.375 8.75 L 5.375 0 L 3.375 0 Z M 0 5.375 L 4.375 5.375 L 4.375 3.375 L 0 3.375 L 0 5.375 Z M 4.375 5.375 L 8.75 5.375 L 8.75 3.375 L 4.375 3.375 L 4.375 5.375 Z",
+                                    Color(0xFF1A1A1A),
+                                    floatArrayOf(1f, 0f, 0f, 1f, 11.250f, 10f),
+                                    viewBoxSize = 20f,
+                                    targetSizeDp = 26f
                                 )
-                                val foldPath = Path().apply {
-                                    moveTo(w - fold, 0f)
-                                    lineTo(w - fold, fold)
-                                    lineTo(w, fold)
-                                }
-                                drawPath(
-                                    foldPath,
-                                    color = Color(0xFF1A1A1A),
-                                    style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                                // Path 2: Top-right fold flap
+                                drawSvgPath(
+                                    this,
+                                    "M 0 6.25 L -1 6.25 C -1 6.802 -0.552 7.25 0 7.25 L 0 6.25 Z M -1 0 L -1 6.25 L 1 6.25 L 1 0 L -1 0 Z M 0 7.25 L 6.25 7.25 L 6.25 5.25 L 0 5.25 L 0 7.25 Z",
+                                    Color(0xFF1A1A1A),
+                                    floatArrayOf(1f, 0f, 0f, 1f, 11.875f, 1.875f),
+                                    viewBoxSize = 20f,
+                                    targetSizeDp = 26f
+                                )
+                                // Path 3: Document sheet body
+                                drawSvgPath(
+                                    this,
+                                    "M 9.375 0 L 10.057 -0.731 C 9.872 -0.904 9.628 -1 9.375 -1 L 9.375 0 Z M 0.549 0.513 L -0.133 -0.218 L -0.133 -0.218 L 0.549 0.513 Z M 0.549 16.987 L 1.231 16.256 L 1.231 16.256 L 0.549 16.987 Z M 15 5.25 L 16 5.25 C 16 4.973 15.885 4.708 15.682 4.519 L 15 5.25 Z M 9.375 -1 L 1.875 -1 L 1.875 1 L 9.375 1 L 9.375 -1 Z M 1.875 -1 C 1.134 -1 0.41 -0.726 -0.133 -0.218 L 1.231 1.244 C 1.391 1.095 1.622 1 1.875 1 L 1.875 -1 Z M -0.133 -0.218 C -0.679 0.291 -1 0.998 -1 1.75 L 1 1.75 C 1 1.574 1.074 1.39 1.231 1.244 L -0.133 -0.218 Z M -1 1.75 L -1 15.75 L 1 15.75 L 1 1.75 L -1 1.75 Z M -1 15.75 C -1 16.502 -0.679 17.209 -0.133 17.718 L 1.231 16.256 C 1.074 16.11 1 15.926 1 15.75 L -1 15.75 Z M -0.133 17.718 C 0.41 18.226 1.134 18.5 1.875 18.5 L 1.875 16.5 C 1.622 16.5 1.391 16.405 1.231 16.256 L -0.133 17.718 Z M 15.682 4.519 L 10.057 -0.731 L 8.693 0.731 L 14.318 5.981 L 15.682 4.519 Z M 16 6.875 L 16 5.25 L 14 5.25 L 14 6.875 L 16 6.875 Z M 1.875 18.5 L 7.5 18.5 L 7.5 16.5 L 1.875 16.5 L 1.875 18.5 Z",
+                                    Color(0xFF1A1A1A),
+                                    floatArrayOf(1f, 0f, 0f, 1f, 3.125f, 1.875f),
+                                    viewBoxSize = 20f,
+                                    targetSizeDp = 26f
                                 )
                             }
                         }
@@ -362,7 +363,7 @@ fun Da63DesignScreen(
                         Row(
                             modifier = Modifier
                                 .size(width = 152.5.dp, height = 64.dp)
-                                .padding(start = 17.dp, end = 22.dp),
+                                .padding(start = 17.85.dp, end = 21.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -373,20 +374,18 @@ fun Da63DesignScreen(
                                 lineHeight = 28.5.sp,
                                 letterSpacing = (-0.68).sp,
                                 color = Color(0xFF1A1A1A),
-                                modifier = Modifier.offset(y = (-1.0).dp),
+                                modifier = Modifier.offset(y = (-0.45).dp),
                                 style = BaseTextStyle
                             )
                             Spacer(modifier = Modifier.width(2.dp))
-                            Canvas(modifier = Modifier.size(14.dp)) {
-                                val chevron = Path().apply {
-                                    moveTo(2.dp.toPx(), 4.dp.toPx())
-                                    lineTo(7.dp.toPx(), 9.dp.toPx())
-                                    lineTo(12.dp.toPx(), 4.dp.toPx())
-                                }
-                                drawPath(
-                                    chevron,
-                                    color = Color(0xFF1A1A1A),
-                                    style = Stroke(width = 1.8.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                            Canvas(modifier = Modifier.size(18.dp).offset(x = 0.15.dp, y = 0.0.dp)) {
+                                drawSvgPath(
+                                    this,
+                                    "M 5 5 L 4.293 5.707 L 5 6.414 L 5.707 5.707 L 5 5 Z M 10.707 10.707 L 11.414 10 L 10.707 9.293 L 10 10 L 10.707 10.707 Z M 15 5 L 14.293 5.707 L 15 6.414 L 15.707 5.707 L 15 5 Z M 5.707 4.293 L 4.293 5.707 L 5.707 7.121 L 7.121 5.707 L 5.707 4.293 Z M 4.293 5.707 L 10 11.414 L 11.414 10 L 5.707 4.293 L 4.293 5.707 Z M 10 11.414 L 15.707 5.707 L 14.293 4.293 L 8.586 10 L 10 11.414 Z M 15.707 5.707 L 14.293 4.293 L 12.879 5.707 L 14.293 7.121 L 15.707 5.707 Z",
+                                    Color(0xFF1A1A1A),
+                                    floatArrayOf(1f, 0f, 0f, 1f, 7f, 7f),
+                                    viewBoxSize = 24f,
+                                    targetSizeDp = 18f
                                 )
                             }
                         }
