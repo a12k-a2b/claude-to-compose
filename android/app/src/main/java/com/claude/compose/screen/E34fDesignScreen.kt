@@ -37,8 +37,11 @@ private val SolOsDarkPill = Color(0xFF1A1A1A)
 
 @Composable
 fun E34fDesignScreen(
+    useFlaredSerifHeadline: Boolean = true,
     modifier: Modifier = Modifier
 ) {
+    val headlineFont = if (useFlaredSerifHeadline) AbcArizonaFlareHeadline else AbcArizonaSans
+
     Box(
         modifier = modifier
             .requiredSize(width = 1440.dp, height = 860.dp)
@@ -73,7 +76,7 @@ fun E34fDesignScreen(
                 Text(
                     text = "A",
                     modifier = Modifier.offset(x = 0.5.dp, y = (-1.0).dp),
-                    fontFamily = AbcArizonaFlareHeadline,
+                    fontFamily = headlineFont,
                     fontSize = 74.5.sp,
                     lineHeight = 77.52.sp,
                     color = Color(0xFF17190F),
@@ -82,7 +85,7 @@ fun E34fDesignScreen(
                 Text(
                     text = "sheet",
                     modifier = Modifier.offset(x = 66.2.dp, y = (-1.0).dp),
-                    fontFamily = AbcArizonaFlareHeadline,
+                    fontFamily = headlineFont,
                     fontSize = 76.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-7.2).sp,
@@ -92,7 +95,7 @@ fun E34fDesignScreen(
                 Text(
                     text = "of",
                     modifier = Modifier.offset(x = 236.9.dp, y = (-0.5).dp),
-                    fontFamily = AbcArizonaFlareHeadline,
+                    fontFamily = headlineFont,
                     fontSize = 74.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-6.4).sp,
@@ -102,7 +105,7 @@ fun E34fDesignScreen(
                 Text(
                     text = "glass",
                     modifier = Modifier.offset(x = 311.0.dp, y = (-0.5).dp),
-                    fontFamily = AbcArizonaFlareHeadline,
+                    fontFamily = headlineFont,
                     fontSize = 74.sp,
                     lineHeight = 77.52.sp,
                     letterSpacing = (-5.2).sp,

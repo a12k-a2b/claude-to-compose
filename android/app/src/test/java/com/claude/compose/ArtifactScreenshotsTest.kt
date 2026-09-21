@@ -111,7 +111,50 @@ class ArtifactScreenshotsTest {
         FileOutputStream(targetFile).use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
+        val flaredFile = File("../../output/test_e34f/rendered_compose_flared_serif.png")
+        FileOutputStream(flaredFile).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        }
         assertTrue("E34f rendered screenshot must exist", targetFile.exists() && targetFile.length() > 0)
+    }
+
+    @Test
+    @Config(
+        sdk = [34],
+        qualifiers = "w1440dp-h860dp-xhdpi"
+    )
+    fun renderE34fSansSerifPreview() {
+        composeTestRule.setContent {
+            MaterialTheme(
+                colorScheme = lightColorScheme(
+                    primary = Color(0xFFFF9D00),
+                    background = Color(0xFFFAF4F2),
+                    onBackground = Color(0xFF1A1A1A),
+                    surface = Color(0xFFFFFFFF),
+                    onSurface = Color(0xFF1A1A1A)
+                ),
+                typography = ClaudeTypography
+            ) {
+                E34fDesignScreen(useFlaredSerifHeadline = false)
+            }
+        }
+
+        composeTestRule.waitForIdle()
+
+        val bitmap: Bitmap = try {
+            composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+        } catch (t: Throwable) {
+            captureComposeViewViaSkia(2880, 1720)
+        }
+
+        println("E34f Sans-Serif captured bitmap dimensions: ${bitmap.width} x ${bitmap.height}")
+
+        val targetFile = File("../../output/test_e34f/rendered_compose_sans_serif.png")
+        targetFile.parentFile?.mkdirs()
+        FileOutputStream(targetFile).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        }
+        assertTrue("E34f Sans-Serif rendered screenshot must exist", targetFile.exists() && targetFile.length() > 0)
     }
 
     private fun captureComposeViewViaSkia(width: Int, height: Int): Bitmap {
