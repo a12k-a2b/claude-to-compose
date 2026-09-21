@@ -360,8 +360,8 @@ class VectorGenerator {
           }
           if (t.hasRotate) {
             groupAttrs.push(`android:rotation="${t.rotate}"`);
-            if (t.pivotX !== 0) groupAttrs.push(`android:pivotX="${t.pivotX}"`);
-            if (t.pivotY !== 0) groupAttrs.push(`android:pivotY="${t.pivotY}"`);
+            if (t.pivotX && t.pivotX !== 0) groupAttrs.push(`android:pivotX="${t.pivotX}"`);
+            if (t.pivotY && t.pivotY !== 0) groupAttrs.push(`android:pivotY="${t.pivotY}"`);
           }
           xml += `    <group\n        ${groupAttrs.join('\n        ')}>\n`;
         }
@@ -480,8 +480,8 @@ class VectorGenerator {
             }
             if (t.hasRotate) {
               groupArgs.push(`rotate = ${t.rotate}f`);
-              if (t.pivotX !== 0) groupArgs.push(`pivotX = ${t.pivotX}f`);
-              if (t.pivotY !== 0) groupArgs.push(`pivotY = ${t.pivotY}f`);
+              if (t.pivotX && t.pivotX !== 0) groupArgs.push(`pivotX = ${t.pivotX}f`);
+              if (t.pivotY && t.pivotY !== 0) groupArgs.push(`pivotY = ${t.pivotY}f`);
             }
             code += `            group(\n                ${groupArgs.join(',\n                ')}\n            ) {\n`;
           }
@@ -609,6 +609,8 @@ class VectorGenerator {
           scaleY,
           rotate: deg,
           rotation: deg,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
           hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
           hasRotate: Math.abs(deg) > 0.0001
@@ -626,6 +628,8 @@ class VectorGenerator {
           scaleY: 1,
           rotate: 0,
           rotation: 0,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001,
           hasScale: false,
           hasRotate: false
@@ -643,6 +647,8 @@ class VectorGenerator {
           translationY: 0,
           rotate: 0,
           rotation: 0,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: false,
           hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001,
           hasRotate: false
@@ -736,6 +742,8 @@ class VectorGenerator {
       scaleY,
       rotate: deg,
       rotation: deg,
+      pivotX: 0,
+      pivotY: 0,
       hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
       hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
       hasRotate: Math.abs(deg) > 0.0001

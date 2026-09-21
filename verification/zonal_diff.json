@@ -4,14 +4,14 @@
     "height": 1720
   },
   "totalPixels": 4953600,
-  "totalMismatches": 204159,
-  "globalSimilarity": 95.88,
-  "globalInkIou": 76.93,
-  "globalInkDice": 86.96,
+  "totalMismatches": 231022,
+  "globalSimilarity": 95.34,
+  "globalInkIou": 74.24,
+  "globalInkDice": 85.22,
   "globalRefInkCount": 1239888,
-  "globalRenderedInkCount": 1207422,
-  "globalInkIntersection": 1064114,
-  "globalInkUnion": 1383196,
+  "globalRenderedInkCount": 1159120,
+  "globalInkIntersection": 1022165,
+  "globalInkUnion": 1376843,
   "zones": [
     {
       "id": "zone_navigation",
@@ -20,21 +20,21 @@
       "yStart": 0,
       "yEnd": 180,
       "height": 180,
-      "similarity": 98.01,
-      "mismatchCount": 10296,
+      "similarity": 98.02,
+      "mismatchCount": 10287,
       "totalPixels": 518400,
-      "ssimScore": 0.9455,
+      "ssimScore": 0.9378,
       "refInkCount": 18396,
-      "renderedInkCount": 15680,
-      "inkIou": 89.61,
-      "inkDice": 94.52,
-      "inkIntersection": 109813,
-      "inkUnion": 122543,
+      "renderedInkCount": 15402,
+      "inkIou": 87.88,
+      "inkDice": 93.55,
+      "inkIntersection": 107321,
+      "inkUnion": 122117,
       "centroidDrift": {
-        "deltaX": 5.02,
-        "deltaY": 0.29,
-        "deltaXDp": 2.51,
-        "deltaYDp": 0.14
+        "deltaX": -0.67,
+        "deltaY": 0.73,
+        "deltaXDp": -0.34,
+        "deltaYDp": 0.36
       }
     },
     {
@@ -44,21 +44,21 @@
       "yStart": 180,
       "yEnd": 800,
       "height": 620,
-      "similarity": 97.24,
-      "mismatchCount": 49291,
+      "similarity": 96.64,
+      "mismatchCount": 59921,
       "totalPixels": 1785600,
-      "ssimScore": 0.9021,
+      "ssimScore": 0.8759,
       "refInkCount": 50694,
-      "renderedInkCount": 54488,
-      "inkIou": 80.32,
-      "inkDice": 89.08,
-      "inkIntersection": 360689,
-      "inkUnion": 449090,
+      "renderedInkCount": 55419,
+      "inkIou": 77.15,
+      "inkDice": 87.1,
+      "inkIntersection": 343394,
+      "inkUnion": 445103,
       "centroidDrift": {
-        "deltaX": -45.55,
-        "deltaY": 60.39,
-        "deltaXDp": -22.77,
-        "deltaYDp": 30.2
+        "deltaX": -55.31,
+        "deltaY": 58.66,
+        "deltaXDp": -27.66,
+        "deltaYDp": 29.33
       }
     },
     {
@@ -68,21 +68,21 @@
       "yStart": 800,
       "yEnd": 1350,
       "height": 550,
-      "similarity": 94.42,
-      "mismatchCount": 88359,
+      "similarity": 94.12,
+      "mismatchCount": 93183,
       "totalPixels": 1584000,
-      "ssimScore": 0.8011,
+      "ssimScore": 0.787,
       "refInkCount": 48690,
-      "renderedInkCount": 75000,
-      "inkIou": 70.66,
-      "inkDice": 82.81,
-      "inkIntersection": 324631,
-      "inkUnion": 459400,
+      "renderedInkCount": 77903,
+      "inkIou": 69.5,
+      "inkDice": 82,
+      "inkIntersection": 315008,
+      "inkUnion": 453277,
       "centroidDrift": {
-        "deltaX": 12.6,
-        "deltaY": 11.37,
-        "deltaXDp": 6.3,
-        "deltaYDp": 5.68
+        "deltaX": 16.09,
+        "deltaY": 9.9,
+        "deltaXDp": 8.04,
+        "deltaYDp": 4.95
       }
     },
     {
@@ -92,27 +92,27 @@
       "yStart": 1350,
       "yEnd": 1584,
       "height": 234,
-      "similarity": 93.69,
-      "mismatchCount": 42550,
+      "similarity": 92.12,
+      "mismatchCount": 53103,
       "totalPixels": 673920,
-      "ssimScore": 0.7913,
+      "ssimScore": 0.7257,
       "refInkCount": 21714,
-      "renderedInkCount": 36336,
-      "inkIou": 68.16,
-      "inkDice": 81.06,
-      "inkIntersection": 141422,
-      "inkUnion": 207500,
+      "renderedInkCount": 37415,
+      "inkIou": 61.45,
+      "inkDice": 76.12,
+      "inkIntersection": 130478,
+      "inkUnion": 212338,
       "centroidDrift": {
-        "deltaX": -21.88,
-        "deltaY": 1.23,
-        "deltaXDp": -10.94,
-        "deltaYDp": 0.61
+        "deltaX": -28.99,
+        "deltaY": 24.35,
+        "deltaXDp": -14.49,
+        "deltaYDp": 12.18
       }
     }
   ],
   "zonalDiffOverlay": "verification/zonal_diff_overlay.png",
-  "elementIouScore": 91.74,
-  "maxSpatialShiftPx": 2.55,
+  "elementIouScore": 89.88,
+  "maxSpatialShiftPx": 2.92,
   "worstDriftElement": {
     "elementId": "node_24",
     "name": "Field notes",
@@ -133,7 +133,7 @@
     ],
     "renderedTightBbox": [
       376,
-      151,
+      153,
       177,
       30
     ],
@@ -143,20 +143,20 @@
     },
     "renderedCentroid": {
       "x": 462.88,
-      "y": 167.35
+      "y": 169.35
     },
     "refInkCount": 2346,
     "renderedInkCount": 1906,
     "dx": 2.5,
-    "dy": -0.5,
+    "dy": 1.5,
     "dxDp": 1.25,
-    "dyDp": -0.25,
+    "dyDp": 0.75,
     "dWidth": 7,
     "dHeight": -1,
-    "shiftMagnitude": 2.55,
-    "iou": 93.07,
-    "status": "ALIGNED",
-    "passed": true
+    "shiftMagnitude": 2.92,
+    "iou": 87.26,
+    "status": "LOW_IOU",
+    "passed": false
   },
   "driftVectors": [
     {
@@ -179,8 +179,8 @@
       ],
       "renderedTightBbox": [
         128,
-        326,
-        364,
+        325,
+        362,
         53
       ],
       "refCentroid": {
@@ -188,19 +188,19 @@
         "y": 353.14
       },
       "renderedCentroid": {
-        "x": 317.06,
-        "y": 356.28
+        "x": 313.33,
+        "y": 355
       },
       "refInkCount": 4403,
-      "renderedInkCount": 5770,
+      "renderedInkCount": 5885,
       "dx": 0,
-      "dy": 1,
+      "dy": 0,
       "dxDp": 0,
-      "dyDp": 0.5,
-      "dWidth": 0,
+      "dyDp": 0,
+      "dWidth": -2,
       "dHeight": 2,
-      "shiftMagnitude": 1,
-      "iou": 92.59,
+      "shiftMagnitude": 0,
+      "iou": 95.72,
       "status": "ALIGNED",
       "passed": true
     },
@@ -223,7 +223,7 @@
         27
       ],
       "renderedTightBbox": [
-        1685,
+        1682,
         336,
         85,
         27
@@ -233,18 +233,18 @@
         "y": 349.23
       },
       "renderedCentroid": {
-        "x": 1718.41,
+        "x": 1715.41,
         "y": 350.48
       },
       "refInkCount": 168,
       "renderedInkCount": 46,
-      "dx": 1,
+      "dx": -2,
       "dy": 0,
-      "dxDp": 0.5,
+      "dxDp": -1,
       "dyDp": 0,
       "dWidth": -6,
       "dHeight": 0,
-      "shiftMagnitude": 1,
+      "shiftMagnitude": 2,
       "iou": 93.41,
       "status": "ALIGNED",
       "passed": true
@@ -268,9 +268,9 @@
         27
       ],
       "renderedTightBbox": [
-        1840,
+        1837,
         336,
-        78,
+        85,
         27
       ],
       "refCentroid": {
@@ -278,19 +278,19 @@
         "y": 350.27
       },
       "renderedCentroid": {
-        "x": 1878.61,
-        "y": 348.81
+        "x": 1877.03,
+        "y": 349.22
       },
       "refInkCount": 79,
-      "renderedInkCount": 31,
-      "dx": 0,
+      "renderedInkCount": 32,
+      "dx": 0.5,
       "dy": 0,
-      "dxDp": 0,
+      "dxDp": 0.25,
       "dyDp": 0,
-      "dWidth": -4,
+      "dWidth": 3,
       "dHeight": 0,
-      "shiftMagnitude": 0,
-      "iou": 95.12,
+      "shiftMagnitude": 0.5,
+      "iou": 96.47,
       "status": "ALIGNED",
       "passed": true
     },
@@ -313,9 +313,9 @@
         27
       ],
       "renderedTightBbox": [
-        1983,
+        1980,
         336,
-        120,
+        122,
         27
       ],
       "refCentroid": {
@@ -323,19 +323,19 @@
         "y": 351.2
       },
       "renderedCentroid": {
-        "x": 2050.65,
-        "y": 350.13
+        "x": 2048.61,
+        "y": 350.07
       },
       "refInkCount": 201,
-      "renderedInkCount": 55,
-      "dx": 1.5,
+      "renderedInkCount": 56,
+      "dx": -0.5,
       "dy": 0,
-      "dxDp": 0.75,
+      "dxDp": -0.25,
       "dyDp": 0,
-      "dWidth": 7,
+      "dWidth": 9,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 94.17,
+      "shiftMagnitude": 0.5,
+      "iou": 92.62,
       "status": "ALIGNED",
       "passed": true
     },
@@ -404,7 +404,7 @@
       ],
       "renderedTightBbox": [
         145,
-        571,
+        570,
         391,
         20
       ],
@@ -414,17 +414,17 @@
       },
       "renderedCentroid": {
         "x": 339.01,
-        "y": 581.99
+        "y": 580.99
       },
       "refInkCount": 412,
       "renderedInkCount": 100,
       "dx": 0,
-      "dy": 0,
+      "dy": -1,
       "dxDp": 0,
-      "dyDp": 0,
+      "dyDp": -0.5,
       "dWidth": 0,
       "dHeight": -2,
-      "shiftMagnitude": 0,
+      "shiftMagnitude": 1,
       "iou": 90.91,
       "status": "ALIGNED",
       "passed": true
@@ -448,9 +448,9 @@
         236
       ],
       "renderedTightBbox": [
-        145,
-        660,
-        1538,
+        143,
+        662,
+        1526,
         243
       ],
       "refCentroid": {
@@ -458,19 +458,19 @@
         "y": 744.84
       },
       "renderedCentroid": {
-        "x": 804.45,
-        "y": 743.56
+        "x": 793.25,
+        "y": 745.81
       },
       "refInkCount": 42040,
-      "renderedInkCount": 53488,
-      "dx": 0,
-      "dy": -2,
-      "dxDp": 0,
-      "dyDp": -1,
-      "dWidth": 3,
+      "renderedInkCount": 53910,
+      "dx": -2,
+      "dy": 0,
+      "dxDp": -1,
+      "dyDp": 0,
+      "dWidth": -9,
       "dHeight": 7,
       "shiftMagnitude": 2,
-      "iou": 96.93,
+      "iou": 96.32,
       "status": "ALIGNED",
       "passed": true
     },
@@ -503,11 +503,11 @@
         "y": 1152.64
       },
       "renderedCentroid": {
-        "x": 601.91,
-        "y": 1156.25
+        "x": 602.67,
+        "y": 1152.81
       },
       "refInkCount": 21303,
-      "renderedInkCount": 35646,
+      "renderedInkCount": 37193,
       "dx": 0,
       "dy": 0,
       "dxDp": 0,
@@ -548,11 +548,11 @@
         "y": 1523.89
       },
       "renderedCentroid": {
-        "x": 612.42,
-        "y": 1522.35
+        "x": 613.08,
+        "y": 1523.7
       },
       "refInkCount": 14163,
-      "renderedInkCount": 24417,
+      "renderedInkCount": 25209,
       "dx": 0,
       "dy": 0,
       "dxDp": 0,
@@ -593,11 +593,11 @@
         "y": 1118.14
       },
       "renderedCentroid": {
-        "x": 1685.6,
-        "y": 1114.64
+        "x": 1687.51,
+        "y": 1112.32
       },
       "refInkCount": 17006,
-      "renderedInkCount": 26909,
+      "renderedInkCount": 28475,
       "dx": 1,
       "dy": -1,
       "dxDp": 0.5,
@@ -631,28 +631,28 @@
         1242,
         1319,
         973,
-        193
+        216
       ],
       "refCentroid": {
         "x": 1745.88,
         "y": 1409.57
       },
       "renderedCentroid": {
-        "x": 1713.84,
-        "y": 1414.39
+        "x": 1742.55,
+        "y": 1439.39
       },
       "refInkCount": 11633,
-      "renderedInkCount": 18614,
+      "renderedInkCount": 15363,
       "dx": 1,
       "dy": 0,
       "dxDp": 0.5,
       "dyDp": 0,
       "dWidth": -1,
-      "dHeight": 3,
+      "dHeight": 26,
       "shiftMagnitude": 1,
-      "iou": 98.35,
-      "status": "ALIGNED",
-      "passed": true
+      "iou": 87.88,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_28",
@@ -674,28 +674,28 @@
       ],
       "renderedTightBbox": [
         162,
-        90,
+        89,
         499,
-        158
+        160
       ],
       "refCentroid": {
         "x": 394.88,
         "y": 186.25
       },
       "renderedCentroid": {
-        "x": 408.97,
-        "y": 167.79
+        "x": 394.14,
+        "y": 168.86
       },
       "refInkCount": 5467,
-      "renderedInkCount": 2984,
+      "renderedInkCount": 3152,
       "dx": 1,
       "dy": -2,
       "dxDp": 0.5,
       "dyDp": -1,
       "dWidth": -6,
-      "dHeight": -12,
+      "dHeight": -10,
       "shiftMagnitude": 2.24,
-      "iou": 91.84,
+      "iou": 93,
       "status": "ALIGNED",
       "passed": true
     },
@@ -718,31 +718,31 @@
         50
       ],
       "renderedTightBbox": [
-        219,
-        144,
-        50,
-        50
+        222,
+        145,
+        47,
+        51
       ],
       "refCentroid": {
         "x": 241.74,
         "y": 166.35
       },
       "renderedCentroid": {
-        "x": 243.93,
-        "y": 168.07
+        "x": 242.38,
+        "y": 167.51
       },
       "refInkCount": 1016,
-      "renderedInkCount": 806,
-      "dx": 0,
-      "dy": 0,
-      "dxDp": 0,
-      "dyDp": 0,
-      "dWidth": 2,
-      "dHeight": 0,
-      "shiftMagnitude": 0,
-      "iou": 96,
-      "status": "ALIGNED",
-      "passed": true
+      "renderedInkCount": 960,
+      "dx": 1.5,
+      "dy": 1.5,
+      "dxDp": 0.75,
+      "dyDp": 0.75,
+      "dWidth": -1,
+      "dHeight": 1,
+      "shiftMagnitude": 2.12,
+      "iou": 88.64,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_20",
@@ -763,31 +763,31 @@
         50
       ],
       "renderedTightBbox": [
-        219,
-        144,
-        50,
-        50
+        222,
+        145,
+        47,
+        51
       ],
       "refCentroid": {
         "x": 241.74,
         "y": 166.35
       },
       "renderedCentroid": {
-        "x": 243.93,
-        "y": 168.07
+        "x": 242.38,
+        "y": 167.51
       },
       "refInkCount": 1016,
-      "renderedInkCount": 806,
-      "dx": 0,
-      "dy": 0,
-      "dxDp": 0,
-      "dyDp": 0,
-      "dWidth": 2,
-      "dHeight": 0,
-      "shiftMagnitude": 0,
-      "iou": 96,
-      "status": "ALIGNED",
-      "passed": true
+      "renderedInkCount": 960,
+      "dx": 1.5,
+      "dy": 1.5,
+      "dxDp": 0.75,
+      "dyDp": 0.75,
+      "dWidth": -1,
+      "dHeight": 1,
+      "shiftMagnitude": 2.12,
+      "iou": 88.64,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_27",
@@ -809,8 +809,8 @@
       ],
       "renderedTightBbox": [
         376,
-        151,
-        213,
+        153,
+        214,
         30
       ],
       "refCentroid": {
@@ -818,21 +818,21 @@
         "y": 168.44
       },
       "renderedCentroid": {
-        "x": 470.54,
-        "y": 167.37
+        "x": 468.62,
+        "y": 169.42
       },
       "refInkCount": 1880,
-      "renderedInkCount": 1859,
-      "dx": -1.5,
-      "dy": -0.5,
-      "dxDp": -0.75,
-      "dyDp": -0.25,
-      "dWidth": 1,
+      "renderedInkCount": 1823,
+      "dx": -1,
+      "dy": 1.5,
+      "dxDp": -0.5,
+      "dyDp": 0.75,
+      "dWidth": 2,
       "dHeight": 1,
-      "shiftMagnitude": 1.58,
-      "iou": 95.33,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 89.51,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_24",
@@ -854,7 +854,7 @@
       ],
       "renderedTightBbox": [
         376,
-        151,
+        153,
         177,
         30
       ],
@@ -864,20 +864,20 @@
       },
       "renderedCentroid": {
         "x": 462.88,
-        "y": 167.35
+        "y": 169.35
       },
       "refInkCount": 2346,
       "renderedInkCount": 1906,
       "dx": 2.5,
-      "dy": -0.5,
+      "dy": 1.5,
       "dxDp": 1.25,
-      "dyDp": -0.25,
+      "dyDp": 0.75,
       "dWidth": 7,
       "dHeight": -1,
-      "shiftMagnitude": 2.55,
-      "iou": 93.07,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 2.92,
+      "iou": 87.26,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_25",
@@ -899,8 +899,8 @@
       ],
       "renderedTightBbox": [
         540,
-        159,
-        49,
+        161,
+        50,
         21
       ],
       "refCentroid": {
@@ -908,21 +908,21 @@
         "y": 169.13
       },
       "renderedCentroid": {
-        "x": 559.09,
-        "y": 168.04
+        "x": 557.77,
+        "y": 170.55
       },
       "refInkCount": 148,
-      "renderedInkCount": 280,
-      "dx": -0.5,
-      "dy": -1,
-      "dxDp": -0.25,
-      "dyDp": -0.5,
-      "dWidth": -1,
+      "renderedInkCount": 244,
+      "dx": 0,
+      "dy": 1,
+      "dxDp": 0,
+      "dyDp": 0.5,
+      "dWidth": 0,
       "dHeight": 2,
-      "shiftMagnitude": 1.12,
-      "iou": 88.84,
-      "status": "LOW_IOU",
-      "passed": false
+      "shiftMagnitude": 1,
+      "iou": 90.48,
+      "status": "ALIGNED",
+      "passed": true
     },
     {
       "elementId": "node_50",
@@ -944,17 +944,17 @@
       ],
       "renderedTightBbox": [
         701,
-        90,
+        89,
         1012,
-        158
+        160
       ],
       "refCentroid": {
         "x": 984.01,
         "y": 177.7
       },
       "renderedCentroid": {
-        "x": 936.34,
-        "y": 167.6
+        "x": 936.33,
+        "y": 168.55
       },
       "refInkCount": 22573,
       "renderedInkCount": 17673,
@@ -963,9 +963,9 @@
       "dxDp": 0.75,
       "dyDp": -1,
       "dWidth": -7,
-      "dHeight": -12,
+      "dHeight": -10,
       "shiftMagnitude": 2.5,
-      "iou": 92.3,
+      "iou": 93.47,
       "status": "ALIGNED",
       "passed": true
     },
@@ -989,7 +989,7 @@
       ],
       "renderedTightBbox": [
         717,
-        104,
+        105,
         128,
         128
       ],
@@ -999,18 +999,18 @@
       },
       "renderedCentroid": {
         "x": 780.64,
-        "y": 167.38
+        "y": 168.38
       },
       "refInkCount": 12431,
       "renderedInkCount": 12128,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -1,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 97.69,
+      "shiftMagnitude": 1.8,
+      "iou": 96.19,
       "status": "ALIGNED",
       "passed": true
     },
@@ -1044,10 +1044,10 @@
       },
       "renderedCentroid": {
         "x": 779.68,
-        "y": 167.29
+        "y": 167.22
       },
       "refInkCount": 7754,
-      "renderedInkCount": 7605,
+      "renderedInkCount": 7603,
       "dx": 0,
       "dy": 0,
       "dxDp": 0,
@@ -1079,7 +1079,7 @@
       ],
       "renderedTightBbox": [
         822,
-        119,
+        120,
         112,
         98
       ],
@@ -1089,17 +1089,17 @@
       },
       "renderedCentroid": {
         "x": 856.14,
-        "y": 168.47
+        "y": 169.47
       },
       "refInkCount": 2307,
       "renderedInkCount": 2330,
       "dx": -1,
-      "dy": 0,
+      "dy": 1,
       "dxDp": -0.5,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -2,
       "dHeight": 2,
-      "shiftMagnitude": 1,
+      "shiftMagnitude": 1.41,
       "iou": 96.28,
       "status": "ALIGNED",
       "passed": true
@@ -1124,7 +1124,7 @@
       ],
       "renderedTightBbox": [
         889,
-        147,
+        148,
         45,
         44
       ],
@@ -1134,17 +1134,17 @@
       },
       "renderedCentroid": {
         "x": 909.3,
-        "y": 170.53
+        "y": 171.53
       },
       "refInkCount": 823,
       "renderedInkCount": 750,
       "dx": 0,
-      "dy": 1,
+      "dy": 2,
       "dxDp": 0,
-      "dyDp": 0.5,
+      "dyDp": 1,
       "dWidth": -4,
       "dHeight": -4,
-      "shiftMagnitude": 1,
+      "shiftMagnitude": 2,
       "iou": 84.18,
       "status": "LOW_IOU",
       "passed": false
@@ -1169,7 +1169,7 @@
       ],
       "renderedTightBbox": [
         1025,
-        157,
+        158,
         40,
         23
       ],
@@ -1179,20 +1179,20 @@
       },
       "renderedCentroid": {
         "x": 1044.5,
-        "y": 167.98
+        "y": 168.98
       },
       "refInkCount": 671,
       "renderedInkCount": 578,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -1,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 92.86,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 85.37,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_35",
@@ -1214,7 +1214,7 @@
       ],
       "renderedTightBbox": [
         1025,
-        157,
+        158,
         40,
         23
       ],
@@ -1224,20 +1224,20 @@
       },
       "renderedCentroid": {
         "x": 1044.5,
-        "y": 167.98
+        "y": 168.98
       },
       "refInkCount": 671,
       "renderedInkCount": 578,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -1,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 92.86,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 85.37,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_39",
@@ -1259,7 +1259,7 @@
       ],
       "renderedTightBbox": [
         1150,
-        141,
+        142,
         51,
         48
       ],
@@ -1269,14 +1269,14 @@
       },
       "renderedCentroid": {
         "x": 1176.3,
-        "y": 168.72
+        "y": 169.72
       },
       "refInkCount": 1023,
       "renderedInkCount": 950,
       "dx": 1,
-      "dy": -0.5,
+      "dy": 0.5,
       "dxDp": 0.5,
-      "dyDp": -0.25,
+      "dyDp": 0.25,
       "dWidth": 0,
       "dHeight": 1,
       "shiftMagnitude": 1.12,
@@ -1304,7 +1304,7 @@
       ],
       "renderedTightBbox": [
         1150,
-        141,
+        142,
         51,
         48
       ],
@@ -1314,14 +1314,14 @@
       },
       "renderedCentroid": {
         "x": 1176.3,
-        "y": 168.72
+        "y": 169.72
       },
       "refInkCount": 1023,
       "renderedInkCount": 950,
       "dx": 1,
-      "dy": -0.5,
+      "dy": 0.5,
       "dxDp": 0.5,
-      "dyDp": -0.25,
+      "dyDp": 0.25,
       "dWidth": 0,
       "dHeight": 1,
       "shiftMagnitude": 1.12,
@@ -1349,7 +1349,7 @@
       ],
       "renderedTightBbox": [
         1319,
-        148,
+        149,
         40,
         38
       ],
@@ -1359,20 +1359,20 @@
       },
       "renderedCentroid": {
         "x": 1336.62,
-        "y": 164.8
+        "y": 165.8
       },
       "refInkCount": 592,
       "renderedInkCount": 507,
       "dx": 1.5,
-      "dy": 0.5,
+      "dy": 1.5,
       "dxDp": 0.75,
-      "dyDp": 0.25,
+      "dyDp": 0.75,
       "dWidth": -1,
       "dHeight": -1,
-      "shiftMagnitude": 1.58,
-      "iou": 90.53,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 2.12,
+      "iou": 86.1,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_41",
@@ -1394,7 +1394,7 @@
       ],
       "renderedTightBbox": [
         1319,
-        148,
+        149,
         40,
         38
       ],
@@ -1404,20 +1404,20 @@
       },
       "renderedCentroid": {
         "x": 1336.62,
-        "y": 164.8
+        "y": 165.8
       },
       "refInkCount": 592,
       "renderedInkCount": 507,
       "dx": 1.5,
-      "dy": 0.5,
+      "dy": 1.5,
       "dxDp": 0.75,
-      "dyDp": 0.25,
+      "dyDp": 0.75,
       "dWidth": -1,
       "dHeight": -1,
-      "shiftMagnitude": 1.58,
-      "iou": 90.53,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 2.12,
+      "iou": 86.1,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_45",
@@ -1439,7 +1439,7 @@
       ],
       "renderedTightBbox": [
         1446,
-        143,
+        144,
         49,
         50
       ],
@@ -1449,17 +1449,17 @@
       },
       "renderedCentroid": {
         "x": 1465.36,
-        "y": 167.24
+        "y": 168.24
       },
       "refInkCount": 1039,
       "renderedInkCount": 930,
       "dx": 2,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 1,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -2,
       "dHeight": -2,
-      "shiftMagnitude": 2,
+      "shiftMagnitude": 2.24,
       "iou": 88.82,
       "status": "LOW_IOU",
       "passed": false
@@ -1484,7 +1484,7 @@
       ],
       "renderedTightBbox": [
         1446,
-        143,
+        144,
         49,
         50
       ],
@@ -1494,17 +1494,17 @@
       },
       "renderedCentroid": {
         "x": 1465.36,
-        "y": 167.24
+        "y": 168.24
       },
       "refInkCount": 1039,
       "renderedInkCount": 930,
       "dx": 2,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 1,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -2,
       "dHeight": -2,
-      "shiftMagnitude": 2,
+      "shiftMagnitude": 2.24,
       "iou": 88.82,
       "status": "LOW_IOU",
       "passed": false
@@ -1529,7 +1529,7 @@
       ],
       "renderedTightBbox": [
         1610,
-        145,
+        146,
         46,
         46
       ],
@@ -1539,20 +1539,20 @@
       },
       "renderedCentroid": {
         "x": 1629.03,
-        "y": 167.5
+        "y": 168.5
       },
       "refInkCount": 1199,
       "renderedInkCount": 1142,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": 1,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 93.62,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 89.76,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_47",
@@ -1574,7 +1574,7 @@
       ],
       "renderedTightBbox": [
         1610,
-        145,
+        146,
         46,
         46
       ],
@@ -1584,20 +1584,20 @@
       },
       "renderedCentroid": {
         "x": 1629.03,
-        "y": 167.5
+        "y": 168.5
       },
       "refInkCount": 1199,
       "renderedInkCount": 1142,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": 1,
       "dHeight": 0,
-      "shiftMagnitude": 1.5,
-      "iou": 93.62,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 89.76,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_61",
@@ -1619,17 +1619,17 @@
       ],
       "renderedTightBbox": [
         1753,
-        90,
+        89,
         454,
-        158
+        160
       ],
       "refCentroid": {
         "x": 1955.11,
         "y": 195.48
       },
       "renderedCentroid": {
-        "x": 1939.45,
-        "y": 166.47
+        "x": 1939.64,
+        "y": 166.84
       },
       "refInkCount": 3129,
       "renderedInkCount": 1536,
@@ -1638,9 +1638,9 @@
       "dxDp": 0.75,
       "dyDp": -1,
       "dWidth": -7,
-      "dHeight": -12,
+      "dHeight": -10,
       "shiftMagnitude": 2.5,
-      "iou": 91.53,
+      "iou": 92.69,
       "status": "ALIGNED",
       "passed": true
     },
@@ -1664,7 +1664,7 @@
       ],
       "renderedTightBbox": [
         1810,
-        147,
+        148,
         45,
         35
       ],
@@ -1674,20 +1674,20 @@
       },
       "renderedCentroid": {
         "x": 1833.6,
-        "y": 164.15
+        "y": 165.15
       },
       "refInkCount": 619,
       "renderedInkCount": 541,
       "dx": 1,
-      "dy": 0.5,
+      "dy": 1.5,
       "dxDp": 0.5,
-      "dyDp": 0.25,
+      "dyDp": 0.75,
       "dWidth": 0,
       "dHeight": -1,
-      "shiftMagnitude": 1.12,
-      "iou": 93.05,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 88.05,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_51",
@@ -1709,7 +1709,7 @@
       ],
       "renderedTightBbox": [
         1810,
-        147,
+        148,
         45,
         35
       ],
@@ -1719,20 +1719,20 @@
       },
       "renderedCentroid": {
         "x": 1833.6,
-        "y": 164.15
+        "y": 165.15
       },
       "refInkCount": 619,
       "renderedInkCount": 541,
       "dx": 1,
-      "dy": 0.5,
+      "dy": 1.5,
       "dxDp": 0.5,
-      "dyDp": 0.25,
+      "dyDp": 0.75,
       "dWidth": 0,
       "dHeight": -1,
-      "shiftMagnitude": 1.12,
-      "iou": 93.05,
-      "status": "ALIGNED",
-      "passed": true
+      "shiftMagnitude": 1.8,
+      "iou": 88.05,
+      "status": "LOW_IOU",
+      "passed": false
     },
     {
       "elementId": "node_56",
@@ -1754,7 +1754,7 @@
       ],
       "renderedTightBbox": [
         1943,
-        147,
+        148,
         43,
         38
       ],
@@ -1764,17 +1764,17 @@
       },
       "renderedCentroid": {
         "x": 1963.64,
-        "y": 166.92
+        "y": 167.92
       },
       "refInkCount": 255,
       "renderedInkCount": 533,
       "dx": 2,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 1,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": 2,
       "dHeight": 4,
-      "shiftMagnitude": 2,
+      "shiftMagnitude": 2.24,
       "iou": 81.53,
       "status": "LOW_IOU",
       "passed": false
@@ -1799,7 +1799,7 @@
       ],
       "renderedTightBbox": [
         1943,
-        147,
+        148,
         43,
         38
       ],
@@ -1809,17 +1809,17 @@
       },
       "renderedCentroid": {
         "x": 1963.64,
-        "y": 166.92
+        "y": 167.92
       },
       "refInkCount": 255,
       "renderedInkCount": 533,
       "dx": 2,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 1,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": 2,
       "dHeight": 4,
-      "shiftMagnitude": 2,
+      "shiftMagnitude": 2.24,
       "iou": 81.53,
       "status": "LOW_IOU",
       "passed": false
@@ -1844,7 +1844,7 @@
       ],
       "renderedTightBbox": [
         2103,
-        163,
+        164,
         48,
         10
       ],
@@ -1854,17 +1854,17 @@
       },
       "renderedCentroid": {
         "x": 2126.5,
-        "y": 167.5
+        "y": 168.5
       },
       "refInkCount": 246,
       "renderedInkCount": 236,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -1,
       "dHeight": -2,
-      "shiftMagnitude": 1.5,
+      "shiftMagnitude": 1.8,
       "iou": 78.6,
       "status": "LOW_IOU",
       "passed": false
@@ -1889,7 +1889,7 @@
       ],
       "renderedTightBbox": [
         2103,
-        163,
+        164,
         48,
         10
       ],
@@ -1899,17 +1899,17 @@
       },
       "renderedCentroid": {
         "x": 2126.5,
-        "y": 167.5
+        "y": 168.5
       },
       "refInkCount": 246,
       "renderedInkCount": 236,
       "dx": 1.5,
-      "dy": 0,
+      "dy": 1,
       "dxDp": 0.75,
-      "dyDp": 0,
+      "dyDp": 0.5,
       "dWidth": -1,
       "dHeight": -2,
-      "shiftMagnitude": 1.5,
+      "shiftMagnitude": 1.8,
       "iou": 78.6,
       "status": "LOW_IOU",
       "passed": false

@@ -97,8 +97,16 @@ describe('SvgParser Unit Tests', () => {
     assert.equal(chainedTranslateScale.translationY, 20);
     assert.equal(chainedTranslateScale.scaleX, 2);
     assert.equal(chainedTranslateScale.scaleY, 2);
+    assert.equal(chainedTranslateScale.pivotX, 0);
+    assert.equal(chainedTranslateScale.pivotY, 0);
     assert.equal(chainedTranslateScale.hasTranslation, true);
     assert.equal(chainedTranslateScale.hasScale, true);
+
+    // Chained transform with rotation: pivotX/pivotY must be defined as 0, not undefined
+    const chainedRotate = SvgParser.parseTransform('rotate(45) translate(5, 5)');
+    assert.equal(chainedRotate.pivotX, 0);
+    assert.equal(chainedRotate.pivotY, 0);
+    assert.equal(chainedRotate.hasRotate, true);
   });
 });
 

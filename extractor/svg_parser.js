@@ -426,6 +426,8 @@ class SvgParser {
           scaleY,
           rotate: deg,
           rotation: deg,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
           hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
           hasRotate: Math.abs(deg) > 0.0001
@@ -443,6 +445,8 @@ class SvgParser {
           scaleY: 1,
           rotate: 0,
           rotation: 0,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: Math.abs(tx) > 0.0001 || Math.abs(ty) > 0.0001,
           hasScale: false,
           hasRotate: false
@@ -460,6 +464,8 @@ class SvgParser {
           translationY: 0,
           rotate: 0,
           rotation: 0,
+          pivotX: 0,
+          pivotY: 0,
           hasTranslation: false,
           hasScale: Math.abs(sx - 1) > 0.0001 || Math.abs(sy - 1) > 0.0001,
           hasRotate: false
@@ -553,6 +559,8 @@ class SvgParser {
       scaleY,
       rotate: deg,
       rotation: deg,
+      pivotX: 0,
+      pivotY: 0,
       hasTranslation: Math.abs(e) > 0.0001 || Math.abs(f) > 0.0001,
       hasScale: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
       hasRotate: Math.abs(deg) > 0.0001

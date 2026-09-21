@@ -67,14 +67,14 @@ fun Da63DesignScreen(
                         lineHeight = 51.sp,
                         letterSpacing = (-3.0).sp,
                         color = Color(0xFF1A1A1A),
-                        modifier = Modifier.offset(x = 0.5.dp, y = 5.5.dp),
+                        modifier = Modifier.offset(x = 0.5.dp, y = 1.0.dp),
                         style = BaseTextStyle
                     )
 
                     Spacer(modifier = Modifier.width(593.0.dp))
 
                     Row(
-                        modifier = Modifier.offset(y = 3.0.dp),
+                        modifier = Modifier.offset(y = (-1.0).dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text("World", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
@@ -82,7 +82,7 @@ fun Da63DesignScreen(
                         Text("Cities", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
                         Spacer(modifier = Modifier.width(23.25.dp))
                         Text("Climate", fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
-                        Spacer(modifier = Modifier.width(22.75.dp))
+                        Spacer(modifier = Modifier.width(24.25.dp))
                         Text("Ideas", modifier = Modifier.offset(y = (-1.75).dp), fontFamily = AbcArizonaSans, fontSize = 18.sp, lineHeight = 27.sp, letterSpacing = (-0.36).sp, color = Color(0xFF535353), style = BaseTextStyle)
                     }
                 }
@@ -91,7 +91,7 @@ fun Da63DesignScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 72.dp, end = 72.dp, top = 57.dp)
+                        .padding(start = 72.dp, end = 72.dp, top = 47.dp)
                 ) {
                     // Article metadata
                     Text(
@@ -160,8 +160,8 @@ fun Da63DesignScreen(
                         color = Color(0xFF1A1A1A),
                         style = BaseTextStyle,
                         modifier = Modifier
-                            .offset(x = 1.5.dp, y = (-0.25).dp)
-                            .padding(bottom = 34.0.dp)
+                            .offset(x = 1.5.dp, y = (-1.25).dp)
+                            .padding(bottom = 28.5.dp)
                     )
 
                     // Article two columns
@@ -181,7 +181,7 @@ fun Da63DesignScreen(
                                 color = Color(0xFF1A1A1A),
                                 style = BaseTextStyle
                             )
-                            Spacer(modifier = Modifier.height(29.0.dp))
+                            Spacer(modifier = Modifier.height(20.5.dp))
                             Text(
                                 text = "Planners in three coastal cities now treat the canopy as infrastructure, mapped and budgeted like a bridge. The result is a slower construction, measured in seasons rather than quarters, and a skyline that softens at its edges.",
                                 fontFamily = AbcArizonaSans,
@@ -203,7 +203,7 @@ fun Da63DesignScreen(
                                 color = Color(0xFF1A1A1A),
                                 style = BaseTextStyle
                             )
-                            Spacer(modifier = Modifier.height(29.0.dp))
+                            Spacer(modifier = Modifier.height(44.5.dp))
                             Text(
                                 text = "The maintenance crews doubled as the budget line moved from parks to public works, and the forest, once an ornament, became a system with a return.",
                                 fontFamily = AbcArizonaSans,
@@ -274,7 +274,7 @@ fun Da63DesignScreen(
             // LAYER 4: Floating Note Overlay Chrome / Toolbar (3 Floating Pills)
             Row(
                 modifier = Modifier
-                    .offset(x = 80.8.dp, y = 44.dp),
+                    .offset(x = 80.8.dp, y = 44.5.dp),
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -351,11 +351,11 @@ fun Da63DesignScreen(
                                 lineHeight = 28.5.sp,
                                 letterSpacing = (-0.68).sp,
                                 color = Color(0xFF1A1A1A),
-                                modifier = Modifier.offset(y = (-0.45).dp),
+                                modifier = Modifier.offset(x = (-1.0).dp, y = (-0.45).dp),
                                 style = BaseTextStyle
                             )
                             Spacer(modifier = Modifier.width(2.dp))
-                            Canvas(modifier = Modifier.size(18.dp).offset(x = 0.15.dp, y = 0.0.dp)) {
+                            Canvas(modifier = Modifier.size(18.dp).offset(x = (-0.85).dp, y = 0.0.dp)) {
                                 drawSvgPath(
                                     this,
                                     "M 5 5 L 4.293 5.707 L 5 6.414 L 5.707 5.707 L 5 5 Z M -0.707 0.707 L 4.293 5.707 L 5.707 4.293 L 0.707 -0.707 L -0.707 0.707 Z M 5.707 5.707 L 10.707 0.707 L 9.293 -0.707 L 4.293 4.293 L 5.707 5.707 Z",

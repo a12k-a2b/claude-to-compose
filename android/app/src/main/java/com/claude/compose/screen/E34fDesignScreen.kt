@@ -58,16 +58,16 @@ fun E34fDesignScreen(
                 letterSpacing = 1.68.sp,
                 color = Color(0xFF6C6C6D),
                 modifier = Modifier
-                    .offset(x = (-1.75).dp, y = 0.5.dp)
-                    .padding(bottom = 14.dp),
+                    .offset(x = (-1.75).dp, y = (-1.0).dp)
+                    .padding(bottom = 12.5.dp),
                 style = BaseTextStyle
             )
 
             // Screen Headline: A sheet of glass (Box with exact word offsets)
             Box(
                 modifier = Modifier
-                    .offset(x = (-1.0).dp, y = 3.8.dp)
-                    .padding(bottom = 17.0.dp)
+                    .offset(x = (-1.0).dp, y = 3.3.dp)
+                    .padding(bottom = 13.0.dp)
             ) {
                 Text(
                     text = "A",
@@ -120,7 +120,7 @@ fun E34fDesignScreen(
                 color = Color(0xFF3A3A37),
                 modifier = Modifier
                     .width(790.dp)
-                    .padding(bottom = 27.5.dp),
+                    .padding(bottom = 21.5.dp),
                 style = BaseTextStyle
             )
 
@@ -157,7 +157,7 @@ fun E34fDesignScreen(
                 color = Color(0xFF6C6C6D),
                 modifier = Modifier
                     .width(742.dp)
-                    .padding(bottom = 23.15.dp),
+                    .padding(bottom = 22.5.dp),
                 style = BaseTextStyle
             )
 
@@ -165,7 +165,7 @@ fun E34fDesignScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
-                // Row 1: DIRECTIONS
+                // Row 1: DIRECTIONS (Pill 1 starts at 166.5dp -> 94.5dp column)
                 PillCategoryRow(
                     category = "DIRECTIONS",
                     items = listOf(
@@ -174,10 +174,11 @@ fun E34fDesignScreen(
                         PillItem("3 · Floating slips", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("4 · Loose coins", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 10.5.dp
+                    spacing = 11.2.dp,
+                    categoryColumnWidth = 94.5.dp
                 )
 
-                // Row 2: BOLDER IDEAS
+                // Row 2: BOLDER IDEAS (Pill 1 starts at 180.5dp -> 108.5dp column)
                 PillCategoryRow(
                     category = "BOLDER IDEAS",
                     items = listOf(
@@ -185,19 +186,21 @@ fun E34fDesignScreen(
                         PillItem("3c · The dial", SolOsOrange, Color.White, false),
                         PillItem("6d · Ledger band", SolOsOrange, Color.White, false)
                     ),
-                    spacing = 8.0.dp
+                    spacing = 8.0.dp,
+                    categoryColumnWidth = 108.5.dp
                 )
 
-                // Row 3: EVALUATE
+                // Row 3: EVALUATE (Pill 1 starts at 151.5dp -> 79.5dp column)
                 PillCategoryRow(
                     category = "EVALUATE",
                     items = listOf(
                         PillItem("5 · Rotation / landscape check", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 11.0.dp
+                    spacing = 11.0.dp,
+                    categoryColumnWidth = 79.5.dp
                 )
 
-                // Row 4: BEYOND THE BAR
+                // Row 4: BEYOND THE BAR (Pill 1 starts at 196.5dp -> 124.5dp column)
                 PillCategoryRow(
                     category = "BEYOND THE BAR",
                     items = listOf(
@@ -208,23 +211,24 @@ fun E34fDesignScreen(
                         PillItem("g5 · Pages", SolOsDarkPill, Color.White, false),
                         PillItem("g6 · First stroke", SolOsDarkPill, Color.White, false)
                     ),
-                    spacing = 10.2.dp
+                    spacing = 10.4.dp,
+                    categoryColumnWidth = 124.5.dp
                 )
 
-                // Row 5: MILDLINER
+                // Row 5: MILDLINER (Pill 1 starts at 157.5dp -> 85.5dp column)
                 PillCategoryRow(
                     category = "MILDLINER",
                     items = listOf(
                         PillItem("m · The mildliner", SolOsOrange, Color.White, false)
                     ),
                     spacing = 8.0.dp,
-                    categoryColumnWidth = 140.dp,
+                    categoryColumnWidth = 85.5.dp,
                     labelModifier = Modifier.offset(y = (-0.5).dp),
                     categoryFontSize = 12.sp,
                     categoryLetterSpacing = 0.75.sp
                 )
 
-                // Row 6: SHARED SYSTEM
+                // Row 6: SHARED SYSTEM (Pill 1 starts at 189.5dp -> 117.5dp column)
                 PillCategoryRow(
                     category = "SHARED SYSTEM",
                     items = listOf(
@@ -234,7 +238,8 @@ fun E34fDesignScreen(
                         PillItem("small", SolOsWhitePill, SolOsTextPrimary, true),
                         PillItem("onboard", SolOsWhitePill, SolOsTextPrimary, true)
                     ),
-                    spacing = 9.0.dp
+                    spacing = 9.0.dp,
+                    categoryColumnWidth = 117.5.dp
                 )
             }
         }
