@@ -556,12 +556,12 @@ class ClaudeToComposeWorkflow {
 }
 
 // CLI Execution Entrypoint
-if (require.main === module) {
+function runCli(argv = process.argv) {
   const program = new Command();
 
   program
-    .name('claude-to-compose-workflow')
-    .description('Autonomous multi-agent workflow runner executing Extraction, Synthesis, and Verification.')
+    .name('claude-to-compose')
+    .description('Autonomous multi-agent workflow runner executing Extraction, Synthesis, Verification, and Closed-Loop Auto-Tuning.')
     .version('1.0.0')
     .argument('[input]', 'Target URL (https://claude.site/...) or local HTML file path')
     .option('-i, --input <target>', 'Target URL or local HTML file path')
@@ -578,7 +578,7 @@ if (require.main === module) {
     .option('--min-score <n>', 'Minimum passing audit score', '90')
     .option('-d, --debug', 'Enable verbose diagnostic logging', false);
 
-  program.parse(process.argv);
+  program.parse(argv);
   const opts = program.opts();
   const inputArg = opts.input || opts.file || opts.url || program.args[0];
 
@@ -602,7 +602,7 @@ if (require.main === module) {
     debug: opts.debug
   });
 
-  runner.run()
+  return runner.run()
     .then(result => {
       process.exit(result.exitCode);
     })
@@ -612,8 +612,13 @@ if (require.main === module) {
     });
 }
 
+if (require.main === module) {
+  runCli();
+}
+
 module.exports = {
   ClaudeToComposeWorkflow,
   runWorkflow: (options) => new ClaudeToComposeWorkflow(options).run(),
+  runCli,
   EXIT_CODES
 };

@@ -4,9 +4,12 @@
   "description": "Hybrid developer tool, verification suite, and multi-agent workflow translating Claude Design artifacts to Jetpack Compose",
   "main": "extractor/engine.js",
   "bin": {
+    "claude-to-compose": "bin/claude-to-compose.js",
     "claude-extract": "bin/claude-extract.js"
   },
   "scripts": {
+    "compose": "node bin/claude-to-compose.js",
+    "workflow": "node skills/claude-to-compose/workflow.js",
     "extract": "node bin/claude-extract.js",
     "test": "node tests/e2e_runner.js",
     "test:e2e": "node test/e2e/run_all.js",
