@@ -1,0 +1,496 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.local/schemas/v1/verification-result.schema.json",
+  "title": "VerificationResult v1",
+  "description": "Fail-closed verification result for one retrofit subject. Schema validation checks declared consistency only; it does not authenticate evidence or prove visual or behavioral correctness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "createdAt",
+    "producer",
+    "inputs",
+    "claimScope",
+    "verificationScope",
+    "subject",
+    "outcome",
+    "requirements",
+    "evidence",
+    "evidenceCompleteness",
+    "defects",
+    "blockers",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "VerificationResult" },
+    "id": { "$ref": "#/$defs/id" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "producer": { "$ref": "#/$defs/producer" },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/inputRef" }
+    },
+    "claimScope": { "const": "EVIDENCE_FOR_NAMED_SUBJECT_ONLY" },
+    "verificationScope": { "$ref": "#/$defs/verificationScope" },
+    "subject": { "$ref": "#/$defs/subject" },
+    "outcome": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/requirement" }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/evidence" }
+    },
+    "evidenceCompleteness": { "$ref": "#/$defs/evidenceCompleteness" },
+    "defects": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/defect" }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/blocker" }
+    },
+    "summary": { "$ref": "#/$defs/summary" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "outcome": { "const": "PASS" } }, "required": ["outcome"] },
+      "then": {
+        "properties": {
+          "subject": {
+            "type": "object",
+            "required": ["buildArtifactSha256"]
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                { "$ref": "#/$defs/requirement" },
+                {
+                  "properties": {
+                    "status": { "const": "PASS" },
+                    "contextResults": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "status": { "const": "PASS" },
+                          "budgetResults": {
+                            "type": "array",
+                            "items": { "properties": { "status": { "const": "PASS" } } }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "allOf": [
+              {
+                "items": {
+                  "allOf": [
+                    { "$ref": "#/$defs/evidence" },
+                    {
+                      "if": { "properties": { "required": { "const": true } }, "required": ["required"] },
+                      "then": { "properties": { "status": { "const": "PRESENT" } } }
+                    }
+                  ]
+                }
+              },
+              { "$ref": "#/$defs/passCoverage" }
+            ]
+          },
+          "evidenceCompleteness": {
+            "type": "object",
+            "allOf": [
+              { "$ref": "#/$defs/evidenceCompleteness" },
+              {
+                "properties": {
+                  "complete": { "const": true },
+                  "missingRequiredEvidenceIds": { "maxItems": 0 },
+                  "invalidRequiredEvidenceIds": { "maxItems": 0 }
+                }
+              }
+            ]
+          },
+          "defects": { "type": "array", "maxItems": 0 },
+          "blockers": { "type": "array", "maxItems": 0 },
+          "summary": {
+            "type": "object",
+            "allOf": [
+              { "$ref": "#/$defs/summary" },
+              {
+                "properties": {
+                  "failedRequirementCount": { "const": 0 },
+                  "blockedRequirementCount": { "const": 0 },
+                  "defectCount": { "const": 0 },
+                  "blockerCount": { "const": 0 }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "FAIL" } }, "required": ["outcome"] },
+      "then": {
+        "properties": {
+          "defects": { "type": "array", "minItems": 1 },
+          "summary": {
+            "type": "object",
+            "allOf": [
+              { "$ref": "#/$defs/summary" },
+              { "properties": { "failedRequirementCount": { "minimum": 1 }, "defectCount": { "minimum": 1 } } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "outcome": { "const": "BLOCKED" } }, "required": ["outcome"] },
+      "then": {
+        "properties": {
+          "blockers": { "type": "array", "minItems": 1 },
+          "summary": {
+            "type": "object",
+            "allOf": [
+              { "$ref": "#/$defs/summary" },
+              { "properties": { "blockedRequirementCount": { "minimum": 1 }, "blockerCount": { "minimum": 1 } } }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/#()-]*$"
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "gitCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "idList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "nonEmptyIdList": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "path", "sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["RETROFIT_CONTRACT", "BASELINE_ARTIFACT", "CANDIDATE_ARTIFACT", "VERIFICATION_MANIFEST", "OTHER"] },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "verificationScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "fixtureId"],
+          "properties": {
+            "kind": { "const": "fixture-replay" },
+            "fixtureId": { "$ref": "#/$defs/id" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "projectId"],
+          "properties": {
+            "kind": { "const": "project-candidate" },
+            "projectId": { "$ref": "#/$defs/id" }
+          }
+        }
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retrofitContractId", "retrofitContractSha256", "acceptanceMatrixSha256", "repositoryRevision", "deviceProfile", "buildVariant"],
+      "properties": {
+        "retrofitContractId": { "$ref": "#/$defs/id" },
+        "retrofitContractSha256": { "$ref": "#/$defs/sha256" },
+        "acceptanceMatrixSha256": { "$ref": "#/$defs/sha256" },
+        "repositoryRevision": { "$ref": "#/$defs/gitCommit" },
+        "workingTreeDiffSha256": { "$ref": "#/$defs/sha256" },
+        "buildArtifactSha256": { "$ref": "#/$defs/sha256" },
+        "deviceProfile": { "$ref": "#/$defs/nonEmptyString" },
+        "buildVariant": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "contractRequirementRef", "category", "description", "status", "contextResults", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "contractRequirementRef": { "$ref": "#/$defs/id" },
+        "category": { "enum": ["BUILD", "BEHAVIOR", "VISUAL", "SEMANTICS", "PERFORMANCE", "PROVENANCE", "OTHER"] },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+        "contextResults": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/contextResult" }
+        },
+        "evidenceRefs": { "$ref": "#/$defs/nonEmptyIdList" }
+      }
+    },
+    "contextResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractContextRef", "status", "budgetResults", "evidenceRefs"],
+      "properties": {
+        "contractContextRef": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+        "budgetResults": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/budgetResult" }
+        },
+        "evidenceRefs": { "$ref": "#/$defs/nonEmptyIdList" }
+      }
+    },
+    "budgetResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contractBudgetRef", "status", "unit", "evidenceRefs"],
+      "properties": {
+        "contractBudgetRef": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["PASS", "FAIL", "BLOCKED"] },
+        "observed": { "type": "number" },
+        "unit": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/nonEmptyIdList" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["PASS", "FAIL"] } }, "required": ["status"] },
+          "then": { "required": ["observed"] },
+          "else": { "not": { "required": ["observed"] } }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "phase", "domain", "pairId", "required", "status", "source", "context"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["COMMAND_RESULT", "TEST_RESULT", "SCREENSHOT", "VISUAL_DIFF", "SEMANTICS_TREE", "APP_STATE", "ARTIFACT", "DEVICE_RECEIPT", "MANUAL_CHECK", "OTHER"] },
+        "phase": { "enum": ["BASELINE", "CANDIDATE", "COMPARISON"] },
+        "domain": { "enum": ["BUILD", "BEHAVIOR", "RENDER", "SEMANTICS", "PERFORMANCE", "PROVENANCE", "OTHER"] },
+        "pairId": { "$ref": "#/$defs/id" },
+        "required": { "type": "boolean" },
+        "status": { "enum": ["PRESENT", "MISSING", "INVALID", "NOT_RUN"] },
+        "source": { "$ref": "#/$defs/relativePath" },
+        "context": { "$ref": "#/$defs/evidenceContext" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "command": { "$ref": "#/$defs/nonEmptyString" },
+        "capturedAt": { "type": "string", "format": "date-time" },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "value"],
+            "properties": {
+              "name": { "$ref": "#/$defs/nonEmptyString" },
+              "value": { "type": "number" },
+              "unit": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "PRESENT" } }, "required": ["status"] },
+          "then": { "required": ["sha256", "capturedAt"] },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["sha256"] },
+                { "required": ["capturedAt"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": { "const": "PRESENT" },
+              "phase": { "enum": ["BASELINE", "CANDIDATE"] }
+            },
+            "required": ["status", "phase"]
+          },
+          "then": {
+            "properties": {
+              "context": {
+                "required": ["subjectArtifactSha256"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidenceContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sceneId", "scenarioId", "stateId", "viewport", "deviceProfile", "configuration", "producerRuntime", "sourceSnapshotSha256"],
+      "properties": {
+        "sceneId": { "$ref": "#/$defs/id" },
+        "scenarioId": { "$ref": "#/$defs/id" },
+        "stateId": { "$ref": "#/$defs/id" },
+        "viewport": { "$ref": "#/$defs/viewport" },
+        "deviceProfile": { "$ref": "#/$defs/nonEmptyString" },
+        "configuration": { "$ref": "#/$defs/configuration" },
+        "producerRuntime": { "$ref": "#/$defs/producerRuntime" },
+        "sourceSnapshotSha256": { "$ref": "#/$defs/sha256" },
+        "subjectArtifactSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["widthPx", "heightPx", "deviceScaleFactor"],
+      "properties": {
+        "widthPx": { "type": "integer", "minimum": 1 },
+        "heightPx": { "type": "integer", "minimum": 1 },
+        "deviceScaleFactor": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildVariant", "locale", "theme", "fontScale", "orientation", "reducedMotion"],
+      "properties": {
+        "buildVariant": { "$ref": "#/$defs/nonEmptyString" },
+        "locale": { "$ref": "#/$defs/nonEmptyString" },
+        "theme": { "$ref": "#/$defs/nonEmptyString" },
+        "fontScale": { "type": "number", "exclusiveMinimum": 0 },
+        "orientation": { "enum": ["PORTRAIT", "LANDSCAPE"] },
+        "reducedMotion": { "type": "boolean" }
+      }
+    },
+    "producerRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "platform"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "$ref": "#/$defs/nonEmptyString" },
+        "platform": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "passCoverage": {
+      "type": "array",
+      "allOf": [
+        { "$ref": "#/$defs/baselineBuildCoverage" },
+        { "$ref": "#/$defs/candidateBuildCoverage" },
+        { "$ref": "#/$defs/baselineBehaviorCoverage" },
+        { "$ref": "#/$defs/candidateBehaviorCoverage" },
+        { "$ref": "#/$defs/baselineRenderCoverage" },
+        { "$ref": "#/$defs/candidateRenderCoverage" }
+      ]
+    },
+    "baselineBuildCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "BASELINE" }, "domain": { "const": "BUILD" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "candidateBuildCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "CANDIDATE" }, "domain": { "const": "BUILD" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "baselineBehaviorCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "BASELINE" }, "domain": { "const": "BEHAVIOR" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "candidateBehaviorCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "CANDIDATE" }, "domain": { "const": "BEHAVIOR" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "baselineRenderCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "BASELINE" }, "domain": { "const": "RENDER" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "candidateRenderCoverage": { "type": "array", "contains": { "type": "object", "properties": { "phase": { "const": "CANDIDATE" }, "domain": { "const": "RENDER" }, "required": { "const": true }, "status": { "const": "PRESENT" } }, "required": ["phase", "domain", "required", "status"] }, "minContains": 1 },
+    "evidenceCompleteness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "requiredCount", "presentRequiredCount", "missingRequiredEvidenceIds", "invalidRequiredEvidenceIds"],
+      "properties": {
+        "complete": { "type": "boolean" },
+        "requiredCount": { "type": "integer", "minimum": 0 },
+        "presentRequiredCount": { "type": "integer", "minimum": 0 },
+        "missingRequiredEvidenceIds": { "$ref": "#/$defs/idList" },
+        "invalidRequiredEvidenceIds": { "$ref": "#/$defs/idList" }
+      }
+    },
+    "defect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "severity", "category", "summary", "expected", "actual", "requirementRef", "evidenceRefs", "reproduction"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "severity": { "enum": ["P0", "P1", "P2", "P3"] },
+        "category": { "enum": ["BUILD", "BEHAVIOR", "VISUAL", "SEMANTICS", "PERFORMANCE", "PROVENANCE", "OTHER"] },
+        "summary": { "$ref": "#/$defs/nonEmptyString" },
+        "expected": { "$ref": "#/$defs/nonEmptyString" },
+        "actual": { "$ref": "#/$defs/nonEmptyString" },
+        "requirementRef": { "$ref": "#/$defs/id" },
+        "evidenceRefs": { "$ref": "#/$defs/idList" },
+        "reproduction": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "blocker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirementRef", "reason", "resolution"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "requirementRef": { "$ref": "#/$defs/id" },
+        "reason": { "$ref": "#/$defs/nonEmptyString" },
+        "resolution": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/idList" },
+        "contractConditionRefs": { "$ref": "#/$defs/nonEmptyIdList" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passedRequirementCount", "failedRequirementCount", "blockedRequirementCount", "defectCount", "blockerCount"],
+      "properties": {
+        "passedRequirementCount": { "type": "integer", "minimum": 0 },
+        "failedRequirementCount": { "type": "integer", "minimum": 0 },
+        "blockedRequirementCount": { "type": "integer", "minimum": 0 },
+        "defectCount": { "type": "integer", "minimum": 0 },
+        "blockerCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

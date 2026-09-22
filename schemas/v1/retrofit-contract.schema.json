@@ -1,0 +1,378 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.local/schemas/v1/retrofit-contract.schema.json",
+  "title": "RetrofitContract v1",
+  "description": "A reviewable mapping between captured design identities and evidence-backed existing Android UI and behavior. Validation does not prove that referenced identities exist or that the implementation is faithful.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "createdAt",
+    "producer",
+    "inputs",
+    "claimScope",
+    "sources",
+    "elementMappings",
+    "actionBindings",
+    "preservationObligations",
+    "acceptanceMatrix",
+    "capabilities",
+    "uncertainties",
+    "implementationBoundary"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "RetrofitContract" },
+    "id": { "$ref": "#/$defs/id" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "producer": { "$ref": "#/$defs/producer" },
+    "inputs": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/inputRef" }
+    },
+    "claimScope": { "const": "DECLARED_MAPPING_NOT_VERIFIED_IMPLEMENTATION" },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["existingAppModel", "designEvidence"],
+      "properties": {
+        "existingAppModel": { "$ref": "#/$defs/artifactRef" },
+        "designEvidence": { "$ref": "#/$defs/artifactRef" }
+      }
+    },
+    "elementMappings": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/elementMapping" }
+    },
+    "actionBindings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/actionBinding" }
+    },
+    "preservationObligations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/preservationObligation" }
+    },
+    "acceptanceMatrix": { "$ref": "#/$defs/acceptanceMatrix" },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/capability" }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/uncertainty" }
+    },
+    "implementationBoundary": { "$ref": "#/$defs/implementationBoundary" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "anyOf": [
+          { "properties": { "elementMappings": { "contains": { "properties": { "mappingStatus": { "const": "OWNER_APPROVED_NEW_SURFACE" } }, "required": ["mappingStatus"] } } } },
+          { "properties": { "actionBindings": { "contains": { "properties": { "bindingStatus": { "const": "OWNER_APPROVED_NEW_BEHAVIOR" } }, "required": ["bindingStatus"] } } } },
+          { "properties": { "preservationObligations": { "contains": { "properties": { "status": { "const": "OWNER_APPROVED_CHANGE" } }, "required": ["status"] } } } },
+          { "properties": { "capabilities": { "contains": { "properties": { "status": { "const": "INTENTIONAL_DEVIATION" } }, "required": ["status"] } } } }
+        ]
+      },
+      "then": {
+        "properties": {
+          "inputs": {
+            "contains": { "properties": { "kind": { "const": "OWNER_APPROVAL" } }, "required": ["kind"] },
+            "minContains": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/#()\\[\\]-]*$"
+    },
+    "resolvedId": {
+      "allOf": [
+        { "$ref": "#/$defs/id" },
+        { "type": "string", "pattern": "^(?!(?:[Tt][Oo][Dd][Oo]|[Tt][Bb][Dd]|[Pp][Ll][Aa][Cc][Ee][Hh][Oo][Ll][Dd][Ee][Rr]|[Uu][Nn][Kk][Nn][Oo][Ww][Nn]|[Ii][Nn][Vv][Ee][Nn][Tt][Ee][Dd])(?:$|[._:/#-])).+$" }
+      ]
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/resolvedId" }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "path", "sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/resolvedId" },
+        "kind": { "enum": ["EXISTING_APP_MODEL", "DESIGN_EVIDENCE", "OWNER_APPROVAL", "OTHER"] },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifactId", "schemaVersion", "path", "sha256"],
+      "properties": {
+        "artifactId": { "$ref": "#/$defs/resolvedId" },
+        "schemaVersion": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "elementMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "designIdentity", "existingUiSymbolRef", "mappingStatus", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "designIdentity": { "$ref": "#/$defs/resolvedId" },
+        "existingUiSymbolRef": { "$ref": "#/$defs/resolvedId" },
+        "mappingStatus": { "enum": ["EVIDENCE_BACKED", "OWNER_APPROVED_NEW_SURFACE"] },
+        "ownerApprovalRef": { "$ref": "#/$defs/resolvedId" },
+        "ownerApprovalStatement": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mappingStatus": { "const": "OWNER_APPROVED_NEW_SURFACE" } }, "required": ["mappingStatus"] },
+          "then": { "required": ["ownerApprovalRef", "ownerApprovalStatement"] },
+          "else": { "not": { "anyOf": [{ "required": ["ownerApprovalRef"] }, { "required": ["ownerApprovalStatement"] }] } }
+        }
+      ]
+    },
+    "actionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "designIdentity", "event", "bindingStatus", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "designIdentity": { "$ref": "#/$defs/resolvedId" },
+        "event": { "enum": ["CLICK", "LONG_CLICK", "INPUT", "SUBMIT", "BACK", "GESTURE", "FOCUS", "OTHER"] },
+        "bindingStatus": { "enum": ["VERIFIED_EXISTING", "OWNER_APPROVED_NEW_BEHAVIOR"] },
+        "existingActionRef": { "$ref": "#/$defs/resolvedId" },
+        "newBehaviorStatement": { "$ref": "#/$defs/nonEmptyString" },
+        "ownerApprovalRef": { "$ref": "#/$defs/resolvedId" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "bindingStatus": { "const": "VERIFIED_EXISTING" } }, "required": ["bindingStatus"] },
+          "then": {
+            "required": ["existingActionRef"],
+            "not": { "anyOf": [{ "required": ["newBehaviorStatement"] }, { "required": ["ownerApprovalRef"] }] }
+          },
+          "else": {
+            "required": ["newBehaviorStatement", "ownerApprovalRef"],
+            "not": { "required": ["existingActionRef"] }
+          }
+        }
+      ]
+    },
+    "preservationObligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "statement", "status", "sourceEvidenceRefs", "verificationRequirement"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "category": {
+          "enum": ["LAUNCH_RESTORE", "NAVIGATION", "DATA_CRUD", "PERSISTENCE", "ERROR_RETRY_OFFLINE", "INPUT_FOCUS", "PROCESS_LIFECYCLE", "RESPONSIVE_LAYOUT", "ACCESSIBILITY", "DESTRUCTIVE_RECOVERY", "SYNC", "OTHER"]
+        },
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["REQUIRED", "OWNER_APPROVED_CHANGE"] },
+        "sourceEvidenceRefs": { "$ref": "#/$defs/evidenceRefs" },
+        "verificationRequirement": { "$ref": "#/$defs/nonEmptyString" },
+        "ownerApprovalRef": { "$ref": "#/$defs/resolvedId" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "OWNER_APPROVED_CHANGE" } }, "required": ["status"] },
+          "then": { "required": ["ownerApprovalRef"] },
+          "else": { "not": { "required": ["ownerApprovalRef"] } }
+        }
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subjectRef", "status", "rationale", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "subjectRef": { "$ref": "#/$defs/resolvedId" },
+        "status": {
+          "enum": ["EXACT_NATIVE", "BOUNDED_APPROXIMATION", "ASSET_FALLBACK", "AGENT_IMPLEMENTATION_REQUIRED", "UNSUPPORTED_BLOCKING", "INTENTIONAL_DEVIATION"]
+        },
+        "rationale": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" },
+        "declaredBudget": { "$ref": "#/$defs/nonEmptyString" },
+        "ownerApprovalRef": { "$ref": "#/$defs/resolvedId" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "BOUNDED_APPROXIMATION" } }, "required": ["status"] },
+          "then": { "required": ["declaredBudget"] }
+        },
+        {
+          "if": { "properties": { "status": { "const": "INTENTIONAL_DEVIATION" } }, "required": ["status"] },
+          "then": { "required": ["ownerApprovalRef"] },
+          "else": { "not": { "required": ["ownerApprovalRef"] } }
+        }
+      ]
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subjectRef", "statement", "impact", "resolution", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "subjectRef": { "$ref": "#/$defs/resolvedId" },
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "enum": ["LOW", "MEDIUM", "HIGH", "BLOCKING"] },
+        "resolution": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "acceptanceMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "requirementsSha256", "requirements"],
+      "properties": {
+        "canonicalization": { "const": "JCS-RFC8785" },
+        "requirementsSha256": { "$ref": "#/$defs/sha256" },
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/acceptanceRequirement" }
+        }
+      }
+    },
+    "acceptanceRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "domains", "requiredContexts", "numericBudgets", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/resolvedId" },
+        "description": { "$ref": "#/$defs/nonEmptyString" },
+        "domains": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["BUILD", "BEHAVIOR", "RENDER", "SEMANTICS", "PERFORMANCE", "PROVENANCE", "OTHER"] }
+        },
+        "requiredContexts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/acceptanceContext" }
+        },
+        "numericBudgets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/numericBudget" }
+        },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "acceptanceContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sceneId", "scenarioId", "stateId", "viewport", "deviceProfile", "configuration"],
+      "properties": {
+        "id": { "$ref": "#/$defs/resolvedId" },
+        "sceneId": { "$ref": "#/$defs/resolvedId" },
+        "scenarioId": { "$ref": "#/$defs/resolvedId" },
+        "stateId": { "$ref": "#/$defs/resolvedId" },
+        "viewport": { "$ref": "#/$defs/viewport" },
+        "deviceProfile": { "$ref": "#/$defs/nonEmptyString" },
+        "configuration": { "$ref": "#/$defs/configuration" }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["widthPx", "heightPx", "deviceScaleFactor"],
+      "properties": {
+        "widthPx": { "type": "integer", "minimum": 1 },
+        "heightPx": { "type": "integer", "minimum": 1 },
+        "deviceScaleFactor": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["buildVariant", "locale", "theme", "fontScale", "orientation", "reducedMotion"],
+      "properties": {
+        "buildVariant": { "$ref": "#/$defs/nonEmptyString" },
+        "locale": { "$ref": "#/$defs/nonEmptyString" },
+        "theme": { "$ref": "#/$defs/nonEmptyString" },
+        "fontScale": { "type": "number", "exclusiveMinimum": 0 },
+        "orientation": { "enum": ["PORTRAIT", "LANDSCAPE"] },
+        "reducedMotion": { "type": "boolean" }
+      }
+    },
+    "numericBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "metric", "operator", "threshold", "unit"],
+      "properties": {
+        "id": { "$ref": "#/$defs/resolvedId" },
+        "metric": { "$ref": "#/$defs/nonEmptyString" },
+        "operator": { "enum": ["AT_LEAST", "AT_MOST", "EXACT"] },
+        "threshold": { "type": "number" },
+        "unit": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "implementationBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedPaths", "prohibitedChanges", "verificationCommands"],
+      "properties": {
+        "allowedPaths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/relativePath" },
+              { "type": "string", "pattern": "^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+/?$" }
+            ]
+          }
+        },
+        "prohibitedChanges": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "verificationCommands": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    }
+  }
+}

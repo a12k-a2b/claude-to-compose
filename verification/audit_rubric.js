@@ -416,6 +416,17 @@ function auditSynthesizedCode(options = {}) {
 
   const scores = {};
   const notes = {};
+  let spec = null;
+  const candidateSpec = options.spec || options.specPath;
+  try {
+    if (candidateSpec && typeof candidateSpec === 'object') {
+      spec = candidateSpec;
+    } else if (candidateSpec && fs.existsSync(candidateSpec)) {
+      spec = JSON.parse(fs.readFileSync(candidateSpec, 'utf8'));
+    }
+  } catch (_) {
+    spec = null;
+  }
 
   // 1. Touch Target Compliance (>= 48dp)
   const componentsDir = path.join(androidDir, 'app/src/main/java/com/claude/compose/components');
@@ -470,8 +481,8 @@ function auditSynthesizedCode(options = {}) {
   const typeFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/theme/Type.kt');
   if (fs.existsSync(typeFile)) {
     const content = fs.readFileSync(typeFile, 'utf8');
-    scores.typography = content.includes('.sp') && content.includes('Typography(') ? 10 : 7;
-    notes.typography = 'All text uses sp sizing with Material 3 typography scale';
+    scores.typography = content.includes('.sp') && content.includes('Typography(') ? 8 : 6;
+    notes.typography = 'Typography tokens exist; raster and per-node typography fidelity require rendered evidence';
   } else {
     scores.typography = 5;
     notes.typography = 'Type.kt missing; fallback typography utilized.';
@@ -480,8 +491,8 @@ function auditSynthesizedCode(options = {}) {
   // 3. Color Palette & M3 Token Mapping
   const colorFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/theme/Color.kt');
   if (fs.existsSync(colorFile)) {
-    scores.color = 10;
-    notes.color = 'Semantic color tokens mapped to M3 Light/Dark schemes';
+    scores.color = 8;
+    notes.color = 'Color tokens exist; display-space and per-node color fidelity require rendered evidence';
   } else {
     scores.color = 6;
     notes.color = 'Color.kt not found in android theme directory.';
@@ -491,26 +502,51 @@ function auditSynthesizedCode(options = {}) {
   const screenFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/screen/ClaudeDesignScreen.kt');
   if (fs.existsSync(screenFile)) {
     const screenContent = fs.readFileSync(screenFile, 'utf8');
-    scores.layout = (screenContent.includes('Column') || screenContent.includes('Row') || screenContent.includes('Box')) ? 10 : 7;
-    notes.layout = 'Responsive container layout matches design spec';
+    const hasLayout = screenContent.includes('Column') || screenContent.includes('Row') || screenContent.includes('Box');
+    const hasStableIdentity = screenContent.includes('testTag(');
+    scores.layout = hasLayout ? (hasStableIdentity ? 8 : 6) : 4;
+    notes.layout = hasStableIdentity
+      ? 'Layout primitives and stable source identities are present; geometry fidelity is gated by native measurement and diff evidence'
+      : 'Layout primitives exist, but generated nodes lack stable source identities for geometry verification';
   } else {
     scores.layout = 6;
     notes.layout = 'ClaudeDesignScreen.kt not found in screen directory.';
   }
 
   // 5. Ripple & Interaction Feedback
-  scores.ripple = 10;
-  notes.ripple = 'Material ripple applied on clickables with state feedback';
+  let interactionSource = '';
+  for (const dirPath of [componentsDir, screenDir]) {
+    if (!fs.existsSync(dirPath)) continue;
+    for (const file of fs.readdirSync(dirPath).filter((f) => f.endsWith('.kt'))) {
+      interactionSource += fs.readFileSync(path.join(dirPath, file), 'utf8');
+    }
+  }
+  const hasNativeInteraction = /\b(Button|IconButton|clickable|combinedClickable)\s*\(?/.test(interactionSource);
+  scores.ripple = hasNativeInteraction ? 7 : 3;
+  notes.ripple = hasNativeInteraction
+    ? 'Native interaction primitives are present; pressed-state and timing fidelity were not replayed'
+    : 'No native interaction primitive was found';
 
   // 6. Elevation, Shadow & Surface Styling
   const elevationFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/theme/Elevation.kt');
   const shapeFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/theme/Shape.kt');
-  scores.elevation = fs.existsSync(elevationFile) || fs.existsSync(shapeFile) ? 10 : 8;
-  notes.elevation = 'Tonal and shadow elevations match card specs';
+  scores.elevation = fs.existsSync(elevationFile) || fs.existsSync(shapeFile) ? 7 : 4;
+  notes.elevation = 'Shape/elevation declarations exist; CSS paint fidelity requires raster comparison';
 
   // 7. Responsive Layout & Flow Wrapping
-  scores.responsive = 10;
-  notes.responsive = 'Adaptive grid cells and flow wrapping support multi-screen';
+  const viewportSceneCount = Object.keys(spec?.viewportScenes || {}).length;
+  const screenSource = fs.existsSync(screenFile) ? fs.readFileSync(screenFile, 'utf8') : '';
+  const hasAdaptiveBranch = /BoxWithConstraints|WindowSizeClass|currentWindowAdaptiveInfo|maxWidth\s*[<>]=?/.test(screenSource);
+  if (viewportSceneCount >= 2 && hasAdaptiveBranch) {
+    scores.responsive = 9;
+    notes.responsive = `${viewportSceneCount} measured viewport scenes are consumed by adaptive layout logic`;
+  } else if (viewportSceneCount >= 2) {
+    scores.responsive = 4;
+    notes.responsive = `${viewportSceneCount} viewport scenes were captured but generated code does not consume them adaptively`;
+  } else {
+    scores.responsive = 5;
+    notes.responsive = 'Multi-viewport scene evidence is unavailable';
+  }
 
   // 8. State Hoisting & Event Handling
   if (fs.existsSync(screenFile)) {
@@ -533,8 +569,8 @@ function auditSynthesizedCode(options = {}) {
   }
 
   // 10. Code Hygiene, Modularity & Naming
-  scores.codeHygiene = 10;
-  notes.codeHygiene = 'Clean component modularity and standard package hierarchy';
+  scores.codeHygiene = fs.existsSync(componentsDir) && fs.existsSync(screenDir) ? 8 : 5;
+  notes.codeHygiene = 'Package structure is present; this score does not stand in for compilation, semantics, or runtime behavior';
 
   const scoreArray = RUBRIC_CRITERIA.map((c) => ({
     score: scores[c.id] ?? 9,

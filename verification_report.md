@@ -1,12 +1,12 @@
 # Verification Report: Claude to Compose
 
 ## 1. Executive Summary
-## Verdict: PASSED
-Verdict: PASSED
+## Verdict: FAILED
+Verdict: FAILED
 
 - **Execution Date**: 2026-09-20T20:24:12.059Z
 - **Target Application**: Claude to Compose
-- **Overall Score**: 100 / 100 (Pass threshold: >= 90)
+- **Static Audit Score**: 100 / 100 (historical; insufficient for release acceptance)
 - **Build Status**: PASSED
 - **Visual Similarity**: 95.4%
 - **Ink IoU (Non-White Ink)**: 72.63%
@@ -66,5 +66,5 @@ Verdict: PASSED
 **Total Score: 100/100 (Pass threshold: >= 90)**
 
 ## 5. Refinement Loop Guidance & Action Items
-- **Verdict Code**: PROCEED_PUBLISH
-- **Action**: All quality gates satisfied. Proceed to Milestone M5 E2E test verification and Milestone M7 GitHub release publishing.
+- **Verdict Code**: TRIGGER_REFINEMENT
+- **Action**: Foreground Ink IoU (72.63%) and the recorded large zonal drift are outside the current fail-closed fidelity gate. Do not publish this artifact as visually verified.

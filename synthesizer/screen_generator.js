@@ -221,6 +221,32 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function sourceTagModifier(node) {
+  const sourceId = node?.sourceId || node?.id || 'unmapped-node';
+  return `Modifier.testTag(${JSON.stringify(String(sourceId))})`;
+}
+
+function composeColorLiteral(rawColor) {
+  if (typeof rawColor !== 'string') return null;
+  const value = rawColor.trim().replace(/^#/, '');
+  if (/^[0-9a-fA-F]{6}$/.test(value)) {
+    return `Color(0xFF${value.toUpperCase()})`;
+  }
+  if (/^[0-9a-fA-F]{8}$/.test(value)) {
+    // Extractor colors use CSS RRGGBBAA; Compose expects AARRGGBB.
+    return `Color(0x${value.slice(6, 8).toUpperCase()}${value.slice(0, 6).toUpperCase()})`;
+  }
+  return null;
+}
+
+function composeTextAlign(value) {
+  const normalized = String(value || '').toLowerCase();
+  if (normalized === 'center') return 'TextAlign.Center';
+  if (normalized === 'right' || normalized === 'end') return 'TextAlign.End';
+  if (normalized === 'justify') return 'TextAlign.Justify';
+  return 'TextAlign.Start';
+}
+
 /**
  * Determines if a layout specification represents a horizontal Row in Compose.
  * In computed CSS, block elements default to flexDirection: 'row', so display
@@ -308,22 +334,19 @@ function buildContainerModifier(node, parentContext = {}, isRow = false) {
   const layout = node.layout || {};
   const inRow = Boolean(parentContext.inRow);
   const siblingCount = parentContext.siblingCount || 1;
-  const modifiers = [];
+  const modifiers = [sourceTagModifier(node)];
 
   if (inRow) {
     // INSIDE A ROW: Never emit unconditional fillMaxWidth()!
     if (layout.flexGrow && layout.flexGrow > 0) {
-      modifiers.push(`Modifier.weight(${layout.flexGrow}f)`);
+      modifiers[0] += `.weight(${layout.flexGrow}f)`;
     } else if (siblingCount > 1 && (node.componentType === 'Card' || (layout.width && layout.width > 120))) {
       // Multiple cards or wide items sharing a row expand equally
-      modifiers.push('Modifier.weight(1f)');
-    } else {
-      // Intrinsic wrap content
-      modifiers.push('Modifier');
+      modifiers[0] += '.weight(1f)';
     }
   } else {
     // INSIDE A COLUMN: Full width is standard and safe
-    modifiers.push('Modifier.fillMaxWidth()');
+    modifiers[0] += '.fillMaxWidth()';
   }
 
   // Padding handling
@@ -347,8 +370,7 @@ function buildContainerModifier(node, parentContext = {}, isRow = false) {
     }
   }
 
-  const result = modifiers.join('');
-  return result === 'Modifier' ? '' : result;
+  return modifiers.join('');
 }
 
 /**
@@ -366,23 +388,36 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const safeText = JSON.stringify(textContent || '');
     const isHeading = node.text?.fontWeight >= 700 || node.tag === 'h1' || node.tag === 'h2' || (node.text?.fontSize && node.text.fontSize >= 32);
     let textStyle = 'MaterialTheme.typography.bodyMedium';
-    let extraParams = [];
+    const extraParams = [`${indent}    modifier = ${sourceTagModifier(node)}`];
 
     if (isHeading) {
       textStyle = 'MaterialTheme.typography.titleLarge';
-      if (node.text?.opticalSize >= 36 || (node.text?.fontSize && node.text.fontSize >= 36)) {
-        extraParams.push(`${indent}    fontFamily = AbcArizonaFlareHeadline`);
-      }
     } else if (node.text?.fontSize <= 12) {
       textStyle = 'MaterialTheme.typography.bodySmall';
     }
+
+    if (Number.isFinite(node.text?.fontSize)) {
+      extraParams.push(`${indent}    fontSize = ${Number(node.text.fontSize).toFixed(2)}.sp`);
+    }
+    if (Number.isFinite(node.text?.lineHeight)) {
+      extraParams.push(`${indent}    lineHeight = ${Number(node.text.lineHeight).toFixed(2)}.sp`);
+    }
+    if (Number.isFinite(node.text?.fontWeight)) {
+      const weight = Math.max(1, Math.min(1000, Math.round(node.text.fontWeight)));
+      extraParams.push(`${indent}    fontWeight = FontWeight(${weight})`);
+    }
+    const textColor = composeColorLiteral(node.text?.color || node.style?.color);
+    if (textColor) {
+      extraParams.push(`${indent}    color = ${textColor}`);
+    }
+    extraParams.push(`${indent}    textAlign = ${composeTextAlign(node.text?.textAlign)}`);
 
     if (node.text?.letterSpacing !== undefined && node.text.letterSpacing !== 0) {
       const lsVal = parseFloat(Number(node.text.letterSpacing).toFixed(2));
       extraParams.push(`${indent}    letterSpacing = ${lsVal < 0 ? `(-${Math.abs(lsVal)}).sp` : `${lsVal}.sp`}`);
     }
 
-    const extraStr = extraParams.length > 0 ? `,\n${extraParams.join(',\n')}` : '';
+    const extraStr = `,\n${extraParams.join(',\n')}`;
     return `${indent}Text(\n${indent}    text = ${safeText},\n${indent}    style = ${textStyle}${extraStr}\n${indent})\n`;
   }
 
@@ -390,8 +425,8 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
   if (type === 'Button') {
     const label = JSON.stringify(textContent || 'Action');
     const buttonModifier = parentContext.inRow && (node.layout?.flexGrow > 0)
-      ? 'Modifier.weight(1f).padding(vertical = 4.dp)'
-      : 'Modifier.padding(vertical = 4.dp)';
+      ? `${sourceTagModifier(node)}.weight(1f).padding(vertical = 4.dp)`
+      : `${sourceTagModifier(node)}.padding(vertical = 4.dp)`;
     return `${indent}PrimaryActionButton(\n${indent}    text = ${label},\n${indent}    onClick = { /* Action */ },\n${indent}    modifier = ${buttonModifier}\n${indent})\n`;
   }
 
@@ -401,7 +436,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const iconVector = resolveIconVector(iconTarget, iconContext);
     const targetVecData = iconTarget.vectorData || (iconContext?.vectorMapData?.get(iconTarget.vectorId || iconTarget.id || iconTarget.vectorName || iconTarget.name));
     const tintExpr = resolveContextualTint(iconTarget, parentContext, targetVecData);
-    return `${indent}AppIconButton(\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ${iconVector}, contentDescription = null, tint = ${tintExpr})\n${indent}}\n`;
+    return `${indent}AppIconButton(\n${indent}    modifier = ${sourceTagModifier(node)},\n${indent}    onClick = { /* Icon Action */ }\n${indent}) {\n${indent}    Icon(imageVector = ${iconVector}, contentDescription = null, tint = ${tintExpr})\n${indent}}\n`;
   }
 
   // 4. Card Component
@@ -417,8 +452,8 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       inner = `${indent}        Text(text = ${JSON.stringify(textContent || 'Card Content')})\n`;
     }
     const cardModifier = parentContext.inRow
-      ? 'Modifier.weight(1f).padding(4.dp)'
-      : 'Modifier.fillMaxWidth().padding(vertical = 6.dp)';
+      ? `${sourceTagModifier(node)}.weight(1f).padding(4.dp)`
+      : `${sourceTagModifier(node)}.fillMaxWidth().padding(vertical = 6.dp)`;
     return `${indent}AppCard(\n${indent}    modifier = ${cardModifier},\n${indent}    onClick = { /* Card Action */ }\n${indent}) {\n${indent}    Column(modifier = Modifier.padding(16.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
   }
 
@@ -428,8 +463,8 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const valVar = state ? state.varName : 'textState';
     const label = JSON.stringify(node.name || 'Input');
     const tfModifier = parentContext.inRow
-      ? 'Modifier.weight(1f).padding(vertical = 4.dp)'
-      : 'Modifier.fillMaxWidth().padding(vertical = 4.dp)';
+      ? `${sourceTagModifier(node)}.weight(1f).padding(vertical = 4.dp)`
+      : `${sourceTagModifier(node)}.fillMaxWidth().padding(vertical = 4.dp)`;
     return `${indent}AppInputField(\n${indent}    value = ${valVar},\n${indent}    onValueChange = { ${valVar} = it },\n${indent}    label = ${label},\n${indent}    modifier = ${tfModifier}\n${indent})\n`;
   }
 
@@ -439,8 +474,8 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const isPill = node.style?.borderRadius?.isPill;
     const heightDp = node.bounds?.height ? `${Math.round(node.bounds.height)}` : '32';
     const modifier = isPill
-      ? `Modifier.requiredHeight(${heightDp}.dp).padding(horizontal = 4.dp)`
-      : 'Modifier.padding(2.dp)';
+      ? `${sourceTagModifier(node)}.requiredHeight(${heightDp}.dp).padding(horizontal = 4.dp)`
+      : `${sourceTagModifier(node)}.padding(2.dp)`;
     return `${indent}StatusBadge(\n${indent}    text = ${label},\n${indent}    modifier = ${modifier}\n${indent})\n`;
   }
 
@@ -449,13 +484,13 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const state = stateMap[node.id];
     const checkVar = state ? state.varName : 'isChecked';
     const label = JSON.stringify(textContent || 'I agree to the terms');
-    return `${indent}AppCheckbox(\n${indent}    checked = ${checkVar},\n${indent}    onCheckedChange = { ${checkVar} = it },\n${indent}    label = ${label}\n${indent})\n`;
+    return `${indent}AppCheckbox(\n${indent}    checked = ${checkVar},\n${indent}    onCheckedChange = { ${checkVar} = it },\n${indent}    label = ${label},\n${indent}    modifier = ${sourceTagModifier(node)}\n${indent})\n`;
   }
 
   // 8. RadioButton Component
   if (type === 'RadioButton') {
     const label = JSON.stringify(textContent || 'Option');
-    return `${indent}AppRadioButton(\n${indent}    selected = true,\n${indent}    onClick = { /* Select */ },\n${indent}    label = ${label}\n${indent})\n`;
+    return `${indent}AppRadioButton(\n${indent}    selected = true,\n${indent}    onClick = { /* Select */ },\n${indent}    label = ${label},\n${indent}    modifier = ${sourceTagModifier(node)}\n${indent})\n`;
   }
 
   // 9. Icon / SVG Component
@@ -463,7 +498,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const iconVector = resolveIconVector(node, iconContext);
     const targetVecData = node.vectorData || (iconContext?.vectorMapData?.get(node.vectorId || node.id || node.vectorName || node.name));
     const tintExpr = resolveContextualTint(node, parentContext, targetVecData);
-    return `${indent}Icon(\n${indent}    imageVector = ${iconVector},\n${indent}    contentDescription = null,\n${indent}    modifier = Modifier.size(20.dp),\n${indent}    tint = ${tintExpr}\n${indent})\n`;
+    return `${indent}Icon(\n${indent}    imageVector = ${iconVector},\n${indent}    contentDescription = null,\n${indent}    modifier = ${sourceTagModifier(node)}.size(20.dp),\n${indent}    tint = ${tintExpr}\n${indent})\n`;
   }
 
   // 10. Switch
@@ -471,23 +506,23 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const s = stateMap[node.id];
     const checkedExpr = s ? s.varName : 'true';
     const onChangeExpr = s ? `{ ${s.varName} = it }` : '{ /* toggle */ }';
-    return `${indent}Switch(\n${indent}    checked = ${checkedExpr},\n${indent}    onCheckedChange = ${onChangeExpr}\n${indent})\n`;
+    return `${indent}Switch(\n${indent}    checked = ${checkedExpr},\n${indent}    onCheckedChange = ${onChangeExpr},\n${indent}    modifier = ${sourceTagModifier(node)}\n${indent})\n`;
   }
 
   // 10b. Chip Component
   if (type === 'Chip') {
-    return `${indent}AppFilterChip(\n${indent}    selected = true,\n${indent}    onClick = { /* chip */ },\n${indent}    label = ${JSON.stringify(textContent || 'Chip')}\n${indent})\n`;
+    return `${indent}AppFilterChip(\n${indent}    selected = true,\n${indent}    onClick = { /* chip */ },\n${indent}    label = ${JSON.stringify(textContent || 'Chip')},\n${indent}    modifier = ${sourceTagModifier(node)}\n${indent})\n`;
   }
 
   // 11. Divider Component
   if (type === 'Divider') {
-    return `${indent}HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))\n`;
+    return `${indent}HorizontalDivider(modifier = ${sourceTagModifier(node)}.padding(vertical = 8.dp))\n`;
   }
 
   // 12. Spacer Component
   if (type === 'Spacer') {
     const h = node.bounds?.height || 16;
-    return `${indent}Spacer(modifier = Modifier.height(${h}.dp))\n`;
+    return `${indent}Spacer(modifier = ${sourceTagModifier(node)}.height(${h}.dp))\n`;
   }
 
   // 13. TopAppBar Component
@@ -497,7 +532,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       siblingCount: children.length,
       childIndex: idx
     }, iconContext)).join('');
-    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
+    return `${indent}Row(\n${indent}    modifier = ${sourceTagModifier(node)}.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),\n${indent}    horizontalArrangement = Arrangement.SpaceBetween,\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
   // 13b. Toolbar Component
@@ -507,7 +542,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       siblingCount: children.length,
       childIndex: idx
     }, iconContext)).join('');
-    return `${indent}Row(\n${indent}    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),\n${indent}    horizontalArrangement = Arrangement.spacedBy(8.dp),\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
+    return `${indent}Row(\n${indent}    modifier = ${sourceTagModifier(node)}.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),\n${indent}    horizontalArrangement = Arrangement.spacedBy(8.dp),\n${indent}    verticalAlignment = Alignment.CenterVertically\n${indent}) {\n${inner}${indent}}\n`;
   }
 
   // 13c. Overlay / Dialog Component
@@ -517,7 +552,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
       siblingCount: children.length,
       childIndex: idx
     }, iconContext)).join('');
-    return `${indent}Box(\n${indent}    modifier = Modifier.fillMaxSize().background(Color(0x66000000)),\n${indent}    contentAlignment = Alignment.Center\n${indent}) {\n${indent}    AppCard(modifier = Modifier.padding(24.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
+    return `${indent}Box(\n${indent}    modifier = ${sourceTagModifier(node)}.fillMaxSize().background(Color(0x66000000)),\n${indent}    contentAlignment = Alignment.Center\n${indent}) {\n${indent}    AppCard(modifier = Modifier.padding(24.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
   }
 
   // 14. NavigationBar Component
@@ -527,7 +562,7 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
     const titlesArray = tabTitles.length > 0 ? tabTitles : ['Overview', 'Analytics', 'Infrastructure'];
     const titlesLiteral = titlesArray.map(t => JSON.stringify(t)).join(', ');
 
-    return `${indent}TabRow(\n${indent}    selectedTabIndex = ${tabState.varName},\n${indent}    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)\n${indent}) {\n${indent}    val tabs = listOf(${titlesLiteral})\n${indent}    tabs.forEachIndexed { index, title ->\n${indent}        Tab(\n${indent}            selected = ${tabState.varName} == index,\n${indent}            onClick = { ${tabState.varName} = index },\n${indent}            text = { Text(title) }\n${indent}        )\n${indent}    }\n${indent}}\n`;
+    return `${indent}TabRow(\n${indent}    selectedTabIndex = ${tabState.varName},\n${indent}    modifier = ${sourceTagModifier(node)}.fillMaxWidth().padding(vertical = 8.dp)\n${indent}) {\n${indent}    val tabs = listOf(${titlesLiteral})\n${indent}    tabs.forEachIndexed { index, title ->\n${indent}        Tab(\n${indent}            selected = ${tabState.varName} == index,\n${indent}            onClick = { ${tabState.varName} = index },\n${indent}            text = { Text(title) }\n${indent}        )\n${indent}    }\n${indent}}\n`;
   }
 
   // 15. Layout Containers (Row, Column, Grid, Box, Container)
@@ -755,7 +790,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ${packageName}.components.*
 import ${packageName}.icons.*
 import ${packageName}.motion.*

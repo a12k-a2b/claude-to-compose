@@ -541,6 +541,7 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
 
     const mockPipelineResult = {
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
@@ -548,12 +549,14 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
           success: true,
           metrics: {
             pixelSimilarityPercentage: 96.5,
+            mssimScore: 0.95,
             inkIou: 88.0,
             edgeContourScore: 78.4
           },
           zonal: {
             elementIouScore: 92.0,
-            maxSpatialShiftPx: 2.0
+            maxSpatialShiftPx: 2.0,
+            elementsEvaluatedCount: 3
           }
         }
       }
@@ -573,6 +576,7 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
 
     const mockPipelineResult = {
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
@@ -580,12 +584,14 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
           success: true,
           metrics: {
             pixelSimilarityPercentage: 95.0,
+            mssimScore: 0.95,
             inkIou: 90.0,
             edgeContourScore: 94.0
           },
           zonal: {
             elementIouScore: 91.0,
             maxSpatialShiftPx: 7.2,
+            elementsEvaluatedCount: 3,
             worstDriftElement: { name: 'title-text', elementId: 'title-1' }
           }
         }
@@ -606,19 +612,22 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
 
     const mockPipelineResult = {
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
         diff: {
           success: true,
           metrics: {
-            pixelSimilarityPercentage: 91.0,
+            pixelSimilarityPercentage: 96.0,
+            mssimScore: 0.95,
             inkIou: 40.0,
             edgeContourScore: 92.0
           },
           zonal: {
             elementIouScore: 92.0,
-            maxSpatialShiftPx: 1.5
+            maxSpatialShiftPx: 1.5,
+            elementsEvaluatedCount: 3
           }
         }
       }
@@ -641,6 +650,7 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
 
     const mockPipelineResult = {
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
@@ -648,12 +658,14 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
           success: true,
           metrics: {
             pixelSimilarityPercentage: 98.5,
+            mssimScore: 0.97,
             inkIou: 91.0,
             edgeContourScore: 94.5
           },
           zonal: {
             elementIouScore: 95.2,
-            maxSpatialShiftPx: 1.8
+            maxSpatialShiftPx: 1.8,
+            elementsEvaluatedCount: 3
           }
         }
       }
@@ -665,5 +677,4 @@ describe('Subsystem 7: Hard Anti-Deception Guardrails & Pipeline Quality Gates',
     assert.equal(summary.deceptionViolations.length, 0);
   });
 });
-
 

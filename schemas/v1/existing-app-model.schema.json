@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.local/schemas/v1/existing-app-model.schema.json",
+  "title": "ExistingAppModel v1",
+  "description": "Evidence-backed structural observations from a non-mutating Android repository inspection. Validation does not prove whole-program correctness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "id",
+    "createdAt",
+    "producer",
+    "inputs",
+    "claimScope",
+    "provenance",
+    "modules",
+    "uiSymbols",
+    "stateActionClues",
+    "buildCommandClues",
+    "tests",
+    "uncertainties"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "ExistingAppModel" },
+    "id": { "$ref": "#/$defs/id" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "producer": { "$ref": "#/$defs/producer" },
+    "inputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/inputRef" }
+    },
+    "claimScope": { "const": "LEXICAL_EVIDENCE_WITH_UNCERTAINTY" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "modules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/module" }
+    },
+    "uiSymbols": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/uiSymbol" }
+    },
+    "stateActionClues": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["states", "actions"],
+      "properties": {
+        "states": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stateClue" }
+        },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/actionClue" }
+        }
+      }
+    },
+    "buildCommandClues": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/buildCommandClue" }
+    },
+    "tests": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/testClue" }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/uncertainty" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "gitCommit": { "type": "string", "pattern": "^[a-f0-9]{40}$" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id" }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "path", "sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["REPOSITORY", "SOURCE", "GRADLE_MODEL", "COMMAND_OUTPUT", "OTHER"] },
+        "path": { "$ref": "#/$defs/nonEmptyString" },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "inspection", "evidence"],
+      "properties": {
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["root", "remoteUrl"],
+          "properties": {
+            "root": { "$ref": "#/$defs/nonEmptyString" },
+            "remoteUrl": { "type": ["string", "null"], "minLength": 1 }
+          }
+        },
+        "revision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["vcs", "commit", "dirty"],
+          "properties": {
+            "vcs": { "const": "git" },
+            "commit": { "$ref": "#/$defs/gitCommit" },
+            "dirty": { "type": "boolean" },
+            "workingTreeDiffSha256": { "$ref": "#/$defs/sha256" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "dirty": { "const": true } }, "required": ["dirty"] },
+              "then": { "required": ["workingTreeDiffSha256"] },
+              "else": { "not": { "required": ["workingTreeDiffSha256"] } }
+            }
+          ]
+        },
+        "inspection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["startedAt", "completedAt", "commands", "filesRead", "mutatedRepository"],
+          "properties": {
+            "startedAt": { "type": "string", "format": "date-time" },
+            "completedAt": { "type": "string", "format": "date-time" },
+            "commands": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/nonEmptyString" }
+            },
+            "filesRead": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/relativePath" }
+            },
+            "mutatedRepository": { "const": false }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "kind", "path", "sha256"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "kind": {
+                "enum": ["SOURCE_FILE", "GRADLE_MODEL", "COMMAND_OUTPUT", "TEST_RESULT", "SCREENSHOT", "SEMANTICS_TREE", "OTHER"]
+              },
+              "path": { "$ref": "#/$defs/relativePath" },
+              "sha256": { "$ref": "#/$defs/sha256" }
+            }
+          }
+        }
+      }
+    },
+    "sourceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "line"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "gradlePath", "kind", "sourceSets", "buildVariants", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "gradlePath": { "type": "string", "pattern": "^:[A-Za-z0-9_.:-]+$" },
+        "kind": { "enum": ["APPLICATION", "ANDROID_LIBRARY", "JVM_LIBRARY", "DYNAMIC_FEATURE", "UNKNOWN"] },
+        "sourceSets": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "buildVariants": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" } },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "uiSymbol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "moduleRef", "qualifiedName", "kind", "location", "confidence", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "moduleRef": { "$ref": "#/$defs/id" },
+        "qualifiedName": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": {
+          "enum": ["COMPOSABLE", "ACTIVITY", "FRAGMENT", "VIEW", "CUSTOM_VIEW", "NAV_ROUTE", "VIEW_MODEL", "STATE_HOLDER", "OTHER"]
+        },
+        "location": { "$ref": "#/$defs/sourceLocation" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "stateClue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "symbol", "location", "confidence", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "symbol": { "$ref": "#/$defs/nonEmptyString" },
+        "location": { "$ref": "#/$defs/sourceLocation" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "actionClue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "symbol", "location", "confidence", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "symbol": { "$ref": "#/$defs/nonEmptyString" },
+        "location": { "$ref": "#/$defs/sourceLocation" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "buildCommandClue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "moduleRef", "purpose", "command", "status", "confidence", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "moduleRef": { "$ref": "#/$defs/id" },
+        "purpose": { "enum": ["ASSEMBLE", "UNIT_TEST", "INSTRUMENTED_TEST", "OTHER"] },
+        "command": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "const": "HEURISTIC_NOT_EXECUTED" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "testClue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "command", "location", "covers", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "enum": ["UNIT", "INSTRUMENTED", "SCREENSHOT", "ROBOLECTRIC", "MANUAL", "OTHER"] },
+        "command": { "$ref": "#/$defs/nonEmptyString" },
+        "location": { "$ref": "#/$defs/sourceLocation" },
+        "covers": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "subjectRef", "statement", "impact", "resolution", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "subjectRef": { "$ref": "#/$defs/id" },
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "enum": ["LOW", "MEDIUM", "HIGH", "BLOCKING"] },
+        "resolution": { "$ref": "#/$defs/nonEmptyString" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    }
+  }
+}

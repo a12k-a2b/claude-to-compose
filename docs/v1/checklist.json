@@ -1,0 +1,102 @@
+{
+  "title": "Claude-to-Compose design retrofit v1",
+  "updated_at": "2026-09-22T19:01:01Z",
+  "current_focus": "Phase 5: package, document, independently review, and publish the v1 branch",
+  "tasks": [
+    {
+      "id": "P1-01",
+      "phase": "1 — Product contract",
+      "title": "Freeze a bounded local-first v1 workflow and versioned artifact contract",
+      "status": "PASS",
+      "acceptance": "Astra-reviewed v1 scope defines inputs, outputs, PASS/FAIL/BLOCKED semantics, and excludes unsupported claims",
+      "evidence": [
+        "docs/v1/evidence/P1-01.md",
+        "tests/unit/v1_contract_schema.test.js"
+      ]
+    },
+    {
+      "id": "P2-01",
+      "phase": "2 — Existing app understanding",
+      "title": "Inspect an Android repository and emit an evidence-backed existing-app model",
+      "status": "PASS",
+      "acceptance": "The CLI identifies real modules, UI symbols, state/action clues, tests, build commands, revision, and unresolved uncertainty without mutating the app",
+      "evidence": [
+        "docs/v1/evidence/P2-01.md",
+        "tests/unit/v1_inspect_cli.test.js"
+      ]
+    },
+    {
+      "id": "P3-01",
+      "phase": "3 — Design retrofit contract",
+      "title": "Build a design-to-existing-app retrofit contract and coding-agent packet",
+      "status": "PASS",
+      "acceptance": "A captured design spec plus app model produces versioned JSON and Markdown mapping obligations, preservation invariants, unsupported features, and exact next commands",
+      "evidence": [
+        "docs/v1/evidence/P3-01.md",
+        "tests/unit/v1_contract_build_cli.test.js"
+      ]
+    },
+    {
+      "id": "P4-01",
+      "phase": "4 — Closed verification loop",
+      "title": "Run fail-closed visual and behavioral acceptance with structured defects",
+      "status": "PASS",
+      "acceptance": "Complete fixture evidence passes, missing evidence blocks, and historical false-green visual evidence fails; results are consistent across CLI JSON and report output",
+      "evidence": [
+        "docs/v1/evidence/P4-01.md",
+        "tests/unit/v1_semantic_validator_cli.test.js"
+      ]
+    },
+    {
+      "id": "P5-01",
+      "phase": "5 — Testable delivery",
+      "title": "Package, document, independently review, and publish the v1 branch",
+      "status": "RUNNING",
+      "acceptance": "A clean-clone user can run doctor, initialize a project, inspect an app, create an agent packet, and exercise the verification fixture using documented commands; dedicated branch is pushed to GitHub",
+      "evidence": []
+    },
+    {
+      "id": "LATER-01",
+      "phase": "Later — Real Note Overlay pilot",
+      "title": "Capture the owner-approved Note Overlay Claude Design links and execute the first real retrofit",
+      "status": "DEFERRED",
+      "acceptance": "Selected Note Overlay states are redesigned in-place and verified on the agreed source revision and DC-1 profile",
+      "evidence": []
+    },
+    {
+      "id": "LATER-02",
+      "phase": "Later — Motion and device qualification",
+      "title": "Add deterministic interaction timelines and physical DC-1 release evidence",
+      "status": "DEFERRED",
+      "acceptance": "Authored scenarios replay with controlled clocks and the exact artifact passes named hardware checks",
+      "evidence": []
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-09-22T15:58:58Z",
+      "accepted": 0,
+      "total": 5
+    },
+    {
+      "at": "2026-09-22T16:31:59Z",
+      "accepted": 1,
+      "total": 5
+    },
+    {
+      "at": "2026-09-22T17:15:37Z",
+      "accepted": 2,
+      "total": 5
+    },
+    {
+      "at": "2026-09-22T18:01:05Z",
+      "accepted": 3,
+      "total": 5
+    },
+    {
+      "at": "2026-09-22T19:01:01Z",
+      "accepted": 4,
+      "total": 5
+    }
+  ]
+}

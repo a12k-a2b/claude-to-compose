@@ -8,34 +8,57 @@ Claude Design → Jetpack Compose pipeline: device reference + verification comp
 
 ![Verification composite](docs/preview/verification-composite.jpg)
 
-[![Build & Verification Status](https://img.shields.io/badge/Verification-100%25%20PASS-brightgreen.svg)](#test-results-summary)
-[![Tests Passing](https://img.shields.io/badge/Tests-533%2F533%20Passing-brightgreen.svg)](#test-results-summary)
+[![Verification Status](https://img.shields.io/badge/Verification-Experimental-orange.svg)](#test-results-summary)
+[![Quality Gate](https://img.shields.io/badge/Quality%20Gate-Fail--closed-blue.svg)](#test-results-summary)
 [![Compose Material 3](https://img.shields.io/badge/Material%203-2024.10.01-blue.svg)](#technical-deep-dive)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-purple.svg)](#prerequisites)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> A hybrid developer tool, verification suite, and multi-agent workflow that ingests Claude Design shareable links and exported HTML/CSS artifacts, extracts computed DOM tokens, vector assets, and interaction behaviors via a headless browser engine, and translates them into production-ready, pixel-perfect Jetpack Compose / Kotlin Android components and complete screens with verified visual and UX fidelity.
+> A local, agent-assisted design-retrofit workbench for making an existing Android app look like captured Claude Design evidence without silently replacing the app's behavior. Visual and behavioral fidelity are measured outcomes, not implied by unit-test counts; missing build, render, geometry, or diff evidence is reported as `BLOCKED`.
+
+## Design retrofit v1
+
+The first testable v1 adds a fail-closed path intended for Codex, Claude Code, or another coding agent:
+
+1. inspect a clean, committed Android baseline without mutating it;
+2. combine the resulting app model with a captured design spec and agent-authored mapping/behavior manifests;
+3. emit a versioned retrofit contract and a coding-agent packet;
+4. implement only in a separate Git worktree; and
+5. verify hash-pinned build, behavior, render, comparison, and provenance evidence as `PASS`, `FAIL`, or `BLOCKED`.
+
+This is deliberately not advertised as a universal one-click web-to-Compose compiler. The existing extractor and synthesizer remain useful experimental lower layers, but a generated screen or green schema test is not accepted as fidelity evidence. Fixture replay proves the verifier, not a real app. A real Note Overlay pilot still needs the selected app repository/revision and Claude Design links.
+
+```bash
+git clone --branch codex/design-retrofit-v1 https://github.com/a12k-a2b/claude-to-compose.git
+cd claude-to-compose
+npm install
+npm run test:v1
+node bin/ctc.js doctor --json
+```
+
+See [the v1 quickstart](docs/v1/QUICKSTART.md), [the frozen artifact contract](docs/v1/V1_CONTRACT.md), and [the end-to-end project plan](docs/END_TO_END_PROJECT_PLAN.md). The v1 is local-first and does not require Railway or any hosted service.
 
 ---
 
 ## Table of Contents
 
-1. [Project Overview & Architecture](#project-overview--architecture)
-2. [Installation & Prerequisites](#installation--prerequisites)
-3. [CLI Usage & Command Manual](#cli-usage--command-manual)
+1. [Design retrofit v1](#design-retrofit-v1)
+2. [Project Overview & Architecture](#project-overview--architecture)
+3. [Installation & Prerequisites](#installation--prerequisites)
+4. [CLI Usage & Command Manual](#cli-usage--command-manual)
    - [1. Headless Extractor CLI (`claude-extract`)](#1-headless-extractor-cli-claude-extract)
    - [2. Compose Synthesizer CLI](#2-compose-synthesizer-cli)
    - [3. Custom Antigravity Skill & Multi-Agent Workflow (`/claude-to-compose`)](#3-custom-antigravity-skill--multi-agent-workflow-claude-to-compose)
    - [4. Dual Verification Suite](#4-dual-verification-suite)
    - [5. E2E & Adversarial Test Runner](#5-e2e--adversarial-test-runner)
-4. [Technical Deep Dive](#technical-deep-dive)
+5. [Technical Deep Dive](#technical-deep-dive)
    - [Extractor Engine & Hydration Barrier](#extractor-engine--hydration-barrier)
    - [Jetpack Compose & UX Synthesizer](#jetpack-compose--ux-synthesizer)
    - [Dual Verification Harness & 10-Point Rubric](#dual-verification-harness--10-point-rubric)
-5. [End-to-End Walkthrough: SaaS Analytics Dashboard](#end-to-end-walkthrough-saas-analytics-dashboard)
-6. [Test Results Summary](#test-results-summary)
-7. [Repository Layout](#repository-layout)
-8. [License](#license)
+6. [End-to-End Walkthrough: SaaS Analytics Dashboard](#end-to-end-walkthrough-saas-analytics-dashboard)
+7. [Test Results Summary](#test-results-summary)
+8. [Repository Layout](#repository-layout)
+9. [License](#license)
 
 ---
 
@@ -110,7 +133,7 @@ Translating rich web designs into idiomatic, maintainable Android Jetpack Compos
 
 | Tool | Required Version | Verification Command | Notes |
 |---|---|---|---|
-| **Node.js** | `>= 20.0.0` | `node --version` | LTS runtime |
+| **Node.js** | `>= 18.0.0` | `node --version` | Node 20+ LTS recommended |
 | **npm** | `>= 9.0.0` | `npm --version` | Package manager |
 | **JDK** | `17` | `javac -version` | Required for Android Gradle builds |
 | **Android SDK** | `API 35` | `echo $ANDROID_HOME` | Platforms 34/35 & Build-Tools 35.0.0 |
@@ -370,7 +393,7 @@ node verification/run_diff.js \
   --rendered android/app/build/outputs/preview/rendered_preview.png \
   --output output/verification_diff
 ```
-**Output**: Produces `diff_overlay.png` and `composite.png` with pixel similarity >= 98.4% and MSSIM >= 0.97.
+**Output**: Produces `diff_overlay.png` and `composite.png`. The measured metrics depend on the input and do not pass unless every configured global and localized gate is satisfied.
 
 ### Step 6: Generate the Comprehensive Verification Report
 ```bash
@@ -385,21 +408,17 @@ node verification/index.js \
 
 ## Test Results Summary
 
-Across all testing tracks, `claude-to-compose` achieves a **100% pass rate across 533 total independent test executions**:
+Test counts are reported separately from product-fidelity acceptance. Many legacy tests validate helpers, schemas, or code-shape contracts; they do not prove that a generated native screen matches its source design.
 
-| Test Suite | Scope & Coverage | Tests | Passed | Failed | Status |
-|---|---|:---:|:---:|:---:|:---:|
-| **Tier 1: Features** | Requirement-driven feature coverage (R1-R4) | 120 | 120 | 0 | **PASS** |
-| **Tier 2: Boundaries** | Edge cases, null guards, extreme dimensions, malformed inputs | 120 | 120 | 0 | **PASS** |
-| **Tier 3: Combinations** | Cross-feature multi-subsystem integration chains | 24 | 24 | 0 | **PASS** |
-| **Tier 4: Real-World Scenarios** | Full workloads (SaaS, E-Commerce, Banking, Social, Multi-Step) | 20 | 20 | 0 | **PASS** |
-| **Tier 5: Verification & Workflow Adversarial** | Verification gate, rubric veto, report generator, build runner | 61 | 61 | 0 | **PASS** |
-| **Tier 5: Extractor & Synthesizer Adversarial** | Browser lifecycle, SVG odd coordinates, non-finite values | 26 | 26 | 0 | **PASS** |
-| **M4 Rubric & Report Adversarial** | Static code auditor, Markdown escaping, legacy key mapping | 89 | 89 | 0 | **PASS** |
-| **M3 Multi-Agent Workflow Adversarial** | YAML frontmatter, 4 agent roles, handoff consistency | 41 | 41 | 0 | **PASS** |
-| **M1/M2 Extraction Adversarial** | Malformed HTML, script injection resilience, deep DOM (>50) | 12 | 12 | 0 | **PASS** |
-| **Unit Test Suite (`test:unit`)** | CLI parser, SVG parser, spec builder, ephemeral server | 20 | 20 | 0 | **PASS** |
-| **GRAND TOTAL** | **Complete Project Test Harness** | **533** | **533** | **0** | **100% PASS** |
+A release-quality `PASS` now requires all of the following evidence in the same run:
+
+- Kotlin compilation and the native preview render actually executed and succeeded.
+- Vector completeness and the static Compose audit succeeded.
+- Pixel similarity, MSSIM, foreground Ink IoU, and contour alignment meet their configured thresholds.
+- At least one semantic element was measured, element bounding-box IoU passes, and maximum spatial drift is within budget.
+- No required stage or metric was skipped or missing. Missing evidence is `BLOCKED`, never pass.
+
+Run `npm test` and `npm run test:unit` for subsystem checks, then run the verification pipeline against the exact generated artifact for fidelity acceptance. See [the architecture gap analysis](docs/ARCHITECTURE_GAP_ANALYSIS.md) for the supported-subset and motion roadmap.
 
 ---
 

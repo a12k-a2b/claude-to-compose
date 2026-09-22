@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.local/schemas/v1/correspondence-manifest.schema.json",
+  "title": "Authored correspondence manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "id", "appModelSha256", "designSpecSha256", "elementMappings", "actionBindings", "capabilities", "uncertainties"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "kind": { "const": "CorrespondenceManifest" },
+    "id": { "$ref": "#/$defs/id" },
+    "appModelSha256": { "$ref": "#/$defs/sha256" },
+    "designSpecSha256": { "$ref": "#/$defs/sha256" },
+    "elementMappings": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/elementMapping" } },
+    "actionBindings": { "type": "array", "items": { "$ref": "#/$defs/actionBinding" } },
+    "capabilities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/capability" } },
+    "uncertainties": { "type": "array", "items": { "$ref": "#/$defs/uncertainty" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/#()\\[\\]-]*$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nonEmpty": { "type": "string", "minLength": 1 },
+    "refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "elementMapping": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "designIdentity", "existingUiSymbolRef", "mappingStatus", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "designIdentity": { "$ref": "#/$defs/id" },
+        "existingUiSymbolRef": { "$ref": "#/$defs/id" },
+        "mappingStatus": { "enum": ["EVIDENCE_BACKED", "OWNER_APPROVED_NEW_SURFACE"] },
+        "ownerApprovalRef": { "$ref": "#/$defs/id" }, "ownerApprovalStatement": { "$ref": "#/$defs/nonEmpty" }, "evidenceRefs": { "$ref": "#/$defs/refs" }
+      },
+      "allOf": [{
+        "if": { "properties": { "mappingStatus": { "const": "OWNER_APPROVED_NEW_SURFACE" } }, "required": ["mappingStatus"] },
+        "then": { "required": ["ownerApprovalRef", "ownerApprovalStatement"] }, "else": { "not": { "anyOf": [{ "required": ["ownerApprovalRef"] }, { "required": ["ownerApprovalStatement"] }] } }
+      }]
+    },
+    "actionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "designIdentity", "event", "bindingStatus", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "designIdentity": { "$ref": "#/$defs/id" },
+        "event": { "enum": ["CLICK", "LONG_CLICK", "INPUT", "SUBMIT", "BACK", "GESTURE", "FOCUS", "OTHER"] },
+        "bindingStatus": { "enum": ["VERIFIED_EXISTING", "OWNER_APPROVED_NEW_BEHAVIOR"] },
+        "existingActionRef": { "$ref": "#/$defs/id" }, "newBehaviorStatement": { "$ref": "#/$defs/nonEmpty" },
+        "ownerApprovalRef": { "$ref": "#/$defs/id" }, "ownerApprovalStatement": { "$ref": "#/$defs/nonEmpty" }, "evidenceRefs": { "$ref": "#/$defs/refs" }
+      },
+      "allOf": [{
+        "if": { "properties": { "bindingStatus": { "const": "VERIFIED_EXISTING" } }, "required": ["bindingStatus"] },
+        "then": { "required": ["existingActionRef"], "not": { "anyOf": [{ "required": ["newBehaviorStatement"] }, { "required": ["ownerApprovalRef"] }, { "required": ["ownerApprovalStatement"] }] } },
+        "else": { "required": ["newBehaviorStatement", "ownerApprovalRef", "ownerApprovalStatement"], "not": { "required": ["existingActionRef"] } }
+      }]
+    },
+    "capability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "subjectRef", "status", "rationale", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "subjectRef": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["EXACT_NATIVE", "BOUNDED_APPROXIMATION", "ASSET_FALLBACK", "AGENT_IMPLEMENTATION_REQUIRED", "UNSUPPORTED_BLOCKING", "INTENTIONAL_DEVIATION"] },
+        "rationale": { "$ref": "#/$defs/nonEmpty" }, "evidenceRefs": { "$ref": "#/$defs/refs" },
+        "declaredBudget": { "$ref": "#/$defs/nonEmpty" }, "ownerApprovalRef": { "$ref": "#/$defs/id" }, "ownerApprovalStatement": { "$ref": "#/$defs/nonEmpty" }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "BOUNDED_APPROXIMATION" } }, "required": ["status"] }, "then": { "required": ["declaredBudget"] } },
+        { "if": { "properties": { "status": { "const": "INTENTIONAL_DEVIATION" } }, "required": ["status"] }, "then": { "required": ["ownerApprovalRef", "ownerApprovalStatement"] }, "else": { "not": { "anyOf": [{ "required": ["ownerApprovalRef"] }, { "required": ["ownerApprovalStatement"] }] } } }
+      ]
+    },
+    "uncertainty": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "subjectRef", "statement", "impact", "resolution", "evidenceRefs"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" }, "subjectRef": { "$ref": "#/$defs/id" },
+        "statement": { "$ref": "#/$defs/nonEmpty" }, "impact": { "enum": ["LOW", "MEDIUM", "HIGH", "BLOCKING"] },
+        "resolution": { "$ref": "#/$defs/nonEmpty" }, "evidenceRefs": { "$ref": "#/$defs/refs" }
+      }
+    }
+  }
+}

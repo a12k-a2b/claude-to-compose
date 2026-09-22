@@ -21,8 +21,9 @@ const { BuildRunner } = require('./build_runner');
 const { runDiff, compareImages } = require('./run_diff');
 const { runZonalDiff } = require('./zonal_diff');
 const { AutoTuner } = require('./auto_tuner');
-const { evaluateRubric, auditSynthesizedCode } = require('./audit_rubric');
+const { auditSynthesizedCode } = require('./audit_rubric');
 const { generateVerificationReport } = require('./report_generator');
+const { DEFAULT_THRESHOLDS, evaluateVerificationEvidence } = require('./quality_gate');
 
 class VerificationPipeline {
   constructor(options = {}) {
@@ -43,11 +44,12 @@ class VerificationPipeline {
       path.join(this.androidDir, 'app/build/outputs/preview/rendered_preview.png');
     this.specPath = options.spec || options.specPath || path.join(this.projectRoot, 'design_spec.json');
     this.threshold = options.threshold !== undefined ? options.threshold : 0.12;
-    this.minSimilarity = options.minSimilarity !== undefined ? options.minSimilarity : 90.0;
-    this.minInkIou = options.minInkIou !== undefined ? options.minInkIou : 55.0;
-    this.minContourScore = options.minContourScore !== undefined ? options.minContourScore : (options.minEdgeContour !== undefined ? options.minEdgeContour : 90.0);
-    this.minElementIou = options.minElementIou !== undefined ? options.minElementIou : 90.0;
-    this.maxSpatialShiftPx = options.maxSpatialShiftPx !== undefined ? options.maxSpatialShiftPx : (options.maxShiftPx !== undefined ? options.maxShiftPx : 3.0);
+    this.minSimilarity = options.minSimilarity !== undefined ? options.minSimilarity : DEFAULT_THRESHOLDS.minSimilarity;
+    this.minMssim = options.minMssim !== undefined ? options.minMssim : DEFAULT_THRESHOLDS.minMssim;
+    this.minInkIou = options.minInkIou !== undefined ? options.minInkIou : DEFAULT_THRESHOLDS.minInkIou;
+    this.minContourScore = options.minContourScore !== undefined ? options.minContourScore : (options.minEdgeContour !== undefined ? options.minEdgeContour : DEFAULT_THRESHOLDS.minContourScore);
+    this.minElementIou = options.minElementIou !== undefined ? options.minElementIou : DEFAULT_THRESHOLDS.minElementIou;
+    this.maxSpatialShiftPx = options.maxSpatialShiftPx !== undefined ? options.maxSpatialShiftPx : (options.maxShiftPx !== undefined ? options.maxShiftPx : DEFAULT_THRESHOLDS.maxSpatialShiftPx);
     this.priorityFilter = options.priorityFilter !== undefined ? options.priorityFilter : 'all';
     this.skipBuild = Boolean(options.skipBuild);
     this.reportPath = options.report || path.join(this.outputDir, 'verification_report.md');
@@ -199,7 +201,12 @@ class VerificationPipeline {
       }
     } else {
       console.log('ℹ Visual diff skipped (reference or preview image not found at default paths)');
-      pipelineResult.stages.diff = { success: true, skipped: true };
+      pipelineResult.stages.diff = {
+        success: false,
+        skipped: true,
+        blocked: true,
+        error: 'Reference or rendered preview artifact is missing'
+      };
     }
 
     // Stage 4: Agent-as-Judge 10-Point Audit Rubric
@@ -210,33 +217,44 @@ class VerificationPipeline {
         androidDir: this.androidDir,
         specPath: this.specPath
       });
-    } catch (_) {
-      auditResult = evaluateRubric([10, 10, 10, 10, 10, 10, 10, 10, 10, 10]);
+    } catch (err) {
+      auditResult = {
+        passed: false,
+        blocked: true,
+        totalScore: null,
+        dimensions: [],
+        recommendations: [],
+        error: err.message
+      };
     }
     pipelineResult.stages.audit = auditResult;
     console.log(
       `✓ Audit rubric evaluated: Total Score: ${auditResult.totalScore}/100 (Passed: ${auditResult.passed})`
     );
 
+    // Determine the authoritative fail-closed outcome before rendering a report.
+    // The report consumes this result; it must never independently weaken gates.
+    this.concludePipeline(pipelineResult);
+
     // Stage 5: Markdown Verification Report Generation
     console.log('▶ [Stage 5/5] Generating Markdown Verification Report...');
     const reportData = {
       buildResults: {
+        compileSuccess: pipelineResult.stages.compile?.success === true,
+        compileSkipped: Boolean(pipelineResult.stages.compile?.skipped),
+        previewSuccess: pipelineResult.stages.previewTest?.success === true,
+        previewSkipped: Boolean(pipelineResult.stages.previewTest?.skipped),
         compileErrors: pipelineResult.stages.compile?.errors?.length || 0,
-        unitTestsPassed: pipelineResult.stages.previewTest?.success ? 1 : 1,
-        unitTestsFailed: pipelineResult.stages.previewTest?.success === false ? 1 : 0,
+        unitTestsPassed: pipelineResult.stages.previewTest?.unitTestsPassed,
+        unitTestsFailed: pipelineResult.stages.previewTest?.unitTestsFailed,
         previewPath: renderedPath
       },
-      diffMetrics: diffMetrics || {
-        pixelSimilarityPercentage: 98.4,
-        mssimScore: 0.971,
-        pixelMismatchCount: 142,
-        compositePath: path.join(this.outputDir, 'composite.png')
-      },
+      diffMetrics: diffMetrics || {},
       zonalDiff: zonalReport,
       autoTunerDirectives: autoTunerDirectives,
       auditResult,
       auditScore: auditResult.totalScore,
+      qualityGate: pipelineResult.qualityGate,
       metadata: {
         timestamp: pipelineResult.timestamp,
         appName: 'Claude to Compose'
@@ -256,15 +274,15 @@ class VerificationPipeline {
     pipelineResult.reportPath = this.reportPath;
     console.log(`✓ Verification report generated at: ${this.reportPath}`);
 
-    return this.concludePipeline(pipelineResult);
+    return pipelineResult;
   }
 
   concludePipeline(pipelineResult) {
-    const minSimilarity = this.minSimilarity !== undefined ? this.minSimilarity : 90.0;
-    const minElementIou = this.minElementIou !== undefined ? this.minElementIou : 90.0;
-    const maxShiftPxLimit = this.maxSpatialShiftPx !== undefined ? this.maxSpatialShiftPx : 3.0;
-    const minInkIou = this.minInkIou !== undefined ? this.minInkIou : 55.0;
-    const minContourScore = this.minContourScore !== undefined ? this.minContourScore : 90.0;
+    const minSimilarity = this.minSimilarity !== undefined ? this.minSimilarity : DEFAULT_THRESHOLDS.minSimilarity;
+    const minElementIou = this.minElementIou !== undefined ? this.minElementIou : DEFAULT_THRESHOLDS.minElementIou;
+    const maxShiftPxLimit = this.maxSpatialShiftPx !== undefined ? this.maxSpatialShiftPx : DEFAULT_THRESHOLDS.maxSpatialShiftPx;
+    const minInkIou = this.minInkIou !== undefined ? this.minInkIou : DEFAULT_THRESHOLDS.minInkIou;
+    const minContourScore = this.minContourScore !== undefined ? this.minContourScore : DEFAULT_THRESHOLDS.minContourScore;
 
     const buildSuccess =
       pipelineResult.stages.compile?.success !== false &&
@@ -352,16 +370,36 @@ class VerificationPipeline {
       });
     }
 
-    const antiDeceptionPassed = deceptionViolations.length === 0;
+    const preliminaryAntiDeceptionPassed = deceptionViolations.length === 0;
 
     const vectorSuccess = !pipelineResult.stages.vectorLinter || pipelineResult.stages.vectorLinter.passed !== false;
     const diffSuccess =
       pipelineResult.stages.diff?.success !== false &&
-      antiDeceptionPassed &&
+      preliminaryAntiDeceptionPassed &&
       (!diffMetrics.pixelSimilarityPercentage || diffMetrics.pixelSimilarityPercentage >= minSimilarity);
 
-    const overallPassed = buildSuccess && auditSuccess && diffSuccess && vectorSuccess;
-    pipelineResult.verdict = overallPassed ? 'PASSED' : 'FAILED';
+    const qualityGate = evaluateVerificationEvidence(pipelineResult.stages, {
+      thresholds: {
+        minSimilarity,
+        minMssim: this.minMssim,
+        minInkIou,
+        minContourScore,
+        minElementIou,
+        maxSpatialShiftPx: maxShiftPxLimit
+      }
+    });
+    pipelineResult.qualityGate = qualityGate;
+    pipelineResult.outcome = qualityGate.outcome;
+
+    for (const failure of qualityGate.failures) {
+      if (!deceptionViolations.includes(failure)) deceptionViolations.push(failure);
+    }
+    const antiDeceptionPassed = deceptionViolations.length === 0;
+
+    const overallPassed = buildSuccess && auditSuccess && diffSuccess && vectorSuccess && qualityGate.passed;
+    pipelineResult.verdict = overallPassed
+      ? 'PASSED'
+      : (qualityGate.outcome === 'FAIL' ? 'FAILED' : 'BLOCKED');
     pipelineResult.gateAction = overallPassed ? 'PROCEED_PUBLISH' : 'TRIGGER_REFINEMENT';
     pipelineResult.antiDeceptionPassed = antiDeceptionPassed;
     pipelineResult.deceptionViolations = deceptionViolations;
@@ -373,6 +411,10 @@ class VerificationPipeline {
     if (deceptionViolations.length > 0) {
       console.log('  VIOLATIONS:');
       deceptionViolations.forEach((v, i) => console.log(`    ${i + 1}. ✗ ${v}`));
+    }
+    if (qualityGate.blockers.length > 0) {
+      console.log('  BLOCKERS:');
+      qualityGate.blockers.forEach((v, i) => console.log(`    ${i + 1}. ! ${v}`));
     }
     console.log('============================================================\n');
 
@@ -399,8 +441,9 @@ if (require.main === module) {
     .option('--output <dir>', 'Output directory for verification artifacts')
     .option('--diff-dir <dir>', 'Output directory for diff and verification artifacts')
     .option('--threshold <number>', 'Pixelmatch diff threshold', parseFloat, 0.12)
-    .option('--min-similarity <number>', 'Minimum pixel similarity percentage required to pass', parseFloat, 90.0)
-    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat, 55.0)
+    .option('--min-similarity <number>', 'Minimum pixel similarity percentage required to pass', parseFloat, DEFAULT_THRESHOLDS.minSimilarity)
+    .option('--min-mssim <number>', 'Minimum MSSIM structural score required to pass', parseFloat, DEFAULT_THRESHOLDS.minMssim)
+    .option('--min-ink-iou <number>', 'Minimum ink IoU percentage required to pass', parseFloat, DEFAULT_THRESHOLDS.minInkIou)
     .option('--min-contour-score <number>', 'Minimum edge contour alignment percentage required to pass', parseFloat, 90.0)
     .option('--min-element-iou <number>', 'Minimum element bounding box IoU required to pass', parseFloat, 90.0)
     .option('--max-shift-px <number>', 'Maximum spatial drift in pixels allowed to pass', parseFloat, 3.0)

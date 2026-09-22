@@ -436,13 +436,18 @@ class SpecBuilder {
   /**
    * Builds the complete design specification object
    */
-  buildSpec({ metadata = {}, viewports = {}, domHierarchy, vectorAssets = [] } = {}) {
+  buildSpec({ metadata = {}, viewports = {}, domHierarchy, viewportScenes = {}, vectorAssets = [] } = {}) {
     const meta = metadata || {};
     const vports = viewports || {};
     const vectors = vectorAssets || [];
 
     if (domHierarchy) {
       this.sanitizeHierarchy(domHierarchy);
+    }
+    for (const scene of Object.values(viewportScenes || {})) {
+      if (scene?.hierarchy && scene.hierarchy !== domHierarchy) {
+        this.sanitizeHierarchy(scene.hierarchy);
+      }
     }
 
     const tokens = this.collectTokens(domHierarchy);
@@ -479,6 +484,7 @@ class SpecBuilder {
       },
       theme,
       hierarchy: domHierarchy,
+      viewportScenes,
       vectors
     };
 

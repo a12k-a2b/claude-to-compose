@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude-to-compose.local/schemas/v1/agent-packet.schema.json",
+  "title": "Retrofit coding-agent packet v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "kind", "id", "claimScope", "retrofitContract", "inputs", "sources", "functionalBehaviorRule", "elementMappings", "actionBindings", "preservationObligations", "goldenPolicy", "capabilities", "uncertainties", "implementationBoundary", "acceptanceRequirements"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" }, "kind": { "const": "AgentPacket" }, "id": { "$ref": "#/$defs/id" },
+    "claimScope": { "const": "CODING_INSTRUCTIONS_FROM_VALIDATED_CONTRACT_NOT_VERIFIED_IMPLEMENTATION" },
+    "retrofitContract": {
+      "type": "object", "additionalProperties": false, "required": ["id", "sha256"],
+      "properties": { "id": { "$ref": "#/$defs/id" }, "sha256": { "$ref": "#/$defs/sha256" } }
+    },
+    "inputs": { "type": "array", "minItems": 4, "items": { "$ref": "#/$defs/input" } },
+    "sources": {
+      "type": "object", "additionalProperties": false, "required": ["existingAppModel", "designEvidence"],
+      "properties": { "existingAppModel": { "$ref": "#/$defs/source" }, "designEvidence": { "$ref": "#/$defs/source" } }
+    },
+    "functionalBehaviorRule": { "type": "string", "minLength": 1 },
+    "elementMappings": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/mapping" } },
+    "actionBindings": { "type": "array", "items": { "$ref": "#/$defs/action" } },
+    "preservationObligations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/obligation" } },
+    "goldenPolicy": { "$ref": "#/$defs/golden" },
+    "capabilities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/capability" } },
+    "uncertainties": { "type": "array", "items": { "$ref": "#/$defs/uncertainty" } },
+    "implementationBoundary": { "$ref": "#/$defs/boundary" },
+    "acceptanceRequirements": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/requirement" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/#()\\[\\]-]*$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "text": { "type": "string", "minLength": 1 },
+    "refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "input": { "type": "object", "additionalProperties": false, "required": ["id", "kind", "path", "sha256"], "properties": { "id": { "$ref": "#/$defs/id" }, "kind": { "enum": ["EXISTING_APP_MODEL", "DESIGN_EVIDENCE", "OWNER_APPROVAL", "OTHER"] }, "path": { "$ref": "#/$defs/text" }, "sha256": { "$ref": "#/$defs/sha256" } } },
+    "source": { "type": "object", "additionalProperties": false, "required": ["artifactId", "schemaVersion", "path", "sha256"], "properties": { "artifactId": { "$ref": "#/$defs/id" }, "schemaVersion": { "const": "1.0.0" }, "path": { "$ref": "#/$defs/text" }, "sha256": { "$ref": "#/$defs/sha256" } } },
+    "mapping": { "type": "object", "additionalProperties": false, "required": ["id", "designIdentity", "existingUiSymbolRef", "mappingStatus", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "designIdentity": { "$ref": "#/$defs/id" }, "existingUiSymbolRef": { "$ref": "#/$defs/id" }, "mappingStatus": { "enum": ["EVIDENCE_BACKED", "OWNER_APPROVED_NEW_SURFACE"] }, "ownerApprovalRef": { "$ref": "#/$defs/id" }, "ownerApprovalStatement": { "$ref": "#/$defs/text" }, "evidenceRefs": { "$ref": "#/$defs/refs" } } },
+    "action": { "type": "object", "additionalProperties": false, "required": ["id", "designIdentity", "event", "bindingStatus", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "designIdentity": { "$ref": "#/$defs/id" }, "event": { "enum": ["CLICK", "LONG_CLICK", "INPUT", "SUBMIT", "BACK", "GESTURE", "FOCUS", "OTHER"] }, "bindingStatus": { "enum": ["VERIFIED_EXISTING", "OWNER_APPROVED_NEW_BEHAVIOR"] }, "existingActionRef": { "$ref": "#/$defs/id" }, "newBehaviorStatement": { "$ref": "#/$defs/text" }, "ownerApprovalRef": { "$ref": "#/$defs/id" }, "evidenceRefs": { "$ref": "#/$defs/refs" } } },
+    "obligation": { "type": "object", "additionalProperties": false, "required": ["id", "category", "statement", "status", "sourceEvidenceRefs", "verificationRequirement"], "properties": { "id": { "$ref": "#/$defs/id" }, "category": { "$ref": "#/$defs/text" }, "statement": { "$ref": "#/$defs/text" }, "status": { "enum": ["REQUIRED", "OWNER_APPROVED_CHANGE"] }, "sourceEvidenceRefs": { "$ref": "#/$defs/refs" }, "verificationRequirement": { "$ref": "#/$defs/text" }, "ownerApprovalRef": { "$ref": "#/$defs/id" } } },
+    "golden": { "type": "object", "additionalProperties": false, "required": ["status", "statement", "obligationRef"], "properties": { "status": { "enum": ["PRESERVE_EXISTING", "OWNER_APPROVED_CHANGE"] }, "statement": { "$ref": "#/$defs/text" }, "obligationRef": { "$ref": "#/$defs/id" }, "ownerApprovalRef": { "$ref": "#/$defs/id" } } },
+    "capability": { "type": "object", "additionalProperties": false, "required": ["id", "subjectRef", "status", "rationale", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "subjectRef": { "$ref": "#/$defs/id" }, "status": { "enum": ["EXACT_NATIVE", "BOUNDED_APPROXIMATION", "ASSET_FALLBACK", "AGENT_IMPLEMENTATION_REQUIRED", "UNSUPPORTED_BLOCKING", "INTENTIONAL_DEVIATION"] }, "rationale": { "$ref": "#/$defs/text" }, "evidenceRefs": { "$ref": "#/$defs/refs" }, "declaredBudget": { "$ref": "#/$defs/text" }, "ownerApprovalRef": { "$ref": "#/$defs/id" } } },
+    "uncertainty": { "type": "object", "additionalProperties": false, "required": ["id", "subjectRef", "statement", "impact", "resolution", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "subjectRef": { "$ref": "#/$defs/id" }, "statement": { "$ref": "#/$defs/text" }, "impact": { "enum": ["LOW", "MEDIUM", "HIGH", "BLOCKING"] }, "resolution": { "$ref": "#/$defs/text" }, "evidenceRefs": { "$ref": "#/$defs/refs" } } },
+    "boundary": { "type": "object", "additionalProperties": false, "required": ["allowedPaths", "prohibitedChanges", "verificationCommands"], "properties": { "allowedPaths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/text" } }, "prohibitedChanges": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/text" } }, "verificationCommands": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/text" } } } },
+    "viewport": { "type": "object", "additionalProperties": false, "required": ["widthPx", "heightPx", "deviceScaleFactor"], "properties": { "widthPx": { "type": "integer", "minimum": 1 }, "heightPx": { "type": "integer", "minimum": 1 }, "deviceScaleFactor": { "type": "number", "exclusiveMinimum": 0 } } },
+    "configuration": { "type": "object", "additionalProperties": false, "required": ["buildVariant", "locale", "theme", "fontScale", "orientation", "reducedMotion"], "properties": { "buildVariant": { "$ref": "#/$defs/text" }, "locale": { "$ref": "#/$defs/text" }, "theme": { "$ref": "#/$defs/text" }, "fontScale": { "type": "number", "exclusiveMinimum": 0 }, "orientation": { "enum": ["PORTRAIT", "LANDSCAPE"] }, "reducedMotion": { "type": "boolean" } } },
+    "context": { "type": "object", "additionalProperties": false, "required": ["id", "sceneId", "scenarioId", "stateId", "viewport", "deviceProfile", "configuration"], "properties": { "id": { "$ref": "#/$defs/id" }, "sceneId": { "$ref": "#/$defs/id" }, "scenarioId": { "$ref": "#/$defs/id" }, "stateId": { "$ref": "#/$defs/id" }, "viewport": { "$ref": "#/$defs/viewport" }, "deviceProfile": { "$ref": "#/$defs/text" }, "configuration": { "$ref": "#/$defs/configuration" } } },
+    "budget": { "type": "object", "additionalProperties": false, "required": ["id", "metric", "operator", "threshold", "unit"], "properties": { "id": { "$ref": "#/$defs/id" }, "metric": { "$ref": "#/$defs/text" }, "operator": { "enum": ["AT_LEAST", "AT_MOST", "EXACT"] }, "threshold": { "type": "number" }, "unit": { "$ref": "#/$defs/text" } } },
+    "requirement": { "type": "object", "additionalProperties": false, "required": ["id", "description", "domains", "requiredContexts", "numericBudgets", "evidenceRefs"], "properties": { "id": { "$ref": "#/$defs/id" }, "description": { "$ref": "#/$defs/text" }, "domains": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["BUILD", "BEHAVIOR", "RENDER", "SEMANTICS", "PERFORMANCE", "PROVENANCE", "OTHER"] } }, "requiredContexts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/context" } }, "numericBudgets": { "type": "array", "items": { "$ref": "#/$defs/budget" } }, "evidenceRefs": { "$ref": "#/$defs/refs" } } }
+  }
+}

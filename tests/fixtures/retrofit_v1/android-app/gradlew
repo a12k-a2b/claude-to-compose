@@ -1,0 +1,3 @@
+#!/bin/sh
+touch "${GRADLE_SENTINEL:?Gradle must never be invoked by inspect-app}"
+exit 99

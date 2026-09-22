@@ -5,7 +5,8 @@
   "main": "extractor/engine.js",
   "bin": {
     "claude-to-compose": "bin/claude-to-compose.js",
-    "claude-extract": "bin/claude-extract.js"
+    "claude-extract": "bin/claude-extract.js",
+    "ctc": "bin/ctc.js"
   },
   "scripts": {
     "compose": "node bin/claude-to-compose.js",
@@ -19,6 +20,10 @@
     "test:tier3": "node tests/e2e_runner.js --tier 3",
     "test:tier4": "node tests/e2e_runner.js --tier 4",
     "test:unit": "node --test tests/unit/**/*.test.js",
+    "test:v1": "node --test tests/unit/v1_contract_schema.test.js tests/unit/v1_inspect_cli.test.js tests/unit/v1_contract_build_cli.test.js tests/unit/v1_semantic_validator_cli.test.js",
+    "test:v1-inspect": "node --test tests/unit/v1_inspect_cli.test.js",
+    "test:v1-contract-build": "node --test tests/unit/v1_contract_build_cli.test.js",
+    "test:v1-verify": "node --test tests/unit/v1_semantic_validator_cli.test.js",
     "diff": "node verification/run_diff.js",
     "audit": "node verification/audit_rubric.js"
   },
