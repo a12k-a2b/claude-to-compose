@@ -1,0 +1,196 @@
+{
+  "version": "2.0.0",
+  "metadata": {
+    "screen": "DaylightDc1Screen",
+    "orientation": "landscape",
+    "viewport": {
+      "width": 1584,
+      "height": 1184,
+      "widthDp": 792,
+      "heightDp": 592,
+      "density": 2.0
+    },
+    "sourceId": "daylight#onboarding/landscape"
+  },
+  "root": {
+    "id": "node_root_landscape",
+    "sourceId": "daylight#onboarding/root",
+    "tag": "main",
+    "type": "CONTAINER",
+    "componentType": "Screen",
+    "bounds": { "x": 0, "y": 0, "width": 1584, "height": 1184 },
+    "boundsDp": { "x": 0, "y": 0, "width": 792, "height": 592 },
+    "style": {
+      "backgroundColor": "#FFFFFF",
+      "color": "#1A1A1A"
+    },
+    "children": [
+      {
+        "id": "node_frames_landscape",
+        "sourceId": "daylight#onboarding/frames",
+        "tag": "canvas",
+        "type": "CANVAS",
+        "componentType": "Frames",
+        "bounds": { "x": 0, "y": 0, "width": 1584, "height": 1184 },
+        "boundsDp": { "x": 0, "y": 0, "width": 792, "height": 592 },
+        "strategy": "fidelity-first"
+      },
+      {
+        "id": "node_nav_skip_landscape",
+        "sourceId": "daylight#onboarding/nav/skip",
+        "tag": "button",
+        "type": "BUTTON",
+        "componentType": "Button",
+        "bounds": { "x": 1452, "y": 26, "width": 96, "height": 64 },
+        "boundsDp": { "x": 726, "y": 13, "width": 48, "height": 32 },
+        "touchTargetDp": { "width": 48, "height": 48 },
+        "role": "button",
+        "style": {
+          "backgroundColor": "#FFFFFF",
+          "borderColor": "#DCD5C9",
+          "borderWidth": 1,
+          "borderRadius": 11,
+          "color": "#1A1A1A"
+        },
+        "text": {
+          "content": "Skip",
+          "fontFamily": "ABC Arizona Sans",
+          "fontSize": 12,
+          "fontWeight": 400,
+          "lineHeight": 16,
+          "color": "#1A1A1A",
+          "textAlign": "center"
+        }
+      },
+      {
+        "id": "node_hero_illustration_landscape",
+        "sourceId": "daylight#onboarding/hero/illustration",
+        "tag": "canvas",
+        "type": "CANVAS",
+        "componentType": "IllustrationCanvas",
+        "bounds": { "x": 64, "y": 120, "width": 700, "height": 960 },
+        "boundsDp": { "x": 32, "y": 60, "width": 350, "height": 480 },
+        "strategy": "fidelity-first"
+      },
+      {
+        "id": "node_compass_landscape",
+        "sourceId": "daylight#onboarding/hero/compass",
+        "tag": "canvas",
+        "type": "CANVAS",
+        "componentType": "CompassRoseGraphic",
+        "bounds": { "x": 620, "y": 160, "width": 120, "height": 120 },
+        "boundsDp": { "x": 310, "y": 80, "width": 60, "height": 60 },
+        "strategy": "fidelity-first"
+      },
+      {
+        "id": "node_brand_glyph_landscape",
+        "sourceId": "daylight#onboarding/hero/brand_glyph",
+        "tag": "img",
+        "type": "IMAGE",
+        "componentType": "Image",
+        "bounds": { "x": 1056, "y": 140, "width": 84, "height": 84 },
+        "boundsDp": { "x": 528, "y": 70, "width": 42, "height": 42 },
+        "asset": {
+          "type": "drawable",
+          "name": "daylight_logo"
+        }
+      },
+      {
+        "id": "node_kicker_landscape",
+        "sourceId": "daylight#onboarding/typography/kicker",
+        "tag": "p",
+        "type": "TEXT",
+        "componentType": "Text",
+        "bounds": { "x": 800, "y": 250, "width": 680, "height": 30 },
+        "boundsDp": { "x": 400, "y": 125, "width": 340, "height": 15 },
+        "text": {
+          "content": "Daylight DC1 · the living page",
+          "fontFamily": "ABC ROM Mono",
+          "fontSize": 11,
+          "fontWeight": 400,
+          "lineHeight": 15,
+          "letterSpacing": 1.1,
+          "color": "#535353",
+          "textAlign": "start"
+        }
+      },
+      {
+        "id": "node_headline_landscape",
+        "sourceId": "daylight#onboarding/typography/headline",
+        "tag": "h1",
+        "type": "TEXT",
+        "componentType": "Text",
+        "bounds": { "x": 800, "y": 290, "width": 680, "height": 96 },
+        "boundsDp": { "x": 400, "y": 145, "width": 340, "height": 48 },
+        "text": {
+          "content": "Step into daylight",
+          "fontFamily": "ABC Arizona Flare",
+          "fontSize": 38,
+          "fontWeight": 500,
+          "lineHeight": 44,
+          "letterSpacing": -2.5,
+          "color": "#000000",
+          "textAlign": "start"
+        }
+      },
+      {
+        "id": "node_subtitle_landscape",
+        "sourceId": "daylight#onboarding/typography/subtitle",
+        "tag": "p",
+        "type": "TEXT",
+        "componentType": "Text",
+        "bounds": { "x": 800, "y": 400, "width": 680, "height": 110 },
+        "boundsDp": { "x": 400, "y": 200, "width": 340, "height": 55 },
+        "text": {
+          "content": "A reflective paper screen that moves like ink — 60 to 120 frames a second, and not a drop of blue light. Let's make it yours.",
+          "fontFamily": "ABC Arizona Sans",
+          "fontSize": 15,
+          "fontWeight": 400,
+          "lineHeight": 22,
+          "color": "#1A1A1A",
+          "textAlign": "start"
+        }
+      },
+      {
+        "id": "node_cta_landscape",
+        "sourceId": "daylight#onboarding/action/get_started",
+        "tag": "button",
+        "type": "BUTTON",
+        "componentType": "Button",
+        "bounds": { "x": 800, "y": 550, "width": 260, "height": 84 },
+        "boundsDp": { "x": 400, "y": 275, "width": 130, "height": 42 },
+        "touchTargetDp": { "width": 130, "height": 48 },
+        "role": "button",
+        "style": {
+          "backgroundColor": "#000000",
+          "borderRadius": 21,
+          "color": "#FFFFFF"
+        },
+        "text": {
+          "content": "Get started",
+          "fontFamily": "ABC Arizona Sans",
+          "fontSize": 14,
+          "fontWeight": 500,
+          "lineHeight": 18,
+          "color": "#FFFFFF",
+          "textAlign": "center"
+        }
+      },
+      {
+        "id": "node_chips_landscape",
+        "sourceId": "daylight#onboarding/chips/container",
+        "tag": "div",
+        "type": "CONTAINER",
+        "componentType": "ChipGroup",
+        "bounds": { "x": 800, "y": 680, "width": 680, "height": 110 },
+        "boundsDp": { "x": 400, "y": 340, "width": 340, "height": 55 },
+        "chipsData": {
+          "label": "PAPER MOTION",
+          "row1": ["Footprints", "Contours"],
+          "row2": ["Streets", "Sunrise"],
+          "selected": "Footprints"
+        }
+      }
+    ]
+  }
+}

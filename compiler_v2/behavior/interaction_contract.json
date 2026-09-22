@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "screen": "DaylightDc1Screen",
+  "scenario": "paper_motion_chip_selection",
+  "description": "Deterministic interaction test asserting state transition on Daylight Sol:OS Paper Motion Chips",
+  "targetDisplay": {
+    "viewport": "1184x1584",
+    "density": 2.0,
+    "technology": "Transflective LivePaper LCD (60Hz - 120Hz)",
+    "settleStandardMs": 150
+  },
+  "stateVariables": [
+    {
+      "name": "selectedChip",
+      "type": "String",
+      "defaultValue": "Footprints",
+      "options": ["Footprints", "Contours", "Streets", "Sunrise"]
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "t0",
+      "timestampMs": 0,
+      "state": { "selectedChip": "Footprints" },
+      "action": "none",
+      "description": "Default initial state: Footprints chip selected with --os-800 dark pill fill"
+    },
+    {
+      "id": "t1",
+      "timestampMs": 50,
+      "state": { "selectedChip": "Streets" },
+      "action": "click(target='daylight#onboarding/chips/item_1')",
+      "description": "Touch down & ripple expansion on Streets chip"
+    },
+    {
+      "id": "t2",
+      "timestampMs": 250,
+      "state": { "selectedChip": "Streets" },
+      "action": "settle",
+      "description": "Settled fluid LivePaper state: Streets chip inverted to dark ink; Footprints restored to ground"
+    }
+  ]
+}

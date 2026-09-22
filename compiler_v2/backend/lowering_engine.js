@@ -25,23 +25,23 @@ function lowerNode(node, context) {
   let code = '';
 
   if (node.category === 'canvas' || node.loweringStrategy === 'fidelity-first') {
-    code = lowerCanvasIllustration(node);
+    code = lowerCanvasIllustration(node, context);
     telemetry.targetComposable = node.componentType === 'Compass' ? 'CompassRoseGraphic' : 'Canvas';
     telemetry.status = 'EXACT';
   } else if (node.category === 'image') {
-    code = lowerImageNode(node);
+    code = lowerImageNode(node, context);
     telemetry.targetComposable = 'Image';
     telemetry.status = 'EXACT';
   } else if (node.category === 'button') {
-    code = lowerButtonNode(node);
+    code = lowerButtonNode(node, context);
     telemetry.targetComposable = 'Surface(shape = CircleShape) / Button';
     telemetry.status = 'EXACT';
   } else if (node.category === 'text') {
-    code = lowerTextNode(node);
+    code = lowerTextNode(node, context);
     telemetry.targetComposable = 'Text';
     telemetry.status = 'EXACT';
   } else if (node.category === 'chip_group') {
-    code = lowerChipGroupNode(node);
+    code = lowerChipGroupNode(node, context);
     telemetry.targetComposable = 'Column / DaylightChip (Surface)';
     telemetry.status = 'EXACT';
   }
@@ -56,7 +56,8 @@ function compileIRToCompose(ir, options = {}) {
   const packagePath = options.packagePath || 'com.claude.compose.screen';
 
   const context = {
-    telemetryList: []
+    telemetryList: [],
+    viewport: ir.viewport || { widthDp: 592, heightDp: 792 }
   };
 
   const components = [];

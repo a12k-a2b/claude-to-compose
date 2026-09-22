@@ -8,12 +8,13 @@
  * with verified accessibility semantics and minimum 48dp touch targets.
  */
 
-function lowerTextNode(node) {
+function lowerTextNode(node, context = {}) {
   const text = node.measured.textRun;
   if (!text) return '';
 
   const sourceTag = `testTag("${node.sourceId}")`;
   const bounds = node.measured.boundsDp;
+  const viewportWidth = context.viewport?.widthDp || (bounds.x > 500 ? 792 : 592);
 
   let fontCall = 'AbcArizonaSans';
   if (text.fontFamily.includes('Flare')) {
@@ -28,8 +29,8 @@ function lowerTextNode(node) {
   const colorHex = text.color.replace('#', '');
   const colorCall = colorHex.length === 6 ? `Color(0xFF${colorHex})` : `Color(0x${colorHex})`;
 
-  let modifierCode = `Modifier\n        .${sourceTag}`;
-  if (bounds.width >= 590) {
+  let modifierCode = `Modifier`;
+  if (bounds.width >= (viewportWidth - 10)) {
     modifierCode += `\n        .fillMaxWidth()`;
   } else {
     modifierCode += `\n        .width(${bounds.width}.dp)`;
@@ -42,6 +43,7 @@ function lowerTextNode(node) {
   if (bounds.y > 0) {
     modifierCode += `\n        .padding(top = ${bounds.y}.dp)`;
   }
+  modifierCode += `\n        .${sourceTag}`;
 
   const escapedContent = text.content.replace(/\n/g, '\\n').replace(/"/g, '\\"');
   const letterSpacingParam = (text.letterSpacing !== undefined && text.letterSpacing !== 0)
@@ -60,7 +62,7 @@ function lowerTextNode(node) {
     )`;
 }
 
-function lowerButtonNode(node) {
+function lowerButtonNode(node, context = {}) {
   const text = node.measured.textRun?.content || 'Action';
   const bounds = node.measured.boundsDp;
   const sourceTag = `testTag("${node.sourceId}")`;
@@ -72,11 +74,14 @@ function lowerButtonNode(node) {
   const borderColor = node.measured.style?.borderColor ? `BorderStroke(1.dp, Color(0xFF${node.measured.style.borderColor.replace('#', '')}))` : 'null';
   const shapeCall = node.measured.style?.borderRadius ? `RoundedCornerShape(${node.measured.style.borderRadius}.dp)` : 'CircleShape';
 
+  const viewportWidth = context.viewport?.widthDp || (bounds.x > 500 ? 792 : 592);
+  const midX = viewportWidth / 2;
+
   let positioning = '';
-  if (Math.abs((bounds.x + bounds.width / 2) - 296) <= 2) {
+  if (Math.abs((bounds.x + bounds.width / 2) - midX) <= 4) {
     positioning = `\n            .align(Alignment.TopCenter)\n            .padding(top = ${bounds.y}.dp)`;
-  } else if (bounds.x > 296) {
-    const endDp = Number((592 - bounds.x - bounds.width).toFixed(1));
+  } else if (bounds.x > midX) {
+    const endDp = Math.max(0, Number((viewportWidth - bounds.x - bounds.width).toFixed(1)));
     positioning = `\n            .align(Alignment.TopEnd)\n            .padding(top = ${bounds.y}.dp, end = ${endDp}.dp)`;
   } else {
     positioning = `\n            .align(Alignment.TopStart)\n            .padding(top = ${bounds.y}.dp, start = ${bounds.x}.dp)`;
@@ -88,9 +93,9 @@ function lowerButtonNode(node) {
         color = ${bgColor},
         border = ${borderColor},
         modifier = Modifier${positioning}
-            .${sourceTag}
             .minimumInteractiveComponentSize()
             .size(width = ${bounds.width}.dp, height = ${bounds.height}.dp)
+            .testTag("${node.sourceId}")
     ) {
         Box(contentAlignment = Alignment.Center) {
             Text(
@@ -104,7 +109,7 @@ function lowerButtonNode(node) {
     }`;
 }
 
-function lowerChipGroupNode(node) {
+function lowerChipGroupNode(node, context = {}) {
   const chips = node.chipsData || {};
   const row1 = chips.row1 || [];
   const row2 = chips.row2 || [];
@@ -115,8 +120,8 @@ function lowerChipGroupNode(node) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .testTag("${node.sourceId}")
             .padding(top = ${node.measured.boundsDp.y}.dp)
+            .testTag("${node.sourceId}")
     ) {
         // Row 1 Chips with inline kicker label
         Row(
@@ -136,7 +141,7 @@ function lowerChipGroupNode(node) {
 ${row1.map((c, idx) => `            DaylightChip(
                 text = "${c}",
                 isSelected = (selectedChip == "${c}"),
-                onClick = { onChipSelected("${c}") },
+                onClick = { selectedChip = "${c}"; onChipSelected("${c}") },
                 sourceId = "${node.sourceId}/chip_${idx}"
             )`).join('\n')}
         }
@@ -152,18 +157,21 @@ ${row1.map((c, idx) => `            DaylightChip(
 ${row2.map((c, idx) => `            DaylightChip(
                 text = "${c}",
                 isSelected = (selectedChip == "${c}"),
-                onClick = { onChipSelected("${c}") },
+                onClick = { selectedChip = "${c}"; onChipSelected("${c}") },
                 sourceId = "${node.sourceId}/chip_r2_${idx}"
             )`).join('\n')}
         }
     }`;
 }
 
-function lowerImageNode(node) {
+function lowerImageNode(node, context = {}) {
   const bounds = node.measured.boundsDp;
   const sourceTag = `testTag("${node.sourceId}")`;
+  const viewportWidth = context.viewport?.widthDp || (bounds.x > 500 ? 792 : 592);
+  const midX = viewportWidth / 2;
+
   let positioning = '';
-  if (Math.abs((bounds.x + bounds.width / 2) - 296) <= 4) {
+  if (Math.abs((bounds.x + bounds.width / 2) - midX) <= 4) {
     positioning = `\n        .align(Alignment.TopCenter)\n        .padding(top = ${bounds.y}.dp)`;
   } else {
     positioning = `\n        .align(Alignment.TopStart)\n        .padding(start = ${bounds.x}.dp, top = ${bounds.y}.dp)`;

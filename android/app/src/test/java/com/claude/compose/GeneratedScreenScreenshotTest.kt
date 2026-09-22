@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import com.claude.compose.screen.GeneratedDc1Screen
 import org.junit.Assert.assertTrue
@@ -75,6 +77,55 @@ class GeneratedScreenScreenshotTest {
             outputDirs.add(File("app/build/outputs/preview"))
         }
 
+        // Export native layout telemetry
+        val tags = listOf(
+            "daylight#onboarding/root",
+            "daylight#onboarding/frames",
+            "daylight#onboarding/nav/skip",
+            "daylight#onboarding/hero/illustration",
+            "daylight#onboarding/hero/compass",
+            "daylight#onboarding/hero/brand_glyph",
+            "daylight#onboarding/typography/kicker",
+            "daylight#onboarding/typography/headline",
+            "daylight#onboarding/typography/subtitle",
+            "daylight#onboarding/action/get_started",
+            "daylight#onboarding/chips/container",
+            "daylight#onboarding/chips/item_0",
+            "daylight#onboarding/chips/item_1",
+            "daylight#onboarding/chips/item_2"
+        )
+        val density = 2.0f
+        val telemetryList = mutableListOf<String>()
+        for (tag in tags) {
+            try {
+                val bounds = composeTestRule.onNodeWithTag(tag).getUnclippedBoundsInRoot()
+                val leftDp = bounds.left.value
+                val topDp = bounds.top.value
+                val rightDp = bounds.right.value
+                val bottomDp = bounds.bottom.value
+                val widthDp = rightDp - leftDp
+                val heightDp = bottomDp - topDp
+                val leftPx = leftDp * density
+                val topPx = topDp * density
+                val widthPx = widthDp * density
+                val heightPx = heightDp * density
+                val cx = leftPx + widthPx / 2f
+                val cy = topPx + heightPx / 2f
+                telemetryList.add(
+                    """
+                    "$tag": {
+                      "boundsDp": {"left": $leftDp, "top": $topDp, "width": $widthDp, "height": $heightDp},
+                      "boundsPx": {"left": $leftPx, "top": $topPx, "width": $widthPx, "height": $heightPx},
+                      "centroid": {"x": $cx, "y": $cy}
+                    }
+                    """.trimIndent()
+                )
+            } catch (e: Throwable) {
+                // Not all canvas nodes have semantics bounds
+            }
+        }
+        val telemetryJson = "{\n  " + telemetryList.joinToString(",\n  ") + "\n}\n"
+
         var primaryFile: File? = null
 
         for (dir in outputDirs) {
@@ -87,6 +138,14 @@ class GeneratedScreenScreenshotTest {
             if (primaryFile == null && outputFile.exists()) {
                 primaryFile = outputFile
             }
+            val telemetryFile = File(dir, "native_telemetry.json")
+            telemetryFile.writeText(telemetryJson)
+        }
+
+        // Also write to output/conformance if available
+        val conformanceDir = File("../../output/conformance")
+        if (conformanceDir.exists() || conformanceDir.mkdirs()) {
+            File(conformanceDir, "native_telemetry.json").writeText(telemetryJson)
         }
 
         assertTrue("Generated preview image file must exist", primaryFile != null && primaryFile.exists())

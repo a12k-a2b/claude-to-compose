@@ -18,10 +18,9 @@ const { generateHandoffGuide } = require('./conformance/handoff_generator');
 function compileDesignPackage(inputScenePath, outputOptions = {}) {
   const conformanceDir = outputOptions.conformanceDir || 'output/conformance';
   const kotlinOutputDir = outputOptions.kotlinOutputDir || 'android/app/src/main/java/com/claude/compose/screen';
-  const screenName = outputOptions.screenName || 'GeneratedDc1Screen';
-
   // 1. Ingest & validate scene
   const rawScene = JSON.parse(fs.readFileSync(inputScenePath, 'utf8'));
+  const screenName = outputOptions.screenName || (rawScene.metadata?.orientation === 'landscape' ? 'GeneratedDc1LandscapeScreen' : 'GeneratedDc1Screen');
   const ir = buildDesignIR(rawScene);
   const validation = validateDesignIR(ir);
 

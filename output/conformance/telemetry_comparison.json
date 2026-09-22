@@ -1,0 +1,327 @@
+{
+  "timestamp": "2026-09-22T09:43:12.875Z",
+  "nodesCompared": 11,
+  "maxDriftThresholdPx": 3,
+  "allPass": false,
+  "results": [
+    {
+      "sourceId": "daylight#onboarding/root",
+      "irBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 0,
+        "drift": 0
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/frames",
+      "irBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 0,
+        "drift": 0
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/nav/skip",
+      "irBounds": {
+        "x": 1052,
+        "y": 26,
+        "width": 96,
+        "height": 64
+      },
+      "nativeBounds": {
+        "left": 1052,
+        "top": 42,
+        "width": 96,
+        "height": 64
+      },
+      "irCentroid": {
+        "x": 1100,
+        "y": 58
+      },
+      "nativeCentroid": {
+        "x": 1100,
+        "y": 74
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 16,
+        "drift": 16
+      },
+      "pass": false
+    },
+    {
+      "sourceId": "daylight#onboarding/hero/illustration",
+      "irBounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 792
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 0,
+        "drift": 0
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/hero/compass",
+      "irBounds": {
+        "x": 935,
+        "y": 205,
+        "width": 136,
+        "height": 136
+      },
+      "nativeBounds": {
+        "left": 935,
+        "top": 205,
+        "width": 136,
+        "height": 136
+      },
+      "irCentroid": {
+        "x": 1003,
+        "y": 273
+      },
+      "nativeCentroid": {
+        "x": 1003,
+        "y": 273
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 0,
+        "drift": 0
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/hero/brand_glyph",
+      "irBounds": {
+        "x": 550,
+        "y": 820,
+        "width": 84,
+        "height": 84
+      },
+      "nativeBounds": {
+        "left": 550,
+        "top": 820,
+        "width": 84,
+        "height": 84
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 862
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 862
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 0,
+        "drift": 0
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/typography/kicker",
+      "irBounds": {
+        "x": 0,
+        "y": 936,
+        "width": 1184,
+        "height": 32
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 936,
+        "width": 1184,
+        "height": 30
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 952
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 951
+      },
+      "delta": {
+        "dx": 0,
+        "dy": -1,
+        "drift": 1
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/typography/headline",
+      "irBounds": {
+        "x": 0,
+        "y": 979,
+        "width": 1184,
+        "height": 96
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 979,
+        "width": 1184,
+        "height": 110
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 1027
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 1034
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 7,
+        "drift": 7
+      },
+      "pass": false
+    },
+    {
+      "sourceId": "daylight#onboarding/typography/subtitle",
+      "irBounds": {
+        "x": 4,
+        "y": 1101,
+        "width": 1184,
+        "height": 120
+      },
+      "nativeBounds": {
+        "left": 4,
+        "top": 1101,
+        "width": 1180,
+        "height": 120
+      },
+      "irCentroid": {
+        "x": 596,
+        "y": 1161
+      },
+      "nativeCentroid": {
+        "x": 594,
+        "y": 1161
+      },
+      "delta": {
+        "dx": -2,
+        "dy": 0,
+        "drift": 2
+      },
+      "pass": true
+    },
+    {
+      "sourceId": "daylight#onboarding/action/get_started",
+      "irBounds": {
+        "x": 467,
+        "y": 1265,
+        "width": 250,
+        "height": 84
+      },
+      "nativeBounds": {
+        "left": 467,
+        "top": 1271,
+        "width": 250,
+        "height": 84
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 1307
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 1313
+      },
+      "delta": {
+        "dx": 0,
+        "dy": 6,
+        "drift": 6
+      },
+      "pass": false
+    },
+    {
+      "sourceId": "daylight#onboarding/chips/container",
+      "irBounds": {
+        "x": 0,
+        "y": 1398,
+        "width": 1184,
+        "height": 160
+      },
+      "nativeBounds": {
+        "left": 0,
+        "top": 1398,
+        "width": 1184,
+        "height": 110
+      },
+      "irCentroid": {
+        "x": 592,
+        "y": 1478
+      },
+      "nativeCentroid": {
+        "x": 592,
+        "y": 1453
+      },
+      "delta": {
+        "dx": 0,
+        "dy": -25,
+        "drift": 25
+      },
+      "pass": false
+    }
+  ]
+}
