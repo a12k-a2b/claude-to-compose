@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/design-system.schema.json",
+  "title": "DesignSystemContract",
+  "type": "object",
+  "required": [
+    "version",
+    "system",
+    "displayProfile",
+    "tokens",
+    "transflectiveContrastRules"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "system": {
+      "type": "string",
+      "const": "Daylight Sol:OS"
+    },
+    "displayProfile": {
+      "type": "object",
+      "required": [
+        "technology",
+        "colorDepth",
+        "framerate",
+        "frontlight",
+        "zeroEpdWaveforms",
+        "epdRestrictions"
+      ],
+      "properties": {
+        "technology": {
+          "type": "string",
+          "enum": [
+            "Transflective LivePaper LCD (60Hz - 120Hz)",
+            "Sharp NT36523N Transflective / Reflective LCD (LivePaper)",
+            "Transflective / Reflective LCD (LivePaper)"
+          ]
+        },
+        "colorDepth": {
+          "type": "string",
+          "const": "8-bit Grayscale (256 discrete levels)"
+        },
+        "framerate": {
+          "type": "string",
+          "const": "60Hz - 120Hz native fluid VSYNC"
+        },
+        "frontlight": {
+          "type": "string",
+          "const": "Pure Amber (Zero Blue Light)"
+        },
+        "zeroEpdWaveforms": {
+          "type": "boolean",
+          "const": true
+        },
+        "epdRestrictions": {
+          "type": "object",
+          "required": [
+            "allowWaveforms",
+            "allowScreenClearFlashes",
+            "allowActionRefreshBroadcast"
+          ],
+          "properties": {
+            "allowWaveforms": { "type": "boolean", "const": false },
+            "allowScreenClearFlashes": { "type": "boolean", "const": false },
+            "allowActionRefreshBroadcast": { "type": "boolean", "const": false }
+          }
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "required": [
+        "neutralGrayscale",
+        "calibratedBrandGrays",
+        "typography",
+        "spacingGrid",
+        "shapes"
+      ],
+      "properties": {
+        "neutralGrayscale": {
+          "type": "object",
+          "required": [
+            "--os-0",
+            "--os-50",
+            "--os-100",
+            "--os-150",
+            "--os-200",
+            "--os-300",
+            "--os-400",
+            "--os-800",
+            "--os-900",
+            "--os-1000"
+          ],
+          "additionalProperties": {
+            "type": "object",
+            "required": ["hex", "luminance", "role"],
+            "properties": {
+              "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "rgba": { "type": "string" },
+              "rgb": { "type": "array", "items": { "type": "integer" }, "minItems": 3, "maxItems": 3 },
+              "luminance": { "type": "integer", "minimum": 0, "maximum": 255 },
+              "role": { "type": "string" }
+            }
+          }
+        },
+        "calibratedBrandGrays": {
+          "type": "object",
+          "required": ["Yellow", "Amber", "Orange"],
+          "properties": {
+            "Yellow": {
+              "type": "object",
+              "required": ["hex", "luminance"],
+              "properties": {
+                "hex": { "type": "string", "const": "#CECECE" },
+                "rgb": { "type": "array" },
+                "luminance": { "type": "integer", "const": 206 }
+              }
+            },
+            "Amber": {
+              "type": "object",
+              "required": ["hex", "luminance"],
+              "properties": {
+                "hex": { "type": "string", "const": "#9D9D9E" },
+                "rgb": { "type": "array" },
+                "luminance": { "type": "integer", "const": 157 }
+              }
+            },
+            "Orange": {
+              "type": "object",
+              "required": ["hex", "luminance"],
+              "properties": {
+                "hex": { "type": "string", "const": "#6C6C6D" },
+                "rgb": { "type": "array" },
+                "luminance": { "type": "integer", "const": 108 }
+              }
+            }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "required": ["headline", "body", "mono"],
+          "properties": {
+            "headline": {
+              "type": "object",
+              "required": ["family", "fallback", "resource"],
+              "properties": {
+                "family": { "type": "string", "const": "ABC Arizona Flare" },
+                "fallback": { "type": "string", "const": "serif" },
+                "variableAxes": { "type": "object" },
+                "resource": { "type": "string" },
+                "weights": { "type": "array" },
+                "lineHeightMultiplier": { "type": "number" },
+                "letterSpacingEm": { "type": "number" }
+              }
+            },
+            "body": {
+              "type": "object",
+              "required": ["family", "fallback", "resource"],
+              "properties": {
+                "family": { "type": "string", "const": "ABC Arizona Sans" },
+                "fallback": { "type": "string", "const": "sans-serif" },
+                "variableAxes": { "type": "object" },
+                "resource": { "type": "string" },
+                "weights": { "type": "array" },
+                "lineHeightMultiplier": { "type": "number" },
+                "letterSpacingEm": { "type": "number" }
+              }
+            },
+            "mono": {
+              "type": "object",
+              "required": ["family", "fallback", "resource"],
+              "properties": {
+                "family": { "type": "string", "const": "ABC ROM Mono" },
+                "fallback": { "type": "string", "const": "monospace" },
+                "weights": { "type": "array" },
+                "resource": { "type": "string" },
+                "lineHeightMultiplier": { "type": "number" },
+                "letterSpacingEm": { "type": "number" }
+              }
+            }
+          }
+        },
+        "spacingGrid": {
+          "type": "object",
+          "required": ["baseUnitDp", "scale"],
+          "properties": {
+            "baseUnitDp": { "type": "integer", "default": 4 },
+            "scale": {
+              "type": "array",
+              "items": { "type": "number" }
+            }
+          }
+        },
+        "shapes": {
+          "type": "object",
+          "required": ["pill", "card", "button", "chip", "hairline"],
+          "properties": {
+            "pill": { "type": "object" },
+            "card": { "type": "object" },
+            "button": { "type": "object" },
+            "chip": { "type": "object" },
+            "hairline": { "type": "object" }
+          }
+        }
+      }
+    },
+    "transflectiveContrastRules": {
+      "type": "object",
+      "required": [
+        "minTextContrastRatio",
+        "minHeadlineContrastRatio",
+        "minTouchTargetDp",
+        "minAdjacentSurfaceDeltaLuminance"
+      ],
+      "properties": {
+        "minTextContrastRatio": {
+          "type": "number",
+          "const": 4.5
+        },
+        "minHeadlineContrastRatio": {
+          "type": "number",
+          "const": 7.0
+        },
+        "minTouchTargetDp": {
+          "type": "object",
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "number", "const": 48 },
+            "height": { "type": "number", "const": 48 }
+          }
+        },
+        "minAdjacentSurfaceDeltaLuminance": {
+          "type": "number",
+          "const": 15
+        },
+        "rasterizationEngine": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/verification-report.schema.json",
+  "title": "VerificationReport",
+  "description": "Schema for Claude to Compose (ctc v2) progressive verification results and diagnostic reports",
+  "type": "object",
+  "required": [
+    "version",
+    "runId",
+    "screenId",
+    "timestamp",
+    "outcome",
+    "passed",
+    "stagesExecutedCount",
+    "stagesTotal",
+    "stages",
+    "blockers",
+    "failures",
+    "provenance"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "screenId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED"]
+    },
+    "passed": {
+      "type": "boolean"
+    },
+    "stagesExecutedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "stagesTotal": {
+      "type": "integer",
+      "const": 6
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/StageExecutionResult"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "failures": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/DefectItem"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceMetadata"
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "elementsEvaluatedCount": { "type": ["integer", "null"] },
+        "maxSpatialShiftPx": { "type": ["number", "null"] },
+        "minContrastRatio": { "type": ["number", "null"] },
+        "inkIouPercentage": { "type": ["number", "null"] },
+        "sobelContourPercentage": { "type": ["number", "null"] },
+        "invariantsPassed": { "type": ["integer", "null"] },
+        "invariantsFailed": { "type": ["integer", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "StageExecutionResult": {
+      "type": "object",
+      "required": ["stage", "status", "success", "durationMs"],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": [
+            "STAGE_1_SCHEMA_PROVENANCE",
+            "STAGE_2_COMPILE_AND_TESTS",
+            "STAGE_3_LAYOUT_TELEMETRY",
+            "STAGE_4_PERCEPTUAL_METRICS",
+            "STAGE_5_SCENARIO_REPLAY",
+            "STAGE_6_DC1_HARDWARE"
+          ]
+        },
+        "alias": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "BLOCKED", "SKIPPED"]
+        },
+        "success": { "type": "boolean" },
+        "durationMs": { "type": "number", "minimum": 0 },
+        "error": { "type": ["string", "null"] },
+        "errorCode": { "type": ["string", "null"] },
+        "evidence": { "type": "object" },
+        "diagnostics": { "type": "object" }
+      }
+    },
+    "DefectItem": {
+      "type": "object",
+      "required": ["sourceId", "stage", "severity", "rootCause", "remediationAction"],
+      "properties": {
+        "sourceId": { "type": "string" },
+        "stage": { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["FATAL", "ERROR", "WARNING", "CRITICAL", "MAJOR", "MINOR"]
+        },
+        "deltaPx": {
+          "type": ["object", "null"],
+          "properties": {
+            "dx": { "type": "number" },
+            "dy": { "type": "number" },
+            "distance": { "type": "number" }
+          }
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "composable": { "type": ["string", "null"] },
+            "file": { "type": ["string", "null"] },
+            "lineNumber": { "type": ["integer", "null"] }
+          }
+        },
+        "rootCause": {
+          "type": "string"
+        },
+        "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "remediationAction": { "type": "string" }
+      }
+    },
+    "ProvenanceMetadata": {
+      "type": "object",
+      "required": ["gitCommit", "designContractHash", "appModelHash", "deviceProfile"],
+      "properties": {
+        "gitCommit": { "type": "string" },
+        "designContractHash": { "type": "string" },
+        "appModelHash": { "type": "string" },
+        "deviceProfile": { "type": "string" },
+        "engineVersion": { "type": "string" }
+      }
+    }
+  }
+}

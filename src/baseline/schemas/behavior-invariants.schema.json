@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/behavior-invariants.schema.json",
+  "title": "BehaviorInvariantsManifest",
+  "type": "object",
+  "required": ["schemaVersion", "applicationId", "targetModule", "createdAt", "invariants"],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "2.0.0" },
+    "applicationId": { "type": "string" },
+    "targetModule": { "type": "string" },
+    "createdAt": { "type": "string" },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "name",
+          "description",
+          "preservationRule",
+          "criticality",
+          "verificationMechanism",
+          "baselineStatus"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "category": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "preservationRule": { "type": "string" },
+          "criticality": { "type": "string", "enum": ["FATAL", "WARNING", "INFO"] },
+          "targetSymbols": { "type": "array" },
+          "verificationMechanism": { "type": "object" },
+          "baselineStatus": { "type": "string" }
+        }
+      }
+    }
+  }
+}

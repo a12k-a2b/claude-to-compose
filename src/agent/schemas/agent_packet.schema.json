@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/agent-packet.schema.json",
+  "title": "AgentImplementationPacket",
+  "description": "Machine-readable implementation packet for coding agents executing Android Jetpack Compose retrofits targeting Daylight Computer (DC1) LivePaper hardware.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "packetId",
+    "generatedAt",
+    "screenId",
+    "targetScope",
+    "designTokens",
+    "preservationInvariants",
+    "layoutConstraints",
+    "verification"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "packetId": {
+      "type": "string",
+      "pattern": "^packet_[a-z0-9_]+$"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "screenId": {
+      "type": "string"
+    },
+    "targetScope": {
+      "type": "object",
+      "required": [
+        "allowedModificationPaths",
+        "forbiddenPaths",
+        "targetFiles",
+        "targetComposables"
+      ],
+      "properties": {
+        "allowedModificationPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "forbiddenPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "forbiddenBehaviors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "targetFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "action", "purpose"],
+            "properties": {
+              "path": { "type": "string" },
+              "action": { "type": "string", "enum": ["RETROFIT", "CREATE", "REPLACE"] },
+              "purpose": { "type": "string" },
+              "targetSymbols": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "targetComposables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["symbol", "composableName", "filePath", "signature", "role"],
+            "properties": {
+              "symbol": { "type": "string" },
+              "composableName": { "type": "string" },
+              "filePath": { "type": "string" },
+              "signature": { "type": "string" },
+              "role": { "type": "string" },
+              "parameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["name", "type", "isState", "isLambda", "isModifier"],
+                  "properties": {
+                    "name": { "type": "string" },
+                    "type": { "type": "string" },
+                    "isState": { "type": "boolean" },
+                    "isLambda": { "type": "boolean" },
+                    "isModifier": { "type": "boolean" },
+                    "defaultValue": { "type": ["string", "null"] }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "designTokens": {
+      "type": "object",
+      "required": [
+        "solOsNeutralTokens",
+        "solOsBrandGrays",
+        "material3ColorSchemeMapping",
+        "typography",
+        "wcagContrastRequirements"
+      ],
+      "properties": {
+        "solOsNeutralTokens": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["hex", "rgb", "luminance", "role"],
+            "properties": {
+              "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "rgba": { "type": "string" },
+              "rgb": {
+                "type": "array",
+                "items": { "type": "integer", "minimum": 0, "maximum": 255 },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "luminance": { "type": "integer", "minimum": 0, "maximum": 255 },
+              "role": { "type": "string" }
+            }
+          }
+        },
+        "solOsBrandGrays": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["hex", "rgb", "luminance"],
+            "properties": {
+              "hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+              "rgb": {
+                "type": "array",
+                "items": { "type": "integer", "minimum": 0, "maximum": 255 },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "luminance": { "type": "integer", "minimum": 0, "maximum": 255 }
+            }
+          }
+        },
+        "material3ColorSchemeMapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["token", "hex", "composeValue"],
+            "properties": {
+              "token": { "type": "string" },
+              "hex": { "type": "string" },
+              "composeValue": { "type": "string" }
+            }
+          }
+        },
+        "typography": {
+          "type": "object",
+          "required": ["fontFamilies", "styles"],
+          "properties": {
+            "fontFamilies": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            },
+            "styles": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": ["fontFamily", "fontSizeSp", "lineHeightSp", "letterSpacingSp", "fontWeight", "inkToken"],
+                "properties": {
+                  "fontFamily": { "type": "string" },
+                  "fontSizeSp": { "type": "number" },
+                  "lineHeightSp": { "type": "number" },
+                  "letterSpacingSp": { "type": "number" },
+                  "fontWeight": { "type": "string" },
+                  "inkToken": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "wcagContrastRequirements": {
+          "type": "object",
+          "required": ["normalTextMinRatio", "largeTextMinRatio", "level"],
+          "properties": {
+            "normalTextMinRatio": { "type": "number", "minimum": 4.5 },
+            "largeTextMinRatio": { "type": "number", "minimum": 3.0 },
+            "level": { "type": "string", "enum": ["AA", "AAA"] }
+          }
+        }
+      }
+    },
+    "preservationInvariants": {
+      "type": "object",
+      "required": [
+        "summary",
+        "invariants",
+        "stateFlows",
+        "debounceDelays",
+        "roomPersistence",
+        "requiredTestTags"
+      ],
+      "properties": {
+        "summary": { "type": "string" },
+        "invariants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "category", "name", "preservationRule", "criticality", "verificationMechanism"],
+            "properties": {
+              "id": { "type": "string" },
+              "category": { "type": "string" },
+              "name": { "type": "string" },
+              "preservationRule": { "type": "string" },
+              "criticality": { "type": "string", "enum": ["FATAL", "WARNING", "INFO"] },
+              "targetSymbols": { "type": "array", "items": { "type": "string" } },
+              "verificationMechanism": { "type": "object" }
+            }
+          }
+        },
+        "stateFlows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["viewModelSymbol", "propertyName", "type", "innerType", "observationPattern"],
+            "properties": {
+              "viewModelSymbol": { "type": "string" },
+              "propertyName": { "type": "string" },
+              "type": { "type": "string" },
+              "innerType": { "type": "string" },
+              "observationPattern": { "type": "string" }
+            }
+          }
+        },
+        "debounceDelays": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["action", "delayMs", "mechanism"],
+            "properties": {
+              "action": { "type": "string" },
+              "delayMs": { "type": "integer" },
+              "mechanism": { "type": "string" }
+            }
+          }
+        },
+        "roomPersistence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["daoSymbol", "entitySymbol", "preservedQueries"],
+            "properties": {
+              "daoSymbol": { "type": "string" },
+              "entitySymbol": { "type": "string" },
+              "preservedQueries": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "requiredTestTags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "layoutConstraints": {
+      "type": "object",
+      "required": [
+        "viewports",
+        "hardwareInsetPx",
+        "minTouchTarget",
+        "elementLayouts"
+      ],
+      "properties": {
+        "viewports": {
+          "type": "object",
+          "required": ["portrait", "landscape"],
+          "properties": {
+            "portrait": {
+              "type": "object",
+              "required": ["widthPx", "heightPx", "widthDp", "heightDp", "density"],
+              "properties": {
+                "widthPx": { "type": "integer", "const": 1184 },
+                "heightPx": { "type": "integer", "const": 1584 },
+                "widthDp": { "type": "number", "const": 592 },
+                "heightDp": { "type": "number", "const": 792 },
+                "density": { "type": "number", "const": 2.0 }
+              }
+            },
+            "landscape": {
+              "type": "object",
+              "required": ["widthPx", "heightPx", "widthDp", "heightDp", "density"],
+              "properties": {
+                "widthPx": { "type": "integer", "const": 1584 },
+                "heightPx": { "type": "integer", "const": 1184 },
+                "widthDp": { "type": "number", "const": 792 },
+                "heightDp": { "type": "number", "const": 592 },
+                "density": { "type": "number", "const": 2.0 }
+              }
+            }
+          }
+        },
+        "hardwareInsetPx": {
+          "type": "object",
+          "required": ["left", "top", "right", "bottom"],
+          "properties": {
+            "left": { "type": "integer", "const": 8 },
+            "top": { "type": "integer", "const": 8 },
+            "right": { "type": "integer", "const": 8 },
+            "bottom": { "type": "integer", "const": 8 }
+          }
+        },
+        "minTouchTarget": {
+          "type": "object",
+          "required": ["widthDp", "heightDp", "widthPx", "heightPx"],
+          "properties": {
+            "widthDp": { "type": "number", "minimum": 48 },
+            "heightDp": { "type": "number", "minimum": 48 },
+            "widthPx": { "type": "integer", "minimum": 96 },
+            "heightPx": { "type": "integer", "minimum": 96 }
+          }
+        },
+        "elementLayouts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sourceId", "category", "portraitBounds", "landscapeBounds", "sizing", "topology"],
+            "properties": {
+              "sourceId": { "type": "string" },
+              "category": { "type": "string" },
+              "portraitBounds": {
+                "type": "object",
+                "required": ["xDp", "yDp", "widthDp", "heightDp"],
+                "properties": {
+                  "xDp": { "type": "number" },
+                  "yDp": { "type": "number" },
+                  "widthDp": { "type": "number" },
+                  "heightDp": { "type": "number" }
+                }
+              },
+              "landscapeBounds": {
+                "type": "object",
+                "required": ["xDp", "yDp", "widthDp", "heightDp"],
+                "properties": {
+                  "xDp": { "type": "number" },
+                  "yDp": { "type": "number" },
+                  "widthDp": { "type": "number" },
+                  "heightDp": { "type": "number" }
+                }
+              },
+              "sizing": { "type": "object" },
+              "topology": { "type": "object" },
+              "insets": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "buildCommands",
+        "unitTestCommands",
+        "ctcVerifyCommands",
+        "failureBudgets",
+        "antiTamperingRule"
+      ],
+      "properties": {
+        "buildCommands": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "unitTestCommands": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "ctcVerifyCommands": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "failureBudgets": {
+          "type": "object",
+          "required": [
+            "maxSpatialDriftPx",
+            "maxBaselineShiftPx",
+            "minInkIoU",
+            "minInkDice",
+            "minNormalTextContrast",
+            "minLargeTextContrast",
+            "marginShiftHardVetoPx"
+          ],
+          "properties": {
+            "maxSpatialDriftPx": { "type": "number", "const": 3.0 },
+            "maxBaselineShiftPx": { "type": "number", "const": 2.0 },
+            "minInkIoU": { "type": "number", "const": 0.85 },
+            "minInkDice": { "type": "number", "const": 0.85 },
+            "minNormalTextContrast": { "type": "number", "const": 7.0 },
+            "minLargeTextContrast": { "type": "number", "const": 4.5 },
+            "marginShiftHardVetoPx": { "type": "number", "const": 10.0 }
+          }
+        },
+        "antiTamperingRule": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

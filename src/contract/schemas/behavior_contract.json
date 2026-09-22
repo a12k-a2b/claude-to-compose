@@ -1,0 +1,329 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/behavior-contract.schema.json",
+  "title": "BehaviorContractSpecification",
+  "type": "object",
+  "required": [
+    "version",
+    "screenId",
+    "stateVariables",
+    "namedStates",
+    "transitions",
+    "checkpoints"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "screenId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "targetDisplay": {
+      "type": "object",
+      "required": ["technology", "settleStandardMs", "zeroEpdWaveforms"],
+      "properties": {
+        "technology": {
+          "type": "string",
+          "enum": [
+            "Transflective LivePaper LCD (60Hz - 120Hz)",
+            "Transflective / Reflective LCD (LivePaper)"
+          ]
+        },
+        "settleStandardMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5000,
+          "default": 150
+        },
+        "zeroEpdWaveforms": {
+          "type": "boolean",
+          "const": true
+        },
+        "allowScreenClearFlashes": {
+          "type": "boolean",
+          "const": false
+        },
+        "allowActionRefreshBroadcast": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "stateVariables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "defaultValue", "isHoisted"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["Boolean", "String", "Int", "Float", "Enum", "List", "Object"]
+          },
+          "defaultValue": {},
+          "options": {
+            "type": "array"
+          },
+          "isHoisted": {
+            "type": "boolean"
+          },
+          "preservationRequired": {
+            "type": "boolean"
+          },
+          "sourceMapping": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "namedStates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stateId", "variableAssignments"],
+        "properties": {
+          "stateId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "isSystemState": {
+            "type": "string",
+            "enum": ["DEFAULT", "LOADING", "EMPTY", "ERROR", "OFFLINE", "EDITING", "POPULATED", "SAVED", "DISMISSED"]
+          },
+          "variableAssignments": {
+            "type": "object"
+          },
+          "entryActions": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "exitActions": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fromState", "toState", "triggerEvent"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "fromState": {
+            "type": "string",
+            "minLength": 1
+          },
+          "toState": {
+            "type": "string",
+            "minLength": 1
+          },
+          "triggerEvent": {
+            "type": "object",
+            "required": ["eventType", "targetSourceId"],
+            "properties": {
+              "eventType": {
+                "type": "string",
+                "enum": [
+                  "TAP",
+                  "LONG_PRESS",
+                  "SWIPE",
+                  "FLING",
+                  "TEXT_CHANGE",
+                  "KEY_EVENT",
+                  "FOCUS",
+                  "WACOM_STYLUS",
+                  "STYLUS_STROKE",
+                  "BACK_PRESS"
+                ]
+              },
+              "targetSourceId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "key": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "direction": { "type": "string", "enum": ["LEFT", "RIGHT", "UP", "DOWN"] },
+                  "distancePx": { "type": "number" },
+                  "velocityDpPerSec": { "type": "number" },
+                  "dwellMs": { "type": "number" },
+                  "pressure": { "type": "number", "minimum": 0, "maximum": 4095 },
+                  "tool": { "type": "string", "enum": ["pen", "eraser"] },
+                  "barrelButton": { "type": "string", "enum": ["none", "barrel", "barrel2", "stylus1", "stylus2"] },
+                  "inputKey": { "type": "string" },
+                  "newText": { "type": "string" }
+                }
+              }
+            }
+          },
+          "guardCondition": {
+            "type": "string"
+          },
+          "appAction": {
+            "type": "object",
+            "required": ["actionName"],
+            "properties": {
+              "actionName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "targetLayer": {
+                "type": "string",
+                "enum": ["ROOM_PERSISTENCE", "VIEWMODEL_EVENT", "NAVIGATION", "LOCAL_STATE"]
+              },
+              "payloadMapping": {
+                "type": "object"
+              },
+              "debounceMs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5000
+              },
+              "invariantId": {
+                "type": "string"
+              }
+            }
+          },
+          "navigationEffect": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["NAVIGATE_TO", "POP_BACK", "OPEN_DIALOG", "DISMISS_DIALOG", "EXTERNAL_LINK"]
+              },
+              "targetRoute": {
+                "type": "string"
+              },
+              "popTarget": {
+                "type": "string"
+              },
+              "preserveBackStack": {
+                "type": "boolean"
+              }
+            }
+          },
+          "animationTrack": {
+            "type": "object",
+            "properties": {
+              "durationMs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 5000
+              },
+              "easing": {
+                "type": "string",
+                "enum": ["Linear", "FastOutSlowIn", "EaseInOut", "Spring"]
+              },
+              "springParameters": {
+                "type": "object",
+                "properties": {
+                  "dampingRatio": { "type": "number" },
+                  "stiffness": { "type": "number" }
+                }
+              },
+              "interruptionSemantics": {
+                "type": "string",
+                "enum": ["CANCEL_AND_START", "QUEUE", "BLEND"]
+              },
+              "reducedMotionFallback": {
+                "type": "string",
+                "enum": ["INSTANT_CUT", "FADE_FALLBACK"]
+              },
+              "propertiesAnimated": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "focusAndKeyboard": {
+      "type": "object",
+      "properties": {
+        "initialFocusSourceId": {
+          "type": "string"
+        },
+        "focusTraversalOrder": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "imeAction": {
+          "type": "string",
+          "enum": ["Done", "Next", "Search", "Default", "Send", "Go"]
+        },
+        "physicalKeyboardShortcuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "actionName"],
+            "properties": {
+              "key": { "type": "string" },
+              "actionName": { "type": "string" },
+              "targetSourceId": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "checkpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "timestampMs", "state"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "timestampMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "state": {
+            "type": "object"
+          },
+          "action": {
+            "type": "string"
+          },
+          "actionDescription": {
+            "type": "string"
+          },
+          "expectedElementStates": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "visible": { "type": "boolean" },
+                "selected": { "type": "boolean" },
+                "text": { "type": "string" },
+                "enabled": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

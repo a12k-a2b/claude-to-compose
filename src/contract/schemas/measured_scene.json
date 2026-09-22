@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/measured-scene.schema.json",
+  "title": "MeasuredSceneBundle",
+  "type": "object",
+  "required": ["version", "screenId", "scenes"],
+  "properties": {
+    "version": { "type": "string", "const": "2.0.0" },
+    "screenId": { "type": "string" },
+    "capturedAt": { "type": "string" },
+    "engineVersion": { "type": "string" },
+    "loadedFonts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["family", "hash"],
+        "properties": {
+          "family": { "type": "string" },
+          "postScriptName": { "type": "string" },
+          "weight": { "type": "integer" },
+          "style": { "type": "string" },
+          "format": { "type": "string" },
+          "hash": { "type": "string" },
+          "localPath": { "type": "string" }
+        }
+      }
+    },
+    "loadedAssets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["assetId", "hash"],
+        "properties": {
+          "assetId": { "type": "string" },
+          "type": { "type": "string" },
+          "localPath": { "type": "string" },
+          "mimeType": { "type": "string" },
+          "width": { "type": "number" },
+          "height": { "type": "number" },
+          "hash": { "type": "string" },
+          "vectorData": { "type": "object" }
+        }
+      }
+    },
+    "scenes": {
+      "type": "object",
+      "description": "Captured scenes keyed by viewport profile identifier",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["viewport", "rootNode", "screenshotHash", "loadedFonts", "loadedAssets"],
+        "properties": {
+          "viewport": {
+            "type": "object",
+            "required": ["widthPx", "heightPx", "density", "widthDp", "heightDp", "orientation"],
+            "properties": {
+              "widthPx": { "type": "integer", "minimum": 0 },
+              "heightPx": { "type": "integer", "minimum": 0 },
+              "density": { "type": "number", "minimum": 0 },
+              "widthDp": { "type": "number", "minimum": 0 },
+              "heightDp": { "type": "number", "minimum": 0 },
+              "orientation": { "type": "string", "enum": ["portrait", "landscape"] }
+            }
+          },
+          "screenshotHash": { "type": "string" },
+          "screenshotPath": { "type": "string" },
+          "loadedFonts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["family", "hash"],
+              "properties": {
+                "family": { "type": "string" },
+                "postScriptName": { "type": "string" },
+                "weight": { "type": "integer" },
+                "style": { "type": "string" },
+                "format": { "type": "string" },
+                "hash": { "type": "string" },
+                "localPath": { "type": "string" }
+              }
+            }
+          },
+          "loadedAssets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["assetId", "type", "hash"],
+              "properties": {
+                "assetId": { "type": "string" },
+                "type": { "type": "string", "enum": ["svg", "bitmap", "font"] },
+                "localPath": { "type": "string" },
+                "mimeType": { "type": "string" },
+                "width": { "type": "number" },
+                "height": { "type": "number" },
+                "hash": { "type": "string" },
+                "vectorData": { "type": "object" }
+              }
+            }
+          },
+          "rootNode": { "$ref": "#/$defs/MeasuredNode" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "MeasuredNode": {
+      "type": "object",
+      "required": ["id", "sourceId", "domTag", "bounds", "paintBounds", "paintOrder", "zIndex", "semantics"],
+      "properties": {
+        "id": { "type": "string" },
+        "sourceId": {
+          "type": "string",
+          "description": "Stable path-based DOM origin identifier (e.g. 'daylight#note_editor/toolbar/back_btn')"
+        },
+        "domTag": { "type": "string" },
+        "domClasses": { "type": "array", "items": { "type": "string" } },
+        "bounds": {
+          "type": "object",
+          "description": "Exact physical bounding box in root coordinates (px)",
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number", "minimum": 0 },
+            "height": { "type": "number", "minimum": 0 }
+          }
+        },
+        "boundsDp": {
+          "type": "object",
+          "description": "Exact physical bounding box in density-independent pixels (dp)",
+          "required": ["x", "y", "width", "height"],
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "width": { "type": "number", "minimum": 0 },
+            "height": { "type": "number", "minimum": 0 }
+          }
+        },
+        "paintBounds": {
+          "type": "object",
+          "description": "Outer visual bounding box including shadows, borders, outlines (px)",
+          "required": ["left", "top", "right", "bottom"],
+          "properties": {
+            "left": { "type": "number" },
+            "top": { "type": "number" },
+            "right": { "type": "number" },
+            "bottom": { "type": "number" }
+          }
+        },
+        "paintBoundsDp": {
+          "type": "object",
+          "required": ["left", "top", "right", "bottom"],
+          "properties": {
+            "left": { "type": "number" },
+            "top": { "type": "number" },
+            "right": { "type": "number" },
+            "bottom": { "type": "number" }
+          }
+        },
+        "paintOrder": { "type": "integer" },
+        "zIndex": { "type": "integer" },
+        "stackingContext": {
+          "type": "object",
+          "required": ["isRoot", "zIndex"],
+          "properties": {
+            "isRoot": { "type": "boolean" },
+            "parentContextId": { "type": "string" },
+            "zIndex": { "type": "integer" },
+            "reason": { "type": "string" }
+          }
+        },
+        "clipChain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["clipType", "bounds"],
+            "properties": {
+              "clipType": { "type": "string", "enum": ["rect", "rounded_rect", "path"] },
+              "bounds": {
+                "type": "object",
+                "required": ["x", "y", "width", "height"],
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "width": { "type": "number", "minimum": 0 },
+                  "height": { "type": "number", "minimum": 0 }
+                }
+              },
+              "radiiDp": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "pathData": { "type": "string" }
+            }
+          }
+        },
+        "transformChain": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["matrix"],
+            "properties": {
+              "matrix": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 6,
+                "maxItems": 6
+              },
+              "description": { "type": "string" },
+              "decomposed": {
+                "type": "object",
+                "properties": {
+                  "translationX": { "type": "number" },
+                  "translationY": { "type": "number" },
+                  "scaleX": { "type": "number" },
+                  "scaleY": { "type": "number" },
+                  "rotation": { "type": "number" },
+                  "pivotX": { "type": "number" },
+                  "pivotY": { "type": "number" },
+                  "hasSkew": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "textRuns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["content", "fontFamily", "fontSizePx", "fontWeight", "lineHeightPx", "colorHex"],
+            "properties": {
+              "content": { "type": "string" },
+              "fontFamily": { "type": "string" },
+              "fontSizePx": { "type": "number" },
+              "fontSizeSp": { "type": "number" },
+              "fontWeight": { "type": "integer" },
+              "fontStyle": { "type": "string", "enum": ["normal", "italic"] },
+              "letterSpacingEm": { "type": "number" },
+              "lineHeightPx": { "type": "number" },
+              "lineHeightSp": { "type": "number" },
+              "colorHex": { "type": "string" },
+              "textAlign": { "type": "string" },
+              "fontOpticalSizing": { "type": "string" },
+              "fontVariationSettings": { "type": "string" },
+              "opticalSize": { "type": "number" }
+            }
+          }
+        },
+        "baselines": {
+          "type": "object",
+          "required": ["firstBaselinePx", "lastBaselinePx", "alphabeticBaselineY"],
+          "properties": {
+            "firstBaselinePx": { "type": "number" },
+            "lastBaselinePx": { "type": "number" },
+            "alphabeticBaselineY": { "type": "number" },
+            "ideographicBaselineY": { "type": "number" }
+          }
+        },
+        "lineBreaks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["lineIndex", "startIndex", "endIndex", "bounds"],
+            "properties": {
+              "lineIndex": { "type": "integer" },
+              "startIndex": { "type": "integer" },
+              "endIndex": { "type": "integer" },
+              "text": { "type": "string" },
+              "bounds": {
+                "type": "object",
+                "required": ["x", "y", "width", "height"],
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "width": { "type": "number", "minimum": 0 },
+                  "height": { "type": "number", "minimum": 0 }
+                }
+              }
+            }
+          }
+        },
+        "computedPaint": {
+          "type": "object",
+          "required": ["backgroundColor", "opacity"],
+          "properties": {
+            "backgroundColor": { "type": "string" },
+            "opacity": { "type": "number" },
+            "borderRadius": {
+              "type": "object",
+              "properties": {
+                "topLeft": { "type": "number" },
+                "topRight": { "type": "number" },
+                "bottomRight": { "type": "number" },
+                "bottomLeft": { "type": "number" }
+              }
+            },
+            "border": {
+              "type": "object",
+              "properties": {
+                "widthPx": { "type": "number" },
+                "style": { "type": "string" },
+                "color": { "type": "string" }
+              }
+            },
+            "boxShadows": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "offsetX": { "type": "number" },
+                  "offsetY": { "type": "number" },
+                  "blurRadius": { "type": "number" },
+                  "spreadRadius": { "type": "number" },
+                  "color": { "type": "string" },
+                  "inset": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "semantics": {
+          "type": "object",
+          "required": ["role", "isInteractive"],
+          "properties": {
+            "role": { "type": "string" },
+            "isInteractive": { "type": "boolean" },
+            "contentDescription": { "type": "string" },
+            "clickable": { "type": "boolean" },
+            "focusable": { "type": "boolean" },
+            "enabled": { "type": "boolean" },
+            "selected": { "type": "boolean" },
+            "checked": { "type": "boolean" },
+            "expanded": { "type": "boolean" }
+          }
+        },
+        "hitRegions": {
+          "type": "object",
+          "required": ["visualBoundsDp", "interactiveBoundsDp", "meetsMinTouchTarget"],
+          "properties": {
+            "visualBoundsDp": {
+              "type": "object",
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number", "minimum": 0 },
+                "height": { "type": "number", "minimum": 0 }
+              }
+            },
+            "interactiveBoundsDp": {
+              "type": "object",
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number", "minimum": 0 },
+                "height": { "type": "number", "minimum": 0 }
+              }
+            },
+            "meetsMinTouchTarget": { "type": "boolean" },
+            "slopInsetsDp": {
+              "type": "object",
+              "properties": {
+                "top": { "type": "number" },
+                "right": { "type": "number" },
+                "bottom": { "type": "number" },
+                "left": { "type": "number" }
+              }
+            }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MeasuredNode" }
+        }
+      }
+    }
+  }
+}

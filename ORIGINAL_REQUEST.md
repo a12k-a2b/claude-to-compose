@@ -186,3 +186,74 @@ Implement an automated pre-flight vector verification gate that compares closed 
 - [ ] All new capabilities covered by unit and integration tests passing 100% green.
 - [ ] Existing 48/48 e2e tests, 284 core tests, and Gradle unit tests continue to pass with zero regressions.
 
+## 2026-09-22T15:19:56Z
+
+Build a local design-retrofit compiler and closed-loop verification system (`ctc` / Claude to Compose) for coding agents that takes an existing functional Kotlin/Jetpack Compose Android application and an approved Claude Design redesign, maps the design concepts to existing app architecture while preserving business behavior, navigation, data persistence, and accessibility, and executes an automated fail-closed verification loop on native Compose layouts and Daylight Computer (DC1) LivePaper hardware.
+
+Working directory: /Users/anjan/.gemini/antigravity/scratch/claude_to_compose
+Git branch: branch-2
+Integrity mode: development
+Reference document: docs/PROJECT_PLAN_EXISTING_APP_RETROFIT.md
+
+## Requirements
+
+### R1. Existing Android App Analyzer & Baseline Harness
+- Build an analyzer (`ctc baseline`, `ctc inspect-app`) using syntax-aware Kotlin/Compose parsing to inspect Gradle modules, source sets, build variants, and Compose composable hierarchies.
+- Index composable screens, navigation routes, ViewModels/state holders, action/event classes, repositories, and UI test tags.
+- Capture a pre-existing app baseline into `app-baseline.json` and `existing-app-model.json`, recording behavior invariants that must survive the redesign (e.g. data persistence, back navigation, autosave).
+- Distinguish pre-existing application failures from retrofit regressions so that missing or broken baselines are marked `BLOCKED`.
+
+### R2. Evidence-Preserving Design Contract & Intermediate Representation
+- Enhance web evidence extraction (`ctc capture`, `ctc contract build`) to produce an immutable, multi-layered design contract conforming to versioned schemas:
+  - **Layer 1 (Measured Scene)**: Exact bounds, paint order, text baselines, actual line breaks, asset hashes, and stable source identities (`sourceId`).
+  - **Layer 2 (Inferred Layout Intent)**: Constraint sizing (fixed, intrinsic, fill, proportional), row/column/box/grid topology, gaps, padding, and responsive breakpoints across DC1 portrait ($1184 \times 1584$) and landscape ($1584 \times 1184$).
+  - **Layer 3 (Behavior Contract)**: State-transition graphs ($t_0 \rightarrow t_1 \rightarrow t_2$), user gestures, focus/keyboard behavior, and loading/empty/error states.
+  - **Layer 4 (Design System)**: Sol:OS 8-bit grayscale neutral tokens (`--os-0` to `--os-1000`), typography tokens, and transflective LivePaper contrast rules.
+
+### R3. App Correspondence Engine & Agent Implementation Packet Generator
+- Build a correspondence mapping engine (`ctc map`, `ctc plan`) that establishes 1:1 relationships between Claude Design nodes and existing app concepts:
+  - Mapped target: route, composable symbol, ViewModel state property, action/event lambda, and visual component role.
+  - Confidence scoring and explicit preservation obligations (e.g., "idempotent save", "preserve back-stack").
+- Generate scoped, reviewable implementation packets for local coding agents (`ctc agent packet` in Markdown and JSON):
+  - Declares objective, scoped files/symbols to modify, forbidden files/subsystems, required assets/fonts, and exact verification commands.
+  - Prevents agents from replacing functional domain architecture with preview-only stubs.
+
+### R4. Multi-Layered Verification Engine & Causal Defect Oracle
+- Build a progressive verification engine (`ctc verify`, `ctc defects`):
+  1. Schema & provenance validation.
+  2. Android compilation & existing behavior tests.
+  3. Native Compose layout telemetry (bounds, baselines, clipping, semantics extracted via test tags).
+  4. Perceptual metrics (spatial drift $\le 3.0\text{px}$, Sobel contour alignment, MSSIM, Ink Dice).
+  5. Deterministic behavioral scenario replay with checkpoint deltas.
+  6. Daylight DC1 LivePaper hardware qualification runner.
+- Emit structured, causal defect reports attributing failures directly to stable element IDs with actionable root causes (e.g., missing font resource, parent horizontal inset mismatch).
+- Enforce the fail-closed quality gate: missing evidence = `BLOCKED`, measured defect = `FAIL`.
+
+### R5. Complete Local CLI & Versioned DC-1 Profile
+- Implement the unified local CLI (`bin/ctc.js`):
+  - `doctor`, `init`, `baseline`, `inspect-app`, `capture`, `contract`, `map`, `plan`, `agent`, `verify`, `defects`, `report`, `package`.
+  - Machine-readable JSON output for every command, distinguishing pass, fail, blocked, and infrastructure errors.
+- Formalize the Daylight Computer DC1 profile:
+  - Custom transflective LCD (60Hz–120Hz fluid pipeline, standard Android SurfaceFlinger).
+  - Strict zero EPD waveform clears / particle refreshes.
+  - WCAG AAA 8-bit grayscale contrast verification.
+
+## Acceptance Criteria
+
+### Existing App Analysis & Baseline
+- [ ] `ctc baseline` and `ctc inspect-app` successfully parse a target Android Compose project and output `app-baseline.json` and `existing-app-model.json`.
+- [ ] Correctly identifies screens, routes, state holders, and behavior invariants.
+
+### Correspondence & Implementation Packet
+- [ ] `ctc map` generates a valid `CorrespondenceMap` linking design elements to existing composables and state without relying solely on raw text matching.
+- [ ] `ctc agent packet` produces Markdown and JSON implementation packets containing scoped modification boundaries and preservation rules.
+
+### Verification Engine & Defect Oracle
+- [ ] `ctc verify` executes the progressive verification pipeline and outputs unified results across CLI, JSON, and Markdown.
+- [ ] Structured defects identify exact element IDs, expected vs actual geometry/text metrics, and probable causes.
+- [ ] Negative controls verify that missing elements, margin shifts ($\ge 10\text{px}$), omitted assets, or missing evidence cause deterministic `FAIL` or `BLOCKED`.
+
+### DC-1 LivePaper Execution
+- [ ] Physical DC1 qualification validates live app deployment, capacitive touch interaction, and zero EPD waveform flashes on tablet hardware.
+- [ ] All 284 existing regression tests continue to pass without regressions.
+

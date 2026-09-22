@@ -25,6 +25,9 @@ android/local.properties
 android/.idea/
 android/*.iml
 android/.kotlin/
+fixtures/note-app/.gradle/
+fixtures/note-app/app/build/
+fixtures/note-app/build/
 *.apk
 *.aab
 
@@ -32,6 +35,7 @@ android/.kotlin/
 .agents/
 
 # Scratch & test artifacts
+.ctc/
 scratch/
 /daylight_*.html
 /daylight_script_*.js

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/contract-receipt.schema.json",
+  "title": "ContractReceipt",
+  "type": "object",
+  "required": [
+    "version",
+    "screenId",
+    "timestamp",
+    "status",
+    "layers",
+    "provenance",
+    "compliance"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "screenId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "FAIL", "BLOCKED"]
+    },
+    "layers": {
+      "type": "object",
+      "required": [
+        "layer1_measured",
+        "layer2_intent",
+        "layer3_behavior",
+        "layer4_design_system"
+      ],
+      "properties": {
+        "layer1_measured": { "type": "object" },
+        "layer2_intent": { "type": "object" },
+        "layer3_behavior": { "type": "object" },
+        "layer4_design_system": { "type": "object" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["evidenceHash", "engineVersion"],
+      "properties": {
+        "evidenceHash": { "type": "string" },
+        "engineVersion": { "type": "string" },
+        "gitRevision": { "type": "string" }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "required": [
+        "zeroEpdWaveformsConfirmed",
+        "wcagContrastPassed",
+        "touchTargetCompliant"
+      ],
+      "properties": {
+        "zeroEpdWaveformsConfirmed": { "type": "boolean" },
+        "wcagContrastPassed": { "type": "boolean" },
+        "touchTargetCompliant": { "type": "boolean" },
+        "colorCollisionDetected": { "type": "boolean" }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

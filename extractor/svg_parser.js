@@ -1357,6 +1357,7 @@ class SvgParser {
 module.exports = {
   SvgParser,
   extractSVGs: SvgParser.extractSVGs,
+  parseSvgString: SvgParser.parseSvgString,
   parseTransform: SvgParser.parseTransform,
   bakeMatrixToPath: SvgParser.bakeMatrixToPath,
   bakeVectorTransforms: SvgParser.bakeVectorTransforms,

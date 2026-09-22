@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/layout-intent.schema.json",
+  "title": "LayoutIntentSpecification",
+  "type": "object",
+  "required": ["version", "screenId", "rootIntent"],
+  "properties": {
+    "version": { "type": "string", "const": "2.0.0" },
+    "screenId": { "type": "string" },
+    "generatedAt": { "type": "string" },
+    "analyzedViewports": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rootIntent": { "$ref": "#/$defs/NodeLayoutIntent" }
+  },
+  "$defs": {
+    "NodeLayoutIntent": {
+      "type": "object",
+      "required": ["sourceId", "category", "sizing", "topology", "confidence"],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "description": "Matches exact Layer 1 MeasuredNode sourceId"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "container",
+            "row",
+            "column",
+            "box",
+            "grid",
+            "text",
+            "button",
+            "chip",
+            "chip_group",
+            "canvas",
+            "image",
+            "spacer",
+            "divider",
+            "navigation_rail",
+            "app_bar"
+          ]
+        },
+        "sizing": {
+          "type": "object",
+          "required": ["widthMode", "heightMode"],
+          "properties": {
+            "widthMode": {
+              "type": "string",
+              "enum": ["FIXED", "INTRINSIC_WRAP", "FILL_PARENT", "PROPORTIONAL_WEIGHT"]
+            },
+            "heightMode": {
+              "type": "string",
+              "enum": ["FIXED", "INTRINSIC_WRAP", "FILL_PARENT", "PROPORTIONAL_WEIGHT"]
+            },
+            "fixedWidthDp": { "type": "number", "minimum": 0 },
+            "fixedHeightDp": { "type": "number", "minimum": 0 },
+            "minWidthDp": { "type": "number", "minimum": 0 },
+            "maxWidthDp": { "type": "number", "minimum": 0 },
+            "minHeightDp": { "type": "number", "minimum": 0 },
+            "maxHeightDp": { "type": "number", "minimum": 0 },
+            "weight": { "type": "number", "minimum": 0 },
+            "aspectRatio": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "topology": {
+          "type": "object",
+          "required": ["flowType", "alignment"],
+          "properties": {
+            "flowType": {
+              "type": "string",
+              "enum": [
+                "ROW",
+                "COLUMN",
+                "BOX_OVERLAY",
+                "GRID",
+                "FLOW_ROW",
+                "FLOW_COLUMN",
+                "CANVAS_DRAW"
+              ]
+            },
+            "alignment": {
+              "type": "string",
+              "description": "Compose alignment (e.g. 'Alignment.CenterHorizontally', 'Alignment.Top')"
+            },
+            "distribution": {
+              "type": "string",
+              "enum": [
+                "START",
+                "CENTER",
+                "END",
+                "SPACE_BETWEEN",
+                "SPACE_AROUND",
+                "SPACE_EVENLY"
+              ]
+            },
+            "gridColumns": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "gapsAndInsets": {
+          "type": "object",
+          "properties": {
+            "gapDp": { "type": "number", "minimum": 0 },
+            "rowGapDp": { "type": "number", "minimum": 0 },
+            "columnGapDp": { "type": "number", "minimum": 0 },
+            "paddingDp": {
+              "type": "object",
+              "properties": {
+                "top": { "type": "number", "minimum": 0 },
+                "right": { "type": "number", "minimum": 0 },
+                "bottom": { "type": "number", "minimum": 0 },
+                "left": { "type": "number", "minimum": 0 }
+              }
+            },
+            "marginDp": {
+              "type": "object",
+              "properties": {
+                "top": { "type": "number", "minimum": 0 },
+                "right": { "type": "number", "minimum": 0 },
+                "bottom": { "type": "number", "minimum": 0 },
+                "left": { "type": "number", "minimum": 0 }
+              }
+            }
+          }
+        },
+        "wrapping": {
+          "type": "object",
+          "properties": {
+            "allowWrap": { "type": "boolean" },
+            "maxLines": { "type": "integer", "minimum": 1 },
+            "overflowStrategy": {
+              "type": "string",
+              "enum": ["CLIP", "ELLIPSIS", "EXPAND"]
+            }
+          }
+        },
+        "scrollBehavior": {
+          "type": "object",
+          "properties": {
+            "isScrollable": { "type": "boolean" },
+            "direction": { "type": "string", "enum": ["VERTICAL", "HORIZONTAL"] },
+            "stickyHeader": { "type": "boolean" }
+          }
+        },
+        "breakpoints": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "visibility": { "type": "string", "enum": ["VISIBLE", "GONE"] },
+              "flowOverride": {
+                "type": "string",
+                "enum": [
+                  "ROW",
+                  "COLUMN",
+                  "BOX_OVERLAY",
+                  "GRID",
+                  "FLOW_ROW",
+                  "FLOW_COLUMN",
+                  "CANVAS_DRAW"
+                ]
+              },
+              "widthModeOverride": {
+                "type": "string",
+                "enum": ["FIXED", "INTRINSIC_WRAP", "FILL_PARENT", "PROPORTIONAL_WEIGHT"]
+              },
+              "heightModeOverride": {
+                "type": "string",
+                "enum": ["FIXED", "INTRINSIC_WRAP", "FILL_PARENT", "PROPORTIONAL_WEIGHT"]
+              }
+            }
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "alternativeExplanations": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/NodeLayoutIntent" }
+        }
+      }
+    }
+  }
+}

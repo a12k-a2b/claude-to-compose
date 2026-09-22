@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/migration-plan.schema.json",
+  "title": "MigrationPlan",
+  "description": "Standardized schema for the Claude to Compose (ctc) v2 Phased Migration Plan and Dependency Graph.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "planId",
+    "screenId",
+    "generatedAt",
+    "boundaries",
+    "phases",
+    "dependencyGraph",
+    "riskAssessment",
+    "invariantsManifestRef",
+    "hardwareProfile"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^plan-[a-z0-9_]+-[a-f0-9]+$"
+    },
+    "screenId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "boundaries": {
+      "type": "object",
+      "required": ["allowedModificationPaths", "forbiddenPaths", "forbiddenBehaviors"],
+      "properties": {
+        "allowedModificationPaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "forbiddenPaths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "forbiddenBehaviors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "index",
+          "id",
+          "name",
+          "objective",
+          "gate",
+          "defaultCommand",
+          "tasks",
+          "rollbackAnchor"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4
+          },
+          "id": {
+            "type": "string",
+            "enum": [
+              "PHASE_0_BASELINE",
+              "PHASE_1_FOUNDATION",
+              "PHASE_2_SHELL_NAV",
+              "PHASE_3_SCREEN_RETROFIT",
+              "PHASE_4_VERIFICATION_POLISH"
+            ]
+          },
+          "name": { "type": "string" },
+          "objective": { "type": "string" },
+          "gate": { "type": "string" },
+          "defaultCommand": { "type": "string" },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "taskId",
+                "name",
+                "componentType",
+                "filePath",
+                "dependencies",
+                "riskScore",
+                "riskLevel"
+              ],
+              "properties": {
+                "taskId": { "type": "string" },
+                "name": { "type": "string" },
+                "componentType": { "type": "string" },
+                "filePath": { "type": "string" },
+                "dependencies": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "preservationInvariants": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "preservationRule": { "type": "string" },
+                "riskScore": { "type": "number", "minimum": 0.0, "maximum": 10.0 },
+                "riskLevel": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] }
+              }
+            }
+          },
+          "rollbackAnchor": {
+            "type": "object",
+            "required": [
+              "anchorId",
+              "phaseId",
+              "gitCheckpoint",
+              "snapshotFiles",
+              "preConditionCheck",
+              "verificationGate",
+              "rollbackCommand",
+              "timeoutMs",
+              "establishedAt"
+            ],
+            "properties": {
+              "anchorId": { "type": "string" },
+              "phaseId": { "type": "string" },
+              "gitCheckpoint": { "type": "string" },
+              "snapshotFiles": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "preConditionCheck": { "type": "string" },
+              "verificationGate": { "type": "string" },
+              "rollbackCommand": { "type": "string" },
+              "timeoutMs": { "type": "integer" },
+              "establishedAt": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "dependencyGraph": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "topologicalOrder",
+        "parallelBatches",
+        "hasCycles",
+        "cyclePaths"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "componentType", "filePath"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "componentType": { "type": "string" },
+              "filePath": { "type": "string" }
+            }
+          }
+        },
+        "topologicalOrder": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "parallelBatches": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "hasCycles": { "type": "boolean" },
+        "cyclePaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "riskAssessment": {
+      "type": "object",
+      "required": ["overallRisk", "compositeScore", "maxTaskRisk", "taskRiskScores"],
+      "properties": {
+        "overallRisk": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "compositeScore": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 10.0
+        },
+        "maxTaskRisk": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 10.0
+        },
+        "taskRiskScores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["taskId", "score", "level", "factors"],
+            "properties": {
+              "taskId": { "type": "string" },
+              "score": { "type": "number" },
+              "level": { "type": "string" },
+              "factors": { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+    "invariantsManifestRef": {
+      "type": "object",
+      "required": ["refId", "lockedInvariants"],
+      "properties": {
+        "refId": { "type": "string" },
+        "lockedInvariants": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "hardwareProfile": {
+      "type": "object",
+      "required": [
+        "name",
+        "model",
+        "panel",
+        "refreshRateHz",
+        "zeroEpdWaveforms",
+        "activeViewport",
+        "physicalPanel",
+        "hardwareInsetPx",
+        "settleMsStandard",
+        "minTouchTargetDp"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "model": { "type": "string" },
+        "panel": { "type": "string" },
+        "refreshRateHz": { "type": "string" },
+        "zeroEpdWaveforms": { "type": "boolean" },
+        "activeViewport": { "type": "string" },
+        "physicalPanel": { "type": "string" },
+        "hardwareInsetPx": {
+          "type": "object",
+          "required": ["left", "top", "right", "bottom"],
+          "properties": {
+            "left": { "type": "integer" },
+            "top": { "type": "integer" },
+            "right": { "type": "integer" },
+            "bottom": { "type": "integer" }
+          }
+        },
+        "settleMsStandard": { "type": "integer" },
+        "minTouchTargetDp": { "type": "integer" }
+      }
+    }
+  }
+}

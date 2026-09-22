@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/correspondence-map.schema.json",
+  "title": "CorrespondenceMap",
+  "description": "Semantic and structural correspondence mapping between Claude Design contract and existing Kotlin/Compose application model",
+  "type": "object",
+  "required": [
+    "version",
+    "screenId",
+    "generatedAt",
+    "contractProvenance",
+    "appModelProvenance",
+    "mappings",
+    "unmappedExistingSymbols",
+    "unmappedDesignNodes",
+    "duplicateCollisions",
+    "summary"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "2.0.0"
+    },
+    "screenId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "contractProvenance": {
+      "type": "object",
+      "required": ["measuredScenesHash", "layoutIntentHash", "behaviorContractHash", "designSystemHash"],
+      "properties": {
+        "measuredScenesHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "layoutIntentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "behaviorContractHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "designSystemHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "appModelProvenance": {
+      "type": "object",
+      "required": ["appModelHash", "targetModule", "packageName", "entryComposableSymbol", "sourceFilePath"],
+      "properties": {
+        "appModelHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "targetModule": { "type": "string" },
+        "packageName": { "type": "string" },
+        "entryComposableSymbol": { "type": "string" },
+        "sourceFilePath": { "type": "string" }
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/MappingRecord" }
+    },
+    "unmappedExistingSymbols": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "sourceFile", "disposition"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "testTag": { "type": ["string", "null"] },
+          "sourceFile": { "type": "string" },
+          "disposition": { "type": "string", "enum": ["DEPRECATE", "RETAIN_UTILITY", "SAFETY_BLOCKED"] },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "unmappedDesignNodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["designSourceId", "category", "disposition"],
+        "properties": {
+          "designSourceId": { "type": "string" },
+          "category": { "type": "string" },
+          "disposition": { "type": "string", "enum": ["NEW_COMPONENT", "REPLACE_CANVAS", "UNRESOLVED_PRODUCT_REQUIREMENT"] },
+          "suggestedComposableName": { "type": "string" },
+          "suggestedParentSourceId": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "duplicateCollisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["existingTargetIdentifier", "conflictingDesignSourceIds", "resolution"],
+        "properties": {
+          "existingTargetIdentifier": { "type": "string" },
+          "conflictingDesignSourceIds": { "type": "array", "items": { "type": "string" } },
+          "resolution": { "type": "string", "enum": ["SPLIT_TARGET", "PRIMARY_WINS", "UNRESOLVED_COLLISION"] }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["totalDesignNodes", "totalExistingSymbols", "mappedCount", "byCategory", "byConfidence"],
+      "properties": {
+        "totalDesignNodes": { "type": "integer", "minimum": 0 },
+        "totalExistingSymbols": { "type": "integer", "minimum": 0 },
+        "mappedCount": { "type": "integer", "minimum": 0 },
+        "byCategory": {
+          "type": "object",
+          "required": ["REUSE_AS_IS", "RETROFIT_STYLE", "RESTRUCTURE_LAYOUT", "NEW_COMPONENT", "REPLACE_CANVAS", "DEPRECATE"],
+          "properties": {
+            "REUSE_AS_IS": { "type": "integer", "minimum": 0 },
+            "RETROFIT_STYLE": { "type": "integer", "minimum": 0 },
+            "RESTRUCTURE_LAYOUT": { "type": "integer", "minimum": 0 },
+            "NEW_COMPONENT": { "type": "integer", "minimum": 0 },
+            "REPLACE_CANVAS": { "type": "integer", "minimum": 0 },
+            "DEPRECATE": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "byConfidence": {
+          "type": "object",
+          "required": ["CONFIRMED_HIGH", "CANDIDATE_MEDIUM", "UNRESOLVED_AMBIGUITY"],
+          "properties": {
+            "CONFIRMED_HIGH": { "type": "integer", "minimum": 0 },
+            "CANDIDATE_MEDIUM": { "type": "integer", "minimum": 0 },
+            "UNRESOLVED_AMBIGUITY": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "MappingRecord": {
+      "type": "object",
+      "required": [
+        "id",
+        "designSourceId",
+        "category",
+        "confidence",
+        "confidenceClassification",
+        "signals",
+        "existingTarget",
+        "designNode",
+        "preservationObligations"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "designSourceId": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "REUSE_AS_IS",
+            "RETROFIT_STYLE",
+            "RESTRUCTURE_LAYOUT",
+            "NEW_COMPONENT",
+            "REPLACE_CANVAS",
+            "DEPRECATE"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "confidenceClassification": {
+          "type": "string",
+          "enum": ["CONFIRMED_HIGH", "CANDIDATE_MEDIUM", "UNRESOLVED_AMBIGUITY"]
+        },
+        "signals": {
+          "type": "object",
+          "required": ["tagScore", "roleScore", "behaviorScore", "topologyScore", "textScore"],
+          "properties": {
+            "tagScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "roleScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "behaviorScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "topologyScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+            "textScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+          }
+        },
+        "existingTarget": {
+          "type": "object",
+          "required": ["composableSymbol", "filePath", "targetType"],
+          "properties": {
+            "composableSymbol": { "type": "string" },
+            "filePath": { "type": "string" },
+            "targetType": {
+              "type": "string",
+              "enum": [
+                "COMPOSABLE_SCREEN",
+                "COMPOSABLE_FUNCTION",
+                "CALL_TREE_NODE",
+                "PARAMETER_LAMBDA",
+                "STATE_PROPERTY",
+                "TEST_TAG"
+              ]
+            },
+            "testTag": { "type": ["string", "null"] },
+            "lineNumber": { "type": ["integer", "null"] }
+          }
+        },
+        "designNode": {
+          "type": "object",
+          "required": ["domTag", "role", "category", "boundsDp"],
+          "properties": {
+            "domTag": { "type": "string" },
+            "role": { "type": "string" },
+            "category": { "type": "string" },
+            "boundsDp": {
+              "type": "object",
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number" },
+                "height": { "type": "number" }
+              }
+            }
+          }
+        },
+        "stateBinding": {
+          "type": ["object", "null"],
+          "properties": {
+            "stateHolderSymbol": { "type": "string" },
+            "propertyName": { "type": "string" },
+            "flowType": { "type": "string" },
+            "isHoisted": { "type": "boolean" }
+          }
+        },
+        "actionBinding": {
+          "type": ["object", "null"],
+          "properties": {
+            "actionName": { "type": "string" },
+            "actionClass": { "type": "string" },
+            "actionVariant": { "type": "string" },
+            "targetLayer": {
+              "type": "string",
+              "enum": ["ROOM_PERSISTENCE", "VIEWMODEL_EVENT", "NAVIGATION", "LOCAL_STATE"]
+            },
+            "callbackParameter": { "type": "string" }
+          }
+        },
+        "preservationObligations": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "alternativeCandidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["symbol", "confidence", "reason"],
+            "properties": {
+              "symbol": { "type": "string" },
+              "confidence": { "type": "number" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "ambiguityNote": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/app-baseline.schema.json",
+  "title": "AppBaseline",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "capturedAt",
+    "project",
+    "environment",
+    "gradle",
+    "compilation",
+    "testSuite",
+    "previews",
+    "qualityGate"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "2.0.0" },
+    "capturedAt": { "type": "string" },
+    "project": {
+      "type": "object",
+      "required": ["projectPath", "targetModule", "variant"],
+      "properties": {
+        "projectPath": { "type": "string" },
+        "targetModule": { "type": "string" },
+        "variant": { "type": "string" }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "required": ["status", "node", "java", "gradle", "androidSdk"]
+    },
+    "gradle": {
+      "type": "object",
+      "required": ["targetModule", "namespace", "compileSdk"]
+    },
+    "compilation": {
+      "type": "object",
+      "required": ["command", "exitCode", "success"]
+    },
+    "testSuite": {
+      "type": "object",
+      "required": ["command", "exitCode", "success", "totalCount", "passedCount", "failedCount"]
+    },
+    "previews": {
+      "type": "object",
+      "required": ["captured", "previews"]
+    },
+    "qualityGate": {
+      "type": "object",
+      "required": ["verdict", "canProceedWithRetrofit", "blockersCount", "blockers"],
+      "properties": {
+        "verdict": { "type": "string", "enum": ["READY_FOR_RETROFIT", "BLOCKED"] },
+        "canProceedWithRetrofit": { "type": "boolean" },
+        "blockersCount": { "type": "integer" },
+        "blockers": { "type": "array" }
+      }
+    }
+  }
+}

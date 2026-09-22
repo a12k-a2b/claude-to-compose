@@ -1,0 +1,269 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "2.0.0",
+  "id": "daylight-dc1",
+  "name": "Daylight Computer DC1 (Sol:OS)",
+  "vendor": "Daylight Computer Company",
+  "hardware": {
+    "model": "DC_1",
+    "product": "vext_jagar",
+    "platform": "vext_jagar",
+    "os": "Sol:OS (Android 13 base)",
+    "dpi": 270,
+    "density": 2.0,
+    "serialPattern": "^JMBR[0-9]{5}$",
+    "allowedDevices": [
+      "rooted 3",
+      "rooted 4",
+      "JMBR00380",
+      "JMBR00405"
+    ],
+    "rootMethod": "su 0",
+    "concurrencyLease": "exclusive"
+  },
+  "display": {
+    "technology": "Transflective / Reflective LCD (LivePaper)",
+    "panel": "Sharp NT36523N Transflective / Reflective LCD (LivePaper)",
+    "physicalWidth": 1200,
+    "physicalHeight": 1600,
+    "logicalWidth": 1184,
+    "logicalHeight": 1584,
+    "logicalWidthDp": 592,
+    "logicalHeightDp": 792,
+    "density": 2.0,
+    "dpi": 270,
+    "refreshRateHz": {
+      "min": 60,
+      "max": 120,
+      "nominal": 60
+    },
+    "colorDepth": "8-bit Grayscale (256 discrete levels)",
+    "colorDepthBits": 8,
+    "colorLevels": 256,
+    "grayscaleLevels": 256,
+    "monochrome": true,
+    "frontlight": "Pure Amber (Zero Blue Light)",
+    "hardwareInsetPx": {
+      "left": 8,
+      "top": 8,
+      "right": 8,
+      "bottom": 8
+    },
+    "settleMsStandard": 150,
+    "settleMsMin": 150,
+    "settleMsMax": 300,
+    "zeroEpdWaveforms": true,
+    "allowScreenFlashHooks": false,
+    "displayPipeline": "Standard Android SurfaceFlinger / Choreographer / VSYNC / Skia HWUI (GPU double/triple buffered)"
+  },
+  "touch": {
+    "technology": "Capacitive Multi-Touch (Linux MT Protocol B)",
+    "eventDevice": "/dev/input/event2",
+    "coordinateInsetPx": {
+      "dx": 8,
+      "dy": 8
+    },
+    "minTouchTargetDp": {
+      "width": 48,
+      "height": 48
+    },
+    "minTouchTargetPx": {
+      "width": 96,
+      "height": 96
+    },
+    "standardDwellMs": 80.0,
+    "minPhysiologicalDwellMs": 40.0,
+    "maxSlots": 10,
+    "contactEllipseDeformation": true,
+    "kinematics": "Minimum Jerk CMC Joint thumb arc"
+  },
+  "stylus": {
+    "technology": "Wacom I2C Digitizer",
+    "eventDevice": "/dev/input/event4",
+    "pressureLevels": 4096,
+    "tiltRange": {
+      "min": -9000,
+      "max": 9000
+    },
+    "tools": [
+      "pen",
+      "eraser"
+    ],
+    "barrelButtons": [
+      "none",
+      "barrel",
+      "barrel2",
+      "stylus1",
+      "stylus2"
+    ]
+  },
+  "viewports": {
+    "allowedOrientations": [
+      "portrait",
+      "landscape"
+    ],
+    "portrait": {
+      "orientation": "portrait",
+      "widthPx": 1184,
+      "heightPx": 1584,
+      "widthDp": 592,
+      "heightDp": 792,
+      "physicalWidthPx": 1200,
+      "physicalHeightPx": 1600
+    },
+    "landscape": {
+      "orientation": "landscape",
+      "widthPx": 1584,
+      "heightPx": 1184,
+      "widthDp": 792,
+      "heightDp": 592,
+      "physicalWidthPx": 1600,
+      "physicalHeightPx": 1200
+    }
+  },
+  "tokens": {
+    "neutralGrayscale": {
+      "--os-0": {
+        "hex": "#FFFFFF",
+        "rgb": [255, 255, 255],
+        "luminance": 255,
+        "role": "Base paper / primary canvas"
+      },
+      "--os-50": {
+        "hex": "#F7F7F7",
+        "rgb": [247, 247, 247],
+        "luminance": 247,
+        "role": "Surface panels / cards"
+      },
+      "--os-100": {
+        "hex": "#DCD5C9",
+        "rgba": "rgba(0,0,0,0.08)",
+        "rgb": [220, 213, 201],
+        "luminance": 215,
+        "role": "Hairline borders / subtle dividers"
+      },
+      "--os-150": {
+        "hex": "#F5F5F5",
+        "rgb": [245, 245, 245],
+        "luminance": 245,
+        "role": "Recessed canvas / input fields"
+      },
+      "--os-200": {
+        "hex": "#CCCCCC",
+        "rgb": [204, 204, 204],
+        "luminance": 204,
+        "role": "Disabled controls / inactive indicators"
+      },
+      "--os-300": {
+        "hex": "#858585",
+        "rgb": [133, 133, 133],
+        "luminance": 133,
+        "role": "Low emphasis / tertiary text / placeholder"
+      },
+      "--os-400": {
+        "hex": "#535353",
+        "rgb": [83, 83, 83],
+        "luminance": 83,
+        "role": "Secondary text ink / icons"
+      },
+      "--os-800": {
+        "hex": "#343434",
+        "rgb": [52, 52, 52],
+        "luminance": 52,
+        "role": "Dark fields / pressed states"
+      },
+      "--os-900": {
+        "hex": "#1A1A1A",
+        "rgb": [26, 26, 26],
+        "luminance": 26,
+        "role": "Primary text ink / headlines"
+      },
+      "--os-1000": {
+        "hex": "#000000",
+        "rgb": [0, 0, 0],
+        "luminance": 0,
+        "role": "Max black ink / deep focus states"
+      }
+    },
+    "calibratedBrandGrays": {
+      "Yellow": {
+        "hex": "#CECECE",
+        "rgb": [206, 206, 206],
+        "luminance": 206
+      },
+      "Amber": {
+        "hex": "#9D9D9E",
+        "rgb": [157, 157, 157],
+        "luminance": 157
+      },
+      "Orange": {
+        "hex": "#6C6C6D",
+        "rgb": [108, 108, 108],
+        "luminance": 108
+      }
+    },
+    "typography": {
+      "headline": {
+        "family": "ABC Arizona Flare",
+        "fallback": "serif",
+        "weights": [400, 600, 700]
+      },
+      "body": {
+        "family": "ABC Arizona Sans",
+        "fallback": "sans-serif",
+        "weights": [400, 500, 600]
+      },
+      "mono": {
+        "family": "ABC ROM Mono",
+        "fallback": "monospace",
+        "weights": [400, 500]
+      }
+    }
+  },
+  "contrastRules": {
+    "wcagNormalText": {
+      "aa": 4.5,
+      "aaa": 7.0
+    },
+    "wcagLargeText": {
+      "aa": 3.0,
+      "aaa": 4.5
+    },
+    "adjacentSurfaceDeltaLuminanceMin": 15,
+    "hairlineBorderToken": "--os-100",
+    "hairlineWidthDp": 0.5
+  },
+  "tolerances": {
+    "maxSpatialDriftPx": 3.0,
+    "maxBaselineDeltaPx": 2.0,
+    "minInkIoU": 0.85,
+    "minInkDice": 0.85,
+    "minSobelContourAlignment": 0.90,
+    "contrastThresholds": {
+      "normalTextAA": 4.5,
+      "normalTextAAA": 7.0,
+      "largeTextAA": 3.0,
+      "largeTextAAA": 4.5
+    }
+  },
+  "rules": {
+    "prohibitedPatterns": [
+      "android.intent.action.ACTION_REFRESH_SCREEN",
+      "ACTION_REFRESH_SCREEN",
+      "com.eink.REFRESH_WAVEFORM",
+      "REFRESH_WAVEFORM",
+      "particle_refresh",
+      "PARTICLE_REFRESH",
+      "epd_clear",
+      "EPD_CLEAR",
+      "waveform_mode",
+      "WAVEFORM_MODE",
+      "modal_dismiss_pause",
+      "artificial_modal_dismiss_pause",
+      "artificial_pause"
+    ],
+    "maxModalDismissPauseMs": 0,
+    "maxKeyboardLatencyMs": 16,
+    "zeroEpdWaveforms": true
+  }
+}

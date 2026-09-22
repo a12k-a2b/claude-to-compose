@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://daylight.dev/schemas/ctc/v2/existing-app-model.schema.json",
+  "title": "ExistingAppModel",
+  "type": "object",
+  "required": [
+    "version",
+    "generatedAt",
+    "projectRoot",
+    "targetModule",
+    "packageName",
+    "buildSystem",
+    "screens",
+    "routes",
+    "stateHolders",
+    "actionClasses",
+    "persistence",
+    "diagnostics"
+  ],
+  "properties": {
+    "version": { "type": "string", "const": "2.0.0" },
+    "generatedAt": { "type": "string" },
+    "projectRoot": { "type": "string" },
+    "targetModule": { "type": "string" },
+    "packageName": { "type": "string" },
+    "buildSystem": {
+      "type": "object",
+      "required": ["type", "compileSdk", "minSdk"],
+      "properties": {
+        "type": { "type": "string", "enum": ["gradle"] },
+        "gradleVersion": { "type": "string" },
+        "agpVersion": { "type": "string" },
+        "kotlinVersion": { "type": "string" },
+        "compileSdk": { "type": "integer" },
+        "targetSdk": { "type": "integer" },
+        "minSdk": { "type": "integer" },
+        "composeBomVersion": { "type": "string" },
+        "roomVersion": { "type": "string" },
+        "navigationVersion": { "type": "string" }
+      }
+    },
+    "screens": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "filePath", "composableName", "parameters", "testTags"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "filePath": { "type": "string" },
+          "composableName": { "type": "string" },
+          "visibility": { "type": "string" },
+          "isExtension": { "type": "boolean" },
+          "receiverType": { "type": ["string", "null"] },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "isState", "isLambda", "isModifier", "nullable"],
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "isState": { "type": "boolean" },
+                "isLambda": { "type": "boolean" },
+                "isModifier": { "type": "boolean" },
+                "defaultValue": { "type": ["string", "null"] },
+                "nullable": { "type": "boolean" }
+              }
+            }
+          },
+          "previewComposable": { "type": ["string", "null"] },
+          "testTags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "callTree": { "type": "object" },
+          "modifierChains": { "type": "array" }
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["route", "destinationComposable"],
+        "properties": {
+          "route": { "type": "string" },
+          "navHostSymbol": { "type": "string" },
+          "filePath": { "type": "string" },
+          "arguments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "nullable"],
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "nullable": { "type": "boolean" },
+                "defaultValue": { "type": ["string", "null"] }
+              }
+            }
+          },
+          "destinationComposable": { "type": "string" }
+        }
+      }
+    },
+    "stateHolders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "filePath", "type", "stateFlows", "eventMethods"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "filePath": { "type": "string" },
+          "type": { "type": "string", "enum": ["ViewModel", "AndroidViewModel", "StateHolder"] },
+          "stateFlows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["propertyName", "type", "innerType", "isMutable"],
+              "properties": {
+                "propertyName": { "type": "string" },
+                "type": { "type": "string" },
+                "innerType": { "type": "string" },
+                "isMutable": { "type": "boolean" }
+              }
+            }
+          },
+          "sharedFlows": { "type": "array" },
+          "composeStates": { "type": "array" },
+          "eventMethods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["methodName", "parameters", "returnType", "isSuspend"],
+              "properties": {
+                "methodName": { "type": "string" },
+                "parameters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "type"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "type": { "type": "string" }
+                    }
+                  }
+                },
+                "returnType": { "type": "string" },
+                "isSuspend": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actionClasses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "filePath", "type", "variants"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "filePath": { "type": "string" },
+          "type": { "type": "string", "enum": ["sealed interface", "sealed class", "enum class"] },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "isObject", "parameters"],
+              "properties": {
+                "name": { "type": "string" },
+                "isObject": { "type": "boolean" },
+                "parameters": { "type": "array" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "required": ["entities", "daos", "databases", "repositories"],
+      "properties": {
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["symbol", "filePath", "tableName", "primaryKeys", "columns"],
+            "properties": {
+              "symbol": { "type": "string" },
+              "filePath": { "type": "string" },
+              "tableName": { "type": "string" },
+              "primaryKeys": { "type": "array", "items": { "type": "string" } },
+              "columns": { "type": "array" }
+            }
+          }
+        },
+        "daos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["symbol", "filePath", "methods"],
+            "properties": {
+              "symbol": { "type": "string" },
+              "filePath": { "type": "string" },
+              "methods": { "type": "array" }
+            }
+          }
+        },
+        "databases": { "type": "array" },
+        "repositories": { "type": "array" }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "message"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["INFO", "WARNING", "ERROR"] },
+          "filePath": { "type": "string" },
+          "line": { "type": "integer" },
+          "column": { "type": "integer" },
+          "message": { "type": "string" },
+          "category": { "type": "string" }
+        }
+      }
+    }
+  }
+}
