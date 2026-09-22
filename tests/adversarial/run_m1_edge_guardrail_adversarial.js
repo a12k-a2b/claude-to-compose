@@ -184,6 +184,7 @@ async function runAdversarialSuite() {
     const pipeline = new VerificationPipeline({ outputDir: outDir });
     const conclusion = pipeline.concludePipeline({
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
@@ -216,6 +217,7 @@ async function runAdversarialSuite() {
     const pipeline = new VerificationPipeline({ outputDir: outDir });
     const conclusion = pipeline.concludePipeline({
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
@@ -568,10 +570,19 @@ async function runAdversarialSuite() {
     const pipeline = new VerificationPipeline({ outputDir: outDir });
     const conclusion = pipeline.concludePipeline({
       stages: {
+        vectorLinter: { success: true, passed: true },
         compile: { success: true },
         previewTest: { success: true },
         audit: { passed: true },
-        diff: { success: true, metrics: diffRes }
+        diff: {
+          success: true,
+          metrics: diffRes,
+          zonal: {
+            elementIouScore: 98.0,
+            maxSpatialShiftPx: 0.2,
+            elementsEvaluatedCount: 1
+          }
+        }
       }
     });
 

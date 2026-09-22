@@ -108,6 +108,19 @@
     "hierarchy": {
       "$ref": "#/$defs/DesignNode"
     },
+    "viewportScenes": {
+      "type": "object",
+      "description": "Measured scene graph for every captured responsive viewport. The legacy hierarchy field aliases the primary scene.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["viewport", "hierarchy"],
+        "properties": {
+          "viewport": { "$ref": "#/$defs/ViewportConfig" },
+          "hierarchy": { "$ref": "#/$defs/DesignNode" },
+          "screenshotPath": { "type": "string" }
+        }
+      }
+    },
     "vectors": {
       "type": "array",
       "items": {
@@ -276,6 +289,10 @@
             "TopAppBar", "Toolbar", "Overlay", "Dialog", "NavigationBar", "NavigationItem", "Switch", "Checkbox",
             "RadioButton"
           ]
+        },
+        "sourceId": {
+          "type": "string",
+          "description": "Stable DOM-origin identity used to correlate source, viewport scenes, generated Compose nodes, and verification telemetry."
         },
         "bounds": {
           "type": "object",

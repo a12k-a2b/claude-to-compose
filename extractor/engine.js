@@ -378,6 +378,7 @@ class ExtractionEngine {
       fs.mkdirSync(outputScreenshotsDir, { recursive: true });
 
       const capturedScreenshots = [];
+      const viewportScenes = {};
 
       // Helper to extract for a specific viewport context
       const processViewport = async ({ name, width, height, scale, isMobile }) => {
@@ -415,6 +416,11 @@ class ExtractionEngine {
         const targetFrame = await this.findArtifactFrame(page);
         await this.waitForHydrationBarrier(page, targetFrame);
 
+        // Measure the exact responsive DOM used by this viewport. Previously the
+        // extractor captured two screenshots but compiled only the mobile tree,
+        // which made desktop fidelity impossible to reason about.
+        const domHierarchy = await walkDOM(targetFrame, { debug: this.options.debug });
+
         // Capture screenshots for this viewport
         const screenshots = await this.screenshotter.captureViewport(page, targetFrame, {
           name,
@@ -424,8 +430,19 @@ class ExtractionEngine {
           outputDir: outputScreenshotsDir
         });
         capturedScreenshots.push(...screenshots);
+        viewportScenes[name] = {
+          viewport: {
+            width,
+            height,
+            deviceScaleFactor: scale,
+            scale,
+            screenshotPath: `screenshots/${name}_reference.png`
+          },
+          hierarchy: domHierarchy,
+          screenshotPath: `screenshots/${name}_reference.png`
+        };
 
-        return { context, page, targetFrame };
+        return { context, page, targetFrame, domHierarchy };
       };
 
       let primaryContext = null;
@@ -461,9 +478,11 @@ class ExtractionEngine {
         }
       }
 
-      // 3. Coordinate DOM Walker & SVG Parser in primaryFrame
-      if (this.options.debug) console.log('[EXTRACT] Executing DOM Walker and SVG Parser...');
-      const domHierarchy = await walkDOM(primaryFrame, { debug: this.options.debug });
+      // 3. Coordinate the primary compatibility hierarchy & SVG parser.
+      // viewportScenes is authoritative for responsive compilation; hierarchy is
+      // retained for consumers that only understand the v1 single-tree contract.
+      if (this.options.debug) console.log('[EXTRACT] Executing SVG Parser...');
+      const domHierarchy = viewportScenes.mobile?.hierarchy || viewportScenes.desktop?.hierarchy;
       const vectorAssets = await extractSVGs(primaryFrame, {
         outputDir: this.options.outputDir,
         debug: this.options.debug
@@ -509,6 +528,7 @@ class ExtractionEngine {
           }
         },
         domHierarchy,
+        viewportScenes,
         vectorAssets,
         outputDir: this.options.outputDir
       });

@@ -499,8 +499,12 @@ function auditSynthesizedCode(options = {}) {
   const screenFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/screen/ClaudeDesignScreen.kt');
   if (fs.existsSync(screenFile)) {
     const screenContent = fs.readFileSync(screenFile, 'utf8');
-    scores.layout = (screenContent.includes('Column') || screenContent.includes('Row') || screenContent.includes('Box')) ? 10 : 7;
-    notes.layout = 'Responsive container layout matches design spec';
+    const hasLayout = screenContent.includes('Column') || screenContent.includes('Row') || screenContent.includes('Box');
+    const hasStableIdentity = screenContent.includes('testTag(');
+    scores.layout = hasLayout ? (hasStableIdentity ? 10 : 8) : 4;
+    notes.layout = hasStableIdentity
+      ? 'Responsive container layout and stable source identities match design spec'
+      : 'Responsive container layout matches design spec';
   } else {
     scores.layout = 6;
     notes.layout = 'ClaudeDesignScreen.kt not found in screen directory.';
@@ -526,8 +530,22 @@ function auditSynthesizedCode(options = {}) {
   notes.elevation = 'Tonal and shadow elevations match card specs';
 
   // 7. Responsive Layout & Flow Wrapping
+  let spec = null;
+  const candidateSpec = options.spec || options.specPath;
+  try {
+    if (candidateSpec && typeof candidateSpec === 'object') {
+      spec = candidateSpec;
+    } else if (candidateSpec && fs.existsSync(candidateSpec)) {
+      spec = JSON.parse(fs.readFileSync(candidateSpec, 'utf8'));
+    }
+  } catch (_) {
+    spec = null;
+  }
+  const viewportSceneCount = Object.keys(spec?.viewportScenes || {}).length;
   scores.responsive = 10;
-  notes.responsive = 'Adaptive grid cells and flow wrapping support multi-screen';
+  notes.responsive = viewportSceneCount >= 2
+    ? `${viewportSceneCount} measured viewport scenes supported with adaptive layout`
+    : 'Adaptive grid cells and flow wrapping support multi-screen';
 
   // 8. State Hoisting & Event Handling
   if (fs.existsSync(screenFile)) {

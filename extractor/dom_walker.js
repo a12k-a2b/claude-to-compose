@@ -762,10 +762,25 @@ async function walkDOM(frame, options = {}) {
       return `icon_${fallbackCounter}`;
     }
 
+    function sourceSegment(el, siblingIndex = 0) {
+      const tagName = (el?.tagName || 'node').toLowerCase();
+      const stableAttr =
+        el?.getAttribute?.('data-testid') ||
+        el?.getAttribute?.('data-test-id') ||
+        el?.getAttribute?.('data-node-id') ||
+        el?.getAttribute?.('id');
+      if (stableAttr) {
+        const normalized = String(stableAttr).trim().replace(/[^a-zA-Z0-9_.:-]+/g, '_');
+        if (normalized) return `${tagName}#${normalized}`;
+      }
+      return `${tagName}:nth-child(${siblingIndex + 1})`;
+    }
+
     // --- Main Recursive Walker Function ---
-    function walkNode(el) {
+    function walkNode(el, sourcePath = '') {
       if (!el || el.nodeType !== Node.ELEMENT_NODE) return null;
       const tag = el.tagName.toLowerCase();
+      const currentSourceId = sourcePath || sourceSegment(el, 0);
       if (['script', 'style', 'noscript', 'meta', 'link', 'template', 'head'].includes(tag)) return null;
 
       const style = window.getComputedStyle(el);
@@ -789,9 +804,12 @@ async function walkDOM(frame, options = {}) {
       // Traverse children (do not recurse inside SVG; SVG handled as atomic unit)
       const children = [];
       if (!isSvg) {
+        let childIndex = 0;
         for (const child of el.children) {
-          const c = walkNode(child);
+          const childPath = `${currentSourceId}/${sourceSegment(child, childIndex)}`;
+          const c = walkNode(child, childPath);
           if (c) children.push(c);
+          childIndex++;
         }
       }
 
@@ -811,6 +829,7 @@ async function walkDOM(frame, options = {}) {
 
       const nodeObj = {
         id: `node_${++idCounter}`,
+        sourceId: currentSourceId,
         tag,
         type: componentType.toUpperCase(),
         componentType,
@@ -919,8 +938,9 @@ async function walkDOM(frame, options = {}) {
     }
 
     const startEl = rootSelector ? document.querySelector(rootSelector) : (document.getElementById('root') || document.getElementById('app') || document.body);
-    const rootNode = walkNode(startEl) || {
+    const rootNode = walkNode(startEl, startEl ? sourceSegment(startEl, 0) : 'body:nth-child(1)') || {
       id: 'node_1',
+      sourceId: 'body:nth-child(1)',
       tag: 'div',
       type: 'CONTAINER',
       componentType: 'Container',
