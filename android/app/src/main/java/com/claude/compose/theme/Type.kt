@@ -20,34 +20,36 @@ import com.claude.compose.R
 fun createOpticalFontFamily(resId: Int, opsz: Float = 32f): FontFamily {
     val clampedOpsz = opsz.coerceIn(16f, 48f)
     return FontFamily(
-        Font(resId, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
-        Font(resId, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
-        Font(resId, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz))),
-        Font(resId, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", clampedOpsz)))
+        Font(resId, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 400f), FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 500f), FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 600f), FontVariation.Setting("opsz", clampedOpsz))),
+        Font(resId, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 700f), FontVariation.Setting("opsz", clampedOpsz)))
     )
 }
 
 val AbcArizonaFlare = FontFamily(
-    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
-    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f))),
-    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 32f)))
+    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 400f), FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 500f), FontVariation.Setting("opsz", 32f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 700f), FontVariation.Setting("opsz", 32f)))
 )
 
 val AbcArizonaFlareHeadline = FontFamily(
-    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f))),
-    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f))),
-    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 48f)))
+    Font(R.font.abc_arizona_flare, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 400f), FontVariation.Setting("opsz", 48f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 500f), FontVariation.Setting("opsz", 48f))),
+    Font(R.font.abc_arizona_flare, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 700f), FontVariation.Setting("opsz", 48f)))
 )
 
 val AbcArizonaSans = FontFamily(
-    Font(R.font.abc_arizona_sans, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
-    Font(R.font.abc_arizona_sans, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
-    Font(R.font.abc_arizona_sans, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f))),
-    Font(R.font.abc_arizona_sans, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("opsz", 16f)))
+    Font(R.font.abc_arizona_sans, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 400f), FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 500f), FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.SemiBold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 600f), FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_arizona_sans, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 700f), FontVariation.Setting("opsz", 16f)))
 )
 
 val AbcRom = FontFamily(
-    Font(R.font.abc_rom, FontWeight.Normal)
+    Font(R.font.abc_rom, FontWeight.Normal, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 400f), FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_rom, FontWeight.Medium, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 500f), FontVariation.Setting("opsz", 16f))),
+    Font(R.font.abc_rom, FontWeight.Bold, variationSettings = FontVariation.Settings(FontVariation.Setting("wght", 700f), FontVariation.Setting("opsz", 16f)))
 )
 
 val AbcRomMono = FontFamily(

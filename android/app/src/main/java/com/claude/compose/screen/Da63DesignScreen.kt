@@ -22,6 +22,12 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import android.graphics.BlurMaskFilter
+import android.graphics.CornerPathEffect
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.asComposePath
@@ -307,9 +313,11 @@ fun Da63DesignScreen(
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
-                    shadowElevation = 4.dp,
+                    shadowElevation = 0.dp,
                     border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
-                    modifier = Modifier.size(width = 249.5.dp, height = 80.dp)
+                    modifier = Modifier
+                        .cssPillShadow(offsetY = 2.dp, blurRadius = 5.dp, color = Color(0x38000000))
+                        .size(width = 249.5.dp, height = 80.dp)
                 ) {
                     Row(
                         modifier = Modifier
@@ -329,7 +337,9 @@ fun Da63DesignScreen(
                                     Color(0xFF1A1A1A),
                                     floatArrayOf(1f, 0f, 0f, 1f, 11.250f, 10f),
                                     viewBoxSize = 20f,
-                                    targetSizeDp = 26f
+                                    targetSizeDp = 26f,
+                                    fillType = android.graphics.Path.FillType.WINDING,
+                                    cornerRadiusDp = 0.5f
                                 )
                                 // Path 2: Top-right fold flap
                                 drawSvgPath(
@@ -338,7 +348,9 @@ fun Da63DesignScreen(
                                     Color(0xFF1A1A1A),
                                     floatArrayOf(1f, 0f, 0f, 1f, 11.875f, 1.875f),
                                     viewBoxSize = 20f,
-                                    targetSizeDp = 26f
+                                    targetSizeDp = 26f,
+                                    fillType = android.graphics.Path.FillType.WINDING,
+                                    cornerRadiusDp = 0.3f
                                 )
                                 // Path 3: Document sheet body
                                 drawSvgPath(
@@ -398,9 +410,11 @@ fun Da63DesignScreen(
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
-                    shadowElevation = 4.dp,
+                    shadowElevation = 0.dp,
                     border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
-                    modifier = Modifier.size(width = 506.dp, height = 80.dp)
+                    modifier = Modifier
+                        .cssPillShadow(offsetY = 2.dp, blurRadius = 5.dp, color = Color(0x38000000))
+                        .size(width = 506.dp, height = 80.dp)
                 ) {
                     Row(
                         modifier = Modifier
@@ -666,9 +680,11 @@ fun Da63DesignScreen(
                 Surface(
                     shape = CircleShape,
                     color = Color.White.copy(alpha = 0.88f),
-                    shadowElevation = 4.dp,
+                    shadowElevation = 0.dp,
                     border = BorderStroke(0.5.dp, Color(0xFFE5E5E5)),
-                    modifier = Modifier.size(width = 227.dp, height = 80.dp)
+                    modifier = Modifier
+                        .cssPillShadow(offsetY = 2.dp, blurRadius = 5.dp, color = Color(0x38000000))
+                        .size(width = 227.dp, height = 80.dp)
                 ) {
                     Row(
                         modifier = Modifier
@@ -829,16 +845,54 @@ fun Da63DesignScreen(
     }
 }
 
+private fun Modifier.cssPillShadow(
+    offsetY: androidx.compose.ui.unit.Dp = 2.dp,
+    blurRadius: androidx.compose.ui.unit.Dp = 5.dp,
+    color: Color = Color(0x33000000)
+): Modifier = this.drawBehind {
+    val pillRadius = size.height / 2f
+    val shadowPaint = android.graphics.Paint().apply {
+        isAntiAlias = true
+        this.color = color.toArgb()
+        if (blurRadius.toPx() > 0) {
+            maskFilter = BlurMaskFilter(blurRadius.toPx(), BlurMaskFilter.Blur.NORMAL)
+        }
+    }
+    drawIntoCanvas { canvas ->
+        val clipPath = android.graphics.Path().apply {
+            addRoundRect(
+                0f, 0f, size.width, size.height,
+                pillRadius, pillRadius,
+                android.graphics.Path.Direction.CW
+            )
+        }
+        canvas.nativeCanvas.save()
+        canvas.nativeCanvas.clipOutPath(clipPath)
+        canvas.nativeCanvas.drawRoundRect(
+            0f,
+            offsetY.toPx(),
+            size.width,
+            size.height + offsetY.toPx(),
+            pillRadius,
+            pillRadius,
+            shadowPaint
+        )
+        canvas.nativeCanvas.restore()
+    }
+}
+
 private fun drawSvgPath(
     drawScope: androidx.compose.ui.graphics.drawscope.DrawScope,
     pathData: String,
     color: Color,
     vararg matrices: FloatArray,
     viewBoxSize: Float = 20f,
-    targetSizeDp: Float = 26f
+    targetSizeDp: Float = 26f,
+    fillType: android.graphics.Path.FillType = android.graphics.Path.FillType.EVEN_ODD,
+    cornerRadiusDp: Float = 0f
 ) {
     val androidPath = PathParser.createPathFromPathData(pathData)
-    androidPath.fillType = android.graphics.Path.FillType.EVEN_ODD
+    androidPath.fillType = fillType
     val finalMatrix = android.graphics.Matrix()
     for (matrixValues in matrices) {
         val stepMatrix = android.graphics.Matrix()
@@ -865,5 +919,17 @@ private fun drawSvgPath(
     val scale = targetSizeDp * drawScope.density / viewBoxSize
     finalMatrix.postScale(scale, scale)
     androidPath.transform(finalMatrix)
-    drawScope.drawPath(androidPath.asComposePath(), color = color)
+    if (cornerRadiusDp > 0f) {
+        val paint = android.graphics.Paint().apply {
+            isAntiAlias = true
+            this.color = color.toArgb()
+            style = android.graphics.Paint.Style.FILL
+            pathEffect = CornerPathEffect(cornerRadiusDp * drawScope.density)
+        }
+        drawScope.drawIntoCanvas { canvas ->
+            canvas.nativeCanvas.drawPath(androidPath, paint)
+        }
+    } else {
+        drawScope.drawPath(androidPath.asComposePath(), color = color)
+    }
 }

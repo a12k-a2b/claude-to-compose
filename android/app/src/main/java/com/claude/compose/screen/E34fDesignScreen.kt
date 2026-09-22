@@ -67,52 +67,19 @@ fun E34fDesignScreen(
                 style = BaseTextStyle
             )
 
-            // Screen Headline: A sheet of glass (Box with exact word offsets)
-            Box(
+            // Screen Headline: A sheet of glass (Unified natural text layout)
+            Text(
+                text = "A sheet of glass",
                 modifier = Modifier
-                    .offset(x = (-1.0).dp, y = 1.8.dp)
-                    .padding(bottom = 13.0.dp)
-            ) {
-                Text(
-                    text = "A",
-                    modifier = Modifier.offset(x = 0.5.dp, y = (-1.0).dp),
-                    fontFamily = headlineFont,
-                    fontSize = 74.5.sp,
-                    lineHeight = 77.52.sp,
-                    color = Color(0xFF17190F),
-                    style = BaseTextStyle
-                )
-                Text(
-                    text = "sheet",
-                    modifier = Modifier.offset(x = 66.2.dp, y = (-1.0).dp),
-                    fontFamily = headlineFont,
-                    fontSize = 76.sp,
-                    lineHeight = 77.52.sp,
-                    letterSpacing = (-7.2).sp,
-                    color = Color(0xFF17190F),
-                    style = BaseTextStyle
-                )
-                Text(
-                    text = "of",
-                    modifier = Modifier.offset(x = 236.9.dp, y = (-0.5).dp),
-                    fontFamily = headlineFont,
-                    fontSize = 74.sp,
-                    lineHeight = 77.52.sp,
-                    letterSpacing = (-6.4).sp,
-                    color = Color(0xFF17190F),
-                    style = BaseTextStyle
-                )
-                Text(
-                    text = "glass",
-                    modifier = Modifier.offset(x = 311.0.dp, y = (-0.5).dp),
-                    fontFamily = headlineFont,
-                    fontSize = 74.sp,
-                    lineHeight = 77.52.sp,
-                    letterSpacing = (-5.2).sp,
-                    color = Color(0xFF17190F),
-                    style = BaseTextStyle
-                )
-            }
+                    .offset(x = 0.dp, y = 0.dp)
+                    .padding(bottom = 13.0.dp),
+                fontFamily = headlineFont,
+                fontSize = 76.sp,
+                lineHeight = 77.52.sp,
+                letterSpacing = (-3.8).sp,
+                color = Color(0xFF17190F),
+                style = BaseTextStyle
+            )
 
             // Lead Paragraph
             Text(
@@ -120,7 +87,7 @@ fun E34fDesignScreen(
                 fontFamily = AbcArizonaSans,
                 fontSize = 20.sp,
                 lineHeight = 31.sp,
-                letterSpacing = (-1.10).sp,
+                letterSpacing = (-0.4).sp,
                 color = Color(0xFF3A3A37),
                 modifier = Modifier
                     .width(790.dp)
@@ -157,7 +124,7 @@ fun E34fDesignScreen(
                 fontFamily = AbcArizonaSans,
                 fontSize = 16.sp,
                 lineHeight = 25.35.sp,
-                letterSpacing = (-0.95).sp,
+                letterSpacing = (-0.32).sp,
                 color = Color(0xFF6C6C6D),
                 modifier = Modifier
                     .width(742.dp)
