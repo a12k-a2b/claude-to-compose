@@ -1,0 +1,87 @@
+{
+  "version": "2.0.0",
+  "timestamp": "2026-09-22T09:26:50.233Z",
+  "nodesCount": 10,
+  "mappings": [
+    {
+      "id": "node_frames",
+      "sourceId": "daylight#onboarding/frames",
+      "category": "canvas",
+      "strategy": "fidelity-first",
+      "targetComposable": "Canvas",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_nav_skip",
+      "sourceId": "daylight#onboarding/nav/skip",
+      "category": "button",
+      "strategy": "native-first",
+      "targetComposable": "Surface(shape = CircleShape) / Button",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_hero_illustration",
+      "sourceId": "daylight#onboarding/hero/illustration",
+      "category": "canvas",
+      "strategy": "fidelity-first",
+      "targetComposable": "Canvas",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_compass",
+      "sourceId": "daylight#onboarding/hero/compass",
+      "category": "canvas",
+      "strategy": "fidelity-first",
+      "targetComposable": "CompassRoseGraphic",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_brand_glyph",
+      "sourceId": "daylight#onboarding/hero/brand_glyph",
+      "category": "image",
+      "strategy": "native-first",
+      "targetComposable": "Image",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_kicker",
+      "sourceId": "daylight#onboarding/typography/kicker",
+      "category": "text",
+      "strategy": "native-first",
+      "targetComposable": "Text",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_headline",
+      "sourceId": "daylight#onboarding/typography/headline",
+      "category": "text",
+      "strategy": "native-first",
+      "targetComposable": "Text",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_subtitle",
+      "sourceId": "daylight#onboarding/typography/subtitle",
+      "category": "text",
+      "strategy": "native-first",
+      "targetComposable": "Text",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_cta_get_started",
+      "sourceId": "daylight#onboarding/action/get_started",
+      "category": "button",
+      "strategy": "native-first",
+      "targetComposable": "Surface(shape = CircleShape) / Button",
+      "status": "EXACT"
+    },
+    {
+      "id": "node_motion_chips_container",
+      "sourceId": "daylight#onboarding/chips/container",
+      "category": "chip_group",
+      "strategy": "native-first",
+      "targetComposable": "Column / DaylightChip (Surface)",
+      "status": "EXACT"
+    }
+  ]
+}

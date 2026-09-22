@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://claude.compose/v2/design_ir.schema.json",
+  "title": "DesignIR",
+  "description": "Evidence-preserving 3-layer Intermediate Representation for Claude-to-Compose v2",
+  "type": "object",
+  "required": ["version", "viewport", "root"],
+  "properties": {
+    "version": { "type": "string", "const": "2.0.0" },
+    "viewport": {
+      "type": "object",
+      "required": ["width", "height", "widthDp", "heightDp", "density"],
+      "properties": {
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "widthDp": { "type": "number" },
+        "heightDp": { "type": "number" },
+        "density": { "type": "number" },
+        "orientation": { "type": "string", "enum": ["portrait", "landscape"] }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "properties": {
+        "colors": { "type": "object" },
+        "typography": { "type": "object" },
+        "elevation": { "type": "object" }
+      }
+    },
+    "root": { "$ref": "#/$defs/irNode" }
+  },
+  "$defs": {
+    "irNode": {
+      "type": "object",
+      "required": ["id", "sourceId", "category", "measured", "layoutIntent"],
+      "properties": {
+        "id": { "type": "string" },
+        "sourceId": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": ["container", "text", "button", "chip", "chip_group", "canvas", "vector", "image", "divider"]
+        },
+        "loweringStrategy": {
+          "type": "string",
+          "enum": ["native-first", "fidelity-first", "hybrid"]
+        },
+        "measured": {
+          "type": "object",
+          "required": ["bounds", "boundsDp"],
+          "properties": {
+            "bounds": {
+              "type": "object",
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number" },
+                "height": { "type": "number" }
+              }
+            },
+            "boundsDp": {
+              "type": "object",
+              "required": ["x", "y", "width", "height"],
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "width": { "type": "number" },
+                "height": { "type": "number" }
+              }
+            },
+            "style": { "type": "object" },
+            "textRun": {
+              "type": "object",
+              "properties": {
+                "content": { "type": "string" },
+                "fontFamily": { "type": "string" },
+                "fontSizeSp": { "type": "number" },
+                "fontWeight": { "type": "integer" },
+                "lineHeightSp": { "type": "number" },
+                "letterSpacing": { "type": "number" },
+                "color": { "type": "string" },
+                "textAlign": { "type": "string" },
+                "opticalSize": { "type": "number" }
+              }
+            }
+          }
+        },
+        "layoutIntent": {
+          "type": "object",
+          "required": ["sizing", "flow"],
+          "properties": {
+            "sizing": {
+              "type": "object",
+              "properties": {
+                "width": { "type": "string", "enum": ["fill", "wrap", "fixed"] },
+                "height": { "type": "string", "enum": ["fill", "wrap", "fixed"] },
+                "fixedWidthDp": { "type": "number" },
+                "fixedHeightDp": { "type": "number" }
+              }
+            },
+            "flow": {
+              "type": "string",
+              "enum": ["vertical", "horizontal", "overlay", "canvas_draw", "none"]
+            },
+            "alignment": { "type": "string" },
+            "padding": {
+              "type": "object",
+              "properties": {
+                "topDp": { "type": "number" },
+                "rightDp": { "type": "number" },
+                "bottomDp": { "type": "number" },
+                "leftDp": { "type": "number" }
+              }
+            }
+          }
+        },
+        "behavior": {
+          "type": "object",
+          "properties": {
+            "role": { "type": "string" },
+            "isInteractive": { "type": "boolean" },
+            "minTouchTargetDp": {
+              "type": "object",
+              "properties": {
+                "width": { "type": "number" },
+                "height": { "type": "number" }
+              }
+            },
+            "action": { "type": "string" },
+            "states": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/irNode" }
+        }
+      }
+    }
+  }
+}

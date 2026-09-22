@@ -1,0 +1,624 @@
+{
+  "version": "2.0.0",
+  "viewport": {
+    "width": 1184,
+    "height": 1584,
+    "widthDp": 592,
+    "heightDp": 792,
+    "density": 2
+  },
+  "tokens": {
+    "colors": {
+      "os0": "#FFFFFF",
+      "os50": "#F7F7F7",
+      "os100": "#E2E0D8",
+      "os150": "#F5F5F5",
+      "os200": "#CECECE",
+      "os300": "#858585",
+      "os400": "#535353",
+      "os800": "#343434",
+      "os900": "#1A1A1A",
+      "os1000": "#000000"
+    },
+    "typography": {
+      "headline": "ABC Arizona Flare",
+      "body": "ABC Arizona Sans",
+      "mono": "ABC ROM Mono"
+    }
+  },
+  "root": {
+    "id": "node_root",
+    "sourceId": "daylight#onboarding/root",
+    "category": "container",
+    "loweringStrategy": "native-first",
+    "measured": {
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1184,
+        "height": 1584
+      },
+      "boundsDp": {
+        "x": 0,
+        "y": 0,
+        "width": 592,
+        "height": 792
+      },
+      "style": {
+        "backgroundColor": "#FFFFFF",
+        "color": "#1A1A1A"
+      }
+    },
+    "layoutIntent": {
+      "sizing": {
+        "width": "fill",
+        "height": "fill",
+        "fixedWidthDp": 592,
+        "fixedHeightDp": 792
+      },
+      "flow": "overlay",
+      "alignment": "Start",
+      "padding": {
+        "topDp": 0,
+        "rightDp": 0,
+        "bottomDp": 0,
+        "leftDp": 0
+      }
+    },
+    "behavior": {
+      "role": "none",
+      "isInteractive": false,
+      "action": null,
+      "minTouchTargetDp": null,
+      "states": []
+    },
+    "componentType": "Screen",
+    "children": [
+      {
+        "id": "node_frames",
+        "sourceId": "daylight#onboarding/frames",
+        "category": "canvas",
+        "loweringStrategy": "fidelity-first",
+        "measured": {
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1184,
+            "height": 1584
+          },
+          "boundsDp": {
+            "x": 0,
+            "y": 0,
+            "width": 592,
+            "height": 792
+          },
+          "style": {}
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "fill",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 792
+          },
+          "flow": "canvas_draw",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Frames"
+      },
+      {
+        "id": "node_nav_skip",
+        "sourceId": "daylight#onboarding/nav/skip",
+        "category": "button",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 1052,
+            "y": 26,
+            "width": 96,
+            "height": 64
+          },
+          "boundsDp": {
+            "x": 526,
+            "y": 13,
+            "width": 48,
+            "height": 32
+          },
+          "style": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#DCD5C9",
+            "borderWidth": 1,
+            "borderRadius": 11,
+            "color": "#1A1A1A"
+          },
+          "textRun": {
+            "content": "Skip",
+            "fontFamily": "ABC Arizona Sans",
+            "fontSizeSp": 12,
+            "fontWeight": 400,
+            "lineHeightSp": 16,
+            "letterSpacing": 0,
+            "color": "#1A1A1A",
+            "textAlign": "center",
+            "opticalSize": null
+          }
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fixed",
+            "height": "fixed",
+            "fixedWidthDp": 48,
+            "fixedHeightDp": 32
+          },
+          "flow": "none",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "button",
+          "isInteractive": true,
+          "action": "onSkipClick",
+          "minTouchTargetDp": {
+            "width": 48,
+            "height": 48
+          },
+          "states": [
+            "idle",
+            "pressed",
+            "focused"
+          ]
+        },
+        "componentType": "Button"
+      },
+      {
+        "id": "node_hero_illustration",
+        "sourceId": "daylight#onboarding/hero/illustration",
+        "category": "canvas",
+        "loweringStrategy": "fidelity-first",
+        "measured": {
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1184,
+            "height": 1584
+          },
+          "boundsDp": {
+            "x": 0,
+            "y": 0,
+            "width": 592,
+            "height": 792
+          },
+          "style": {}
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "fill",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 792
+          },
+          "flow": "canvas_draw",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "IllustrationCanvas"
+      },
+      {
+        "id": "node_compass",
+        "sourceId": "daylight#onboarding/hero/compass",
+        "category": "canvas",
+        "loweringStrategy": "fidelity-first",
+        "measured": {
+          "bounds": {
+            "x": 935,
+            "y": 205,
+            "width": 136,
+            "height": 136
+          },
+          "boundsDp": {
+            "x": 467.5,
+            "y": 102.5,
+            "width": 68,
+            "height": 68
+          },
+          "style": {}
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fixed",
+            "height": "fixed",
+            "fixedWidthDp": 68,
+            "fixedHeightDp": 68
+          },
+          "flow": "canvas_draw",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Compass"
+      },
+      {
+        "id": "node_brand_glyph",
+        "sourceId": "daylight#onboarding/hero/brand_glyph",
+        "category": "image",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 550,
+            "y": 820,
+            "width": 84,
+            "height": 84
+          },
+          "boundsDp": {
+            "x": 275,
+            "y": 410,
+            "width": 42,
+            "height": 42
+          },
+          "style": {}
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fixed",
+            "height": "fixed",
+            "fixedWidthDp": 42,
+            "fixedHeightDp": 42
+          },
+          "flow": "none",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Image"
+      },
+      {
+        "id": "node_kicker",
+        "sourceId": "daylight#onboarding/typography/kicker",
+        "category": "text",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 0,
+            "y": 936,
+            "width": 1184,
+            "height": 32
+          },
+          "boundsDp": {
+            "x": 0,
+            "y": 468,
+            "width": 592,
+            "height": 16
+          },
+          "style": {},
+          "textRun": {
+            "content": "Daylight DC1 · the living page",
+            "fontFamily": "ABC ROM Mono",
+            "fontSizeSp": 12,
+            "fontWeight": 400,
+            "lineHeightSp": 15,
+            "letterSpacing": 1.1,
+            "color": "#535353",
+            "textAlign": "center",
+            "opticalSize": null
+          }
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "wrap",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 16
+          },
+          "flow": "none",
+          "alignment": "CenterHorizontally",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Text"
+      },
+      {
+        "id": "node_headline",
+        "sourceId": "daylight#onboarding/typography/headline",
+        "category": "text",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 0,
+            "y": 979,
+            "width": 1184,
+            "height": 96
+          },
+          "boundsDp": {
+            "x": 0,
+            "y": 489.7,
+            "width": 592,
+            "height": 48
+          },
+          "style": {},
+          "textRun": {
+            "content": "Step into daylight",
+            "fontFamily": "ABC Arizona Flare",
+            "fontSizeSp": 44,
+            "fontWeight": 500,
+            "lineHeightSp": 48,
+            "letterSpacing": -3.05,
+            "color": "#000000",
+            "textAlign": "center",
+            "opticalSize": 48
+          }
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "wrap",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 48
+          },
+          "flow": "none",
+          "alignment": "CenterHorizontally",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Text"
+      },
+      {
+        "id": "node_subtitle",
+        "sourceId": "daylight#onboarding/typography/subtitle",
+        "category": "text",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 4,
+            "y": 1101,
+            "width": 1184,
+            "height": 120
+          },
+          "boundsDp": {
+            "x": 2.1,
+            "y": 550.7,
+            "width": 592,
+            "height": 60
+          },
+          "style": {},
+          "textRun": {
+            "content": "A reflective paper screen that moves like ink — 60 to\n120 frames a second, and not a drop of blue light.\nLet's make it yours.",
+            "fontFamily": "ABC Arizona Sans",
+            "fontSizeSp": 14,
+            "fontWeight": 400,
+            "lineHeightSp": 20,
+            "letterSpacing": 0,
+            "color": "#343434",
+            "textAlign": "center",
+            "opticalSize": null
+          }
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "wrap",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 60
+          },
+          "flow": "none",
+          "alignment": "CenterHorizontally",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "none",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "Text"
+      },
+      {
+        "id": "node_cta_get_started",
+        "sourceId": "daylight#onboarding/action/get_started",
+        "category": "button",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 467,
+            "y": 1265,
+            "width": 250,
+            "height": 84
+          },
+          "boundsDp": {
+            "x": 233.5,
+            "y": 632.5,
+            "width": 125,
+            "height": 42
+          },
+          "style": {
+            "backgroundColor": "#000000",
+            "borderRadius": 21,
+            "color": "#FFFFFF"
+          },
+          "textRun": {
+            "content": "Get started",
+            "fontFamily": "ABC Arizona Sans",
+            "fontSizeSp": 15,
+            "fontWeight": 500,
+            "lineHeightSp": 20,
+            "letterSpacing": 0,
+            "color": "#FFFFFF",
+            "textAlign": "center",
+            "opticalSize": null
+          }
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fixed",
+            "height": "fixed",
+            "fixedWidthDp": 125,
+            "fixedHeightDp": 42
+          },
+          "flow": "none",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "button",
+          "isInteractive": true,
+          "action": "onGetStartedClick",
+          "minTouchTargetDp": {
+            "width": 125,
+            "height": 48
+          },
+          "states": [
+            "idle",
+            "pressed",
+            "focused"
+          ]
+        },
+        "componentType": "Button"
+      },
+      {
+        "id": "node_motion_chips_container",
+        "sourceId": "daylight#onboarding/chips/container",
+        "category": "chip_group",
+        "loweringStrategy": "native-first",
+        "measured": {
+          "bounds": {
+            "x": 0,
+            "y": 1398,
+            "width": 1184,
+            "height": 160
+          },
+          "boundsDp": {
+            "x": 0,
+            "y": 699,
+            "width": 592,
+            "height": 80
+          },
+          "style": {}
+        },
+        "layoutIntent": {
+          "sizing": {
+            "width": "fill",
+            "height": "fixed",
+            "fixedWidthDp": 592,
+            "fixedHeightDp": 80
+          },
+          "flow": "none",
+          "alignment": "Start",
+          "padding": {
+            "topDp": 0,
+            "rightDp": 0,
+            "bottomDp": 0,
+            "leftDp": 0
+          }
+        },
+        "behavior": {
+          "role": "group",
+          "isInteractive": false,
+          "action": null,
+          "minTouchTargetDp": null,
+          "states": []
+        },
+        "componentType": "ChipGroup",
+        "chipsData": {
+          "label": "PAPER MOTION",
+          "selected": "Footprints",
+          "row1": [
+            "Footprints",
+            "Contours",
+            "Filigree",
+            "Flow",
+            "Whorls",
+            "Feather"
+          ],
+          "row2": [
+            "Streets",
+            "Sunrise"
+          ]
+        }
+      }
+    ]
+  }
+}

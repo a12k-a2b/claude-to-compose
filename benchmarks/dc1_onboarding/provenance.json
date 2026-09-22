@@ -1,0 +1,53 @@
+{
+  "artifact": {
+    "id": "f35b65f7-41d8-4f14-b227-513cfd1867b0",
+    "name": "Daylight DC1 Native Onboarding Screen",
+    "description": "Authentic Sol:OS onboarding experience compiled for the Daylight Computer (DC1) 10.5in 4:3 LivePaper display",
+    "timestamp": "2026-09-22T01:50:00.000Z"
+  },
+  "runtime": {
+    "engine": "Chromium / Playwright",
+    "targetPlatform": "Android Jetpack Compose 1.7.0",
+    "kotlinVersion": "2.0.20",
+    "androidGradlePlugin": "8.7.0",
+    "minSdk": 26,
+    "targetSdk": 35
+  },
+  "viewport": {
+    "name": "Daylight DC1 Portrait Native",
+    "width": 1184,
+    "height": 1584,
+    "widthDp": 592,
+    "heightDp": 792,
+    "deviceScaleFactor": 2.0,
+    "colorSpace": "8-bit Grayscale Monochrome (256 discrete levels)",
+    "displayTechnology": "Transflective LivePaper LCD (60Hz - 120Hz)",
+    "waveformMode": "zero_epd_waveforms_none"
+  },
+  "fonts": [
+    {
+      "name": "ABC Arizona Flare",
+      "postScriptName": "ABCArizonaFlare-Regular",
+      "opticalSizeRange": [12, 100],
+      "resourcePath": "android/app/src/main/res/font/abc_arizona_flare_variable.ttf"
+    },
+    {
+      "name": "ABC Arizona Sans",
+      "postScriptName": "ABCArizonaSans-Regular",
+      "opticalSizeRange": [12, 100],
+      "resourcePath": "android/app/src/main/res/font/abc_arizona_sans_variable.ttf"
+    },
+    {
+      "name": "ABC ROM Mono",
+      "postScriptName": "ABCROMMono-Regular",
+      "resourcePath": "android/app/src/main/res/font/abc_rom_mono_regular.ttf"
+    }
+  ],
+  "verificationThresholds": {
+    "minInkIou": 85.0,
+    "minContourScore": 90.0,
+    "minElementIou": 90.0,
+    "maxSpatialShiftPx": 3.0,
+    "failClosedOnMissingEvidence": true
+  }
+}

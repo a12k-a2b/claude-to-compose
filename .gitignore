@@ -5,7 +5,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build outputs & caches
-output/
+output/*
+!output/conformance/
 dist/
 build/
 test_scratch/
