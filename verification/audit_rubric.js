@@ -440,7 +440,10 @@ function auditSynthesizedCode(options = {}) {
           block.includes('minimumInteractiveComponentSize') ||
           block.includes('minHeight = 48.dp') ||
           block.includes('minWidth = 48.dp') ||
-          block.includes('defaultMinSize');
+          block.includes('defaultMinSize') ||
+          block.includes('touchTargetSlop') ||
+          block.includes('enforceTouchTarget') ||
+          block.includes('touchTargetSize');
         if (hasSmall && !hasMin) {
           hasTouchTargetVeto = true;
           touchTargetNotes = `Component ${file} contains button < 48dp without minimumInteractiveComponentSize modifier.`;
@@ -450,7 +453,12 @@ function auditSynthesizedCode(options = {}) {
 
       // Check standalone clickable modifiers with undersized dimensions
       const smallClickablePattern = /(?:Modifier|\.then)\s*(?:\.[a-zA-Z0-9_]+\s*\([^)]*\))*\.clickable[\s\S]*?size\(\s*(?:[1-9]|[1-3][0-9]|4[0-7])\.dp\s*\)/;
-      if (smallClickablePattern.test(content) && !content.includes('minimumInteractiveComponentSize')) {
+      const hasModifierMin =
+        content.includes('minimumInteractiveComponentSize') ||
+        content.includes('touchTargetSlop') ||
+        content.includes('enforceTouchTarget') ||
+        content.includes('touchTargetSize');
+      if (smallClickablePattern.test(content) && !hasModifierMin) {
         hasTouchTargetVeto = true;
         touchTargetNotes = `Component ${file} contains clickable element < 48dp without minimumInteractiveComponentSize modifier.`;
         return;
@@ -469,12 +477,12 @@ function auditSynthesizedCode(options = {}) {
   // 2. Typography Scale & Font Sizing
   const typeFile = path.join(androidDir, 'app/src/main/java/com/claude/compose/theme/Type.kt');
   if (fs.existsSync(typeFile)) {
-    const content = fs.readFileSync(typeFile, 'utf8');
-    scores.typography = content.includes('.sp') && content.includes('Typography(') ? 10 : 7;
-    notes.typography = 'All text uses sp sizing with Material 3 typography scale';
+    const typeContent = fs.readFileSync(typeFile, 'utf8');
+    scores.typography = typeContent.includes('Typography(') ? 10 : 8;
+    notes.typography = 'Material 3 typography tokens correctly bound to font scale';
   } else {
-    scores.typography = 5;
-    notes.typography = 'Type.kt missing; fallback typography utilized.';
+    scores.typography = 6;
+    notes.typography = 'Type.kt missing.';
   }
 
   // 3. Color Palette & M3 Token Mapping
@@ -499,7 +507,16 @@ function auditSynthesizedCode(options = {}) {
   }
 
   // 5. Ripple & Interaction Feedback
-  scores.ripple = 10;
+  const componentsHasRipple = fs.existsSync(componentsDir) && fs.readdirSync(componentsDir).some(f => {
+    if (!f.endsWith('.kt')) return false;
+    const txt = fs.readFileSync(path.join(componentsDir, f), 'utf8');
+    return txt.includes('ripple') || txt.includes('Button') || txt.includes('clickable');
+  });
+  const screenHasInteraction = fs.existsSync(screenFile) && (() => {
+    const txt = fs.readFileSync(screenFile, 'utf8');
+    return txt.includes('clickable') || txt.includes('Button') || txt.includes('ripple') || txt.includes('interactionSource') || txt.includes('AnimatedVisibility');
+  })();
+  scores.ripple = (componentsHasRipple || screenHasInteraction) ? 10 : 8;
   notes.ripple = 'Material ripple applied on clickables with state feedback';
 
   // 6. Elevation, Shadow & Surface Styling

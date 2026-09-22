@@ -147,6 +147,39 @@ async function walkDOM(frame, options = {}) {
       return list;
     }
 
+    // --- Helper: Animation parsing ---
+    function parseAnimations(style) {
+      if (!style.animationName || style.animationName === 'none') return [];
+      const names = splitCommaSafe(style.animationName);
+      const durations = splitCommaSafe(style.animationDuration || '0s');
+      const timings = splitCommaSafe(style.animationTimingFunction || 'ease');
+      const delays = splitCommaSafe(style.animationDelay || '0s');
+      const iterationCounts = splitCommaSafe(style.animationIterationCount || '1');
+      const directions = splitCommaSafe(style.animationDirection || 'normal');
+
+      const parseMs = val => {
+        if (!val) return 0;
+        if (val.endsWith('ms')) return parseFloat(val);
+        if (val.endsWith('s')) return parseFloat(val) * 1000;
+        return parseFloat(val) || 0;
+      };
+
+      const list = [];
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        if (!name || name === 'none') continue;
+        list.push({
+          name,
+          durationMs: parseMs(durations[i % durations.length]),
+          easing: timings[i % timings.length] || 'ease',
+          delayMs: parseMs(delays[i % delays.length]),
+          iterationCount: iterationCounts[i % iterationCounts.length] || '1',
+          direction: directions[i % directions.length] || 'normal'
+        });
+      }
+      return list;
+    }
+
     // --- Helper: Border radius & Pill/Circle detection ---
     function parseRadius(style, rect) {
       const parseVal = (v, dim) => {
@@ -736,8 +769,10 @@ async function walkDOM(frame, options = {}) {
       if (['script', 'style', 'noscript', 'meta', 'link', 'template', 'head'].includes(tag)) return null;
 
       const style = window.getComputedStyle(el);
-      if (style.display === 'none' || style.visibility === 'hidden') return null;
-      if (style.opacity === '0' && !style.transitionProperty?.includes('opacity')) return null;
+      const isHidden = style.display === 'none' || style.visibility === 'hidden';
+      const isZeroOpacity = style.opacity === '0';
+      const hasOpacityTransition = style.transitionProperty?.includes('opacity') || Boolean(style.animationName && style.animationName !== 'none');
+      if (isZeroOpacity && !hasOpacityTransition && isHidden) return null;
 
       const rect = el.getBoundingClientRect();
       const isSvg = tag === 'svg';
@@ -760,14 +795,15 @@ async function walkDOM(frame, options = {}) {
         }
       }
 
-      // Prune zero-dimension leaf nodes
-      if (rect.width === 0 && rect.height === 0 && children.length === 0 && !directText) {
+      // Prune zero-dimension leaf nodes, preserving conditional/hidden elements if they contain children, text, or are SVG
+      if (rect.width === 0 && rect.height === 0 && children.length === 0 && !directText && !isSvg) {
         return null;
       }
 
       const componentType = classifyComponent(el, style, rect, children, directText);
       const isClickable = style.cursor === 'pointer' || tag === 'button' || tag === 'a' || el.getAttribute('role') === 'button';
       const transitions = parseTransitions(style);
+      const animations = parseAnimations(style);
 
       const parsedBgColor = parseColor(style.backgroundColor);
       const parsedTextColor = parseColor(style.color);
@@ -778,6 +814,7 @@ async function walkDOM(frame, options = {}) {
         tag,
         type: componentType.toUpperCase(),
         componentType,
+        isConditional: isHidden ? true : undefined,
         bounds: {
           x: Math.round(rect.x * 10) / 10,
           y: Math.round(rect.y * 10) / 10,
@@ -791,7 +828,9 @@ async function walkDOM(frame, options = {}) {
           height: Math.round(rect.height * 10) / 10
         },
         layout: {
-          display: style.display.includes('flex') ? 'flex' : (style.display.includes('grid') ? 'grid' : (style.display === 'block' ? 'block' : 'inline')),
+          display: style.display === 'none' ? 'none' : (style.display.includes('flex') ? 'flex' : (style.display.includes('grid') ? 'grid' : (style.display === 'block' ? 'block' : 'inline'))),
+          visibility: isHidden ? 'hidden' : 'visible',
+          isConditional: isHidden ? true : undefined,
           flexDirection: style.flexDirection || undefined,
           justifyContent: style.justifyContent || undefined,
           alignItems: style.alignItems || undefined,
@@ -863,11 +902,12 @@ async function walkDOM(frame, options = {}) {
         nodeObj.vectorData = extractInlineSvgData(el);
       }
 
-      if (isClickable || transitions.length > 0) {
+      if (isClickable || transitions.length > 0 || animations.length > 0) {
         nodeObj.interactions = {
           isClickable,
           hasRipple: isClickable,
-          transitions: transitions.length > 0 ? transitions : undefined
+          transitions: transitions.length > 0 ? transitions : undefined,
+          animations: animations.length > 0 ? animations : undefined
         };
       }
 
@@ -889,7 +929,10 @@ async function walkDOM(frame, options = {}) {
       children: []
     };
 
-    const themeHints = {};
+    const themeHints = {
+      keyframes: [],
+      pseudoDeltas: []
+    };
     try {
       const computedRoot = window.getComputedStyle(document.documentElement);
       const varKeys = ['--color-primary', '--primary', '--brand-primary', '--radius-sm', '--radius-md', '--radius-lg', '--radius-card'];
@@ -907,6 +950,39 @@ async function walkDOM(frame, options = {}) {
                   themeHints[prop] = rule.style.getPropertyValue(prop).trim();
                 }
               }
+            } else if (rule.type === CSSRule.KEYFRAMES_RULE || rule.type === 7 || rule.constructor?.name === 'CSSKeyframesRule') {
+              const kf = {
+                name: rule.name,
+                steps: []
+              };
+              if (rule.cssRules) {
+                for (const step of rule.cssRules) {
+                  const stepProps = {};
+                  if (step.style) {
+                    for (let i = 0; i < step.style.length; i++) {
+                      const p = step.style[i];
+                      stepProps[p] = step.style.getPropertyValue(p).trim();
+                    }
+                  }
+                  kf.steps.push({
+                    keyText: step.keyText,
+                    properties: stepProps
+                  });
+                }
+              }
+              themeHints.keyframes.push(kf);
+            } else if (rule.selectorText && (rule.selectorText.includes(':hover') || rule.selectorText.includes(':active') || rule.selectorText.includes('[data-state]'))) {
+              const deltaProps = {};
+              if (rule.style) {
+                for (let i = 0; i < rule.style.length; i++) {
+                  const p = rule.style[i];
+                  deltaProps[p] = rule.style.getPropertyValue(p).trim();
+                }
+              }
+              themeHints.pseudoDeltas.push({
+                selector: rule.selectorText,
+                properties: deltaProps
+              });
             }
           }
         } catch (_) {}

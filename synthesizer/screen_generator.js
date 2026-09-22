@@ -142,6 +142,7 @@ function extractInteractiveStates(rootNode) {
   let checkIndex = 0;
   let tabIndex = 0;
   let switchIndex = 0;
+  let conditionalIndex = 0;
 
   function traverse(node) {
     if (!node) return;
@@ -203,6 +204,17 @@ function extractInteractiveStates(rootNode) {
           nodeId: node.id
         });
       }
+    } else if ((node.isConditional || node.layout?.isConditional || node.layout?.visibility === 'hidden' || type === 'overlay' || type === 'dialog') && node !== rootNode) {
+      conditionalIndex++;
+      const rawName = node.name || node.id || (type === 'overlay' || type === 'dialog' ? `dialog_${conditionalIndex}` : `section_${conditionalIndex}`);
+      const cleanName = sanitizeIdentifier(rawName).replace(/`/g, '');
+      states.push({
+        varName: `is${capitalize(cleanName)}Visible`,
+        type: 'Boolean',
+        defaultVal: (node.layout?.visibility === 'hidden' || node.isConditional) ? 'false' : 'true',
+        kind: 'visibility',
+        nodeId: node.id
+      });
     }
 
     if (Array.isArray(node.children)) {
@@ -347,14 +359,41 @@ function buildContainerModifier(node, parentContext = {}, isRow = false) {
     }
   }
 
+  // Dynamic dimension transitions
+  if (node.interactions?.transitions && Array.isArray(node.interactions.transitions)) {
+    if (node.interactions.transitions.some(t => ['height', 'width', 'all', 'max-height', 'auto'].includes((t.property || '').toLowerCase()))) {
+      modifiers.push('.animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))');
+    }
+  }
+
   const result = modifiers.join('');
   return result === 'Modifier' ? '' : result;
 }
 
 /**
- * Recursively translates a DesignNode into Compose Kotlin code.
+ * Recursively translates a DesignNode into Compose Kotlin code, wrapping conditional nodes with AnimatedVisibility.
  */
 function translateNode(node, indent = '        ', stateMap = {}, parentContext = { inRow: false, siblingCount: 1, childIndex: 0 }, iconContext = null) {
+  if (!node) return `${indent}Box {}\n`;
+  const type = node.componentType || 'Container';
+  const visState = stateMap[node.id];
+  const isConditional = visState && visState.kind === 'visibility' && type !== 'Overlay' && type !== 'Dialog';
+
+  if (isConditional) {
+    const innerCode = translateNodeCore(node, indent + '    ', stateMap, parentContext, iconContext);
+    return `${indent}AnimatedVisibility(\n` +
+           `${indent}    visible = ${visState.varName},\n` +
+           `${indent}    enter = fadeIn(animationSpec = tween(250)) + expandVertically(),\n` +
+           `${indent}    exit = fadeOut(animationSpec = tween(200)) + shrinkVertically()\n` +
+           `${indent}) {\n` +
+           `${innerCode}` +
+           `${indent}}\n`;
+  }
+
+  return translateNodeCore(node, indent, stateMap, parentContext, iconContext);
+}
+
+function translateNodeCore(node, indent = '        ', stateMap = {}, parentContext = { inRow: false, siblingCount: 1, childIndex: 0 }, iconContext = null) {
   if (!node) return `${indent}Box {}\n`;
 
   const type = node.componentType || 'Container';
@@ -512,12 +551,26 @@ function translateNode(node, indent = '        ', stateMap = {}, parentContext =
 
   // 13c. Overlay / Dialog Component
   if (type === 'Overlay' || type === 'Dialog') {
+    const visState = stateMap[node.id];
+    const visVar = visState ? visState.varName : 'true';
     const inner = children.map((c, idx) => translateNode(c, indent + '        ', stateMap, {
       inRow: false,
       siblingCount: children.length,
       childIndex: idx
     }, iconContext)).join('');
-    return `${indent}Box(\n${indent}    modifier = Modifier.fillMaxSize().background(Color(0x66000000)),\n${indent}    contentAlignment = Alignment.Center\n${indent}) {\n${indent}    AppCard(modifier = Modifier.padding(24.dp)) {\n${inner}${indent}    }\n${indent}}\n`;
+    return `${indent}AnimatedVisibility(\n` +
+           `${indent}    visible = ${visVar},\n` +
+           `${indent}    enter = fadeIn(animationSpec = tween(250)),\n` +
+           `${indent}    exit = fadeOut(animationSpec = tween(200))\n` +
+           `${indent}) {\n` +
+           `${indent}    Box(\n` +
+           `${indent}        modifier = Modifier.fillMaxSize().background(Color(0x66000000)),\n` +
+           `${indent}        contentAlignment = Alignment.Center\n` +
+           `${indent}    ) {\n` +
+           `${indent}        AppCard(modifier = Modifier.padding(24.dp)) {\n` +
+           `${inner}${indent}        }\n` +
+           `${indent}    }\n` +
+           `${indent}}\n`;
   }
 
   // 14. NavigationBar Component
@@ -715,6 +768,7 @@ fun ClaudeDesignScreen(
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring

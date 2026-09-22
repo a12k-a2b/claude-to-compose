@@ -4,6 +4,8 @@
  */
 
 const path = require('node:path');
+const { MotionGenerator } = require('../../synthesizer/motion_generator');
+const { generateScreenFile } = require('../../synthesizer/screen_generator');
 
 module.exports = {
   name: 'F15: Motion & Animation Translation',
@@ -14,51 +16,82 @@ module.exports = {
       id: 'T1_F15_01',
       name: 'Validate AnimatedVisibility generation with fadeIn/fadeOut and expandVertically/shrinkVertically',
       run: async (t) => {
-        const sampleAnimatedVisibility = `
-          AnimatedVisibility(
-            visible = isExpanded,
-            enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
-            exit = fadeOut(animationSpec = tween(200)) + shrinkVertically()
-          ) {
-            DetailsContent()
+        const generatedSnippet = MotionGenerator.generateAnimatedVisibility({
+          visibleCondition: 'isExpanded',
+          durationMs: 300,
+          content: 'DetailsContent()'
+        });
+        t.assertMatch(generatedSnippet, /AnimatedVisibility\(/);
+        t.assertMatch(generatedSnippet, /fadeIn\(animationSpec = tween\(300\)\) \+ expandVertically\(\)/);
+        t.assertMatch(generatedSnippet, /fadeOut\(animationSpec = tween\(225\)\) \+ shrinkVertically\(\)/);
+
+        // Test screen generator conditional node translation
+        const spec = {
+          hierarchy: {
+            id: 'root_node',
+            componentType: 'Container',
+            layout: { display: 'flex' },
+            children: [
+              {
+                id: 'conditional_card',
+                componentType: 'Card',
+                isConditional: true,
+                layout: { visibility: 'hidden', padding: {} },
+                children: [{ id: 'text_node', componentType: 'Text', text: { content: 'Details' } }]
+              }
+            ]
           }
-        `;
-        t.assertMatch(sampleAnimatedVisibility, /AnimatedVisibility\(/);
-        t.assertMatch(sampleAnimatedVisibility, /fadeIn\(/);
-        t.assertMatch(sampleAnimatedVisibility, /fadeOut\(/);
+        };
+        const screenCode = generateScreenFile(spec, 'com.claude.compose');
+        t.assertMatch(screenCode, /AnimatedVisibility\(/);
+        t.assertMatch(screenCode, /isConditional_cardVisible/);
       }
     },
     {
       id: 'T1_F15_02',
       name: 'Validate animateFloatAsState and animateDpAsState mapping from CSS transitions',
       run: async (t) => {
-        const sampleFloatAnimation = 'val alpha by animateFloatAsState(targetValue = if (visible) 1f else 0f, label = "alphaAnim")';
-        const sampleDpAnimation = 'val elevation by animateDpAsState(targetValue = if (pressed) 8.dp else 2.dp, label = "elevAnim")';
-        t.assertMatch(sampleFloatAnimation, /animateFloatAsState\(targetValue/);
-        t.assertMatch(sampleDpAnimation, /animateDpAsState\(targetValue/);
+        const pressedElev = MotionGenerator.generatePressedElevation({
+          defaultElevation: 2,
+          pressedElevation: 8,
+          label: 'elevAnim'
+        });
+        t.assertMatch(pressedElev, /animateDpAsState\(/);
+        t.assertMatch(pressedElev, /targetValue = if \(isPressed\) 8\.dp else 2\.dp/);
+
+        const pressedScale = MotionGenerator.generateInteractivePressScale({
+          defaultScale: '1f',
+          pressedScale: '0.97f',
+          label: 'scaleAnim'
+        });
+        t.assertMatch(pressedScale, /animateFloatAsState\(/);
+        t.assertMatch(pressedScale, /targetValue = if \(isPressed\) 0\.97f else 1f/);
       }
     },
     {
       id: 'T1_F15_03',
       name: 'Validate CSS easing functions to Compose AnimationSpec mapping (linear, ease-in-out -> tween/spring)',
       run: async (t) => {
-        const easingMap = {
-          'linear': 'LinearEasing',
-          'ease-in': 'FastOutLinearInEasing',
-          'ease-out': 'LinearOutSlowInEasing',
-          'ease-in-out': 'FastOutSlowInEasing'
-        };
-        t.assertEqual(easingMap['ease-in-out'], 'FastOutSlowInEasing');
-        t.assertEqual(easingMap['linear'], 'LinearEasing');
+        t.assertEqual(MotionGenerator.mapCssEasing('ease-in-out'), 'FastOutSlowInEasing');
+        t.assertEqual(MotionGenerator.mapCssEasing('linear'), 'LinearEasing');
+        t.assertEqual(MotionGenerator.mapCssEasing('ease-in'), 'FastOutLinearInEasing');
+        t.assertEqual(MotionGenerator.mapCssEasing('ease-out'), 'LinearOutSlowInEasing');
+        t.assertEqual(MotionGenerator.mapCssEasing('unknown-cubic'), 'FastOutSlowInEasing');
+
+        const tweenSpec = MotionGenerator.resolveAnimationSpec(300, 'ease-in-out');
+        t.assertEqual(tweenSpec, 'tween(durationMillis = 300, easing = FastOutSlowInEasing)');
       }
     },
     {
       id: 'T1_F15_04',
       name: 'Validate spring() physics animation parameterization (dampingRatio, stiffness)',
       run: async (t) => {
-        const springSpec = 'spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)';
-        t.assertMatch(springSpec, /Spring\.DampingRatio/);
-        t.assertMatch(springSpec, /Spring\.Stiffness/);
+        t.assert(MotionGenerator.validateSpringParams(0.7, 300));
+        t.assertThrows(() => MotionGenerator.validateSpringParams(-1, 100), /InvalidSpringParamsError/);
+        t.assertThrows(() => MotionGenerator.validateSpringParams(0.5, -50), /InvalidSpringParamsError/);
+
+        const contentSizeSpec = MotionGenerator.generateContentSizeAnimation();
+        t.assertMatch(contentSizeSpec, /Modifier\.animateContentSize\(animationSpec = spring\(stiffness = Spring\.StiffnessMediumLow\)\)/);
       }
     },
     {
@@ -66,6 +99,10 @@ module.exports = {
       name: 'Verify motion_generator module exports animation synthesizers',
       run: async (t) => {
         t.checkFileExists('synthesizer/motion_generator.js', 'M2', 'Motion generator module required for transition translation');
+        t.assertEqual(typeof MotionGenerator.generateAnimatedVisibility, 'function');
+        t.assertEqual(typeof MotionGenerator.generatePressedElevation, 'function');
+        t.assertEqual(typeof MotionGenerator.generateInfiniteTransition, 'function');
+        t.assertEqual(typeof MotionGenerator.generateMotionTokensKotlinFile, 'function');
       }
     }
   ]

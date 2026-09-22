@@ -5,6 +5,17 @@ import android.graphics.Canvas
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -98,6 +109,71 @@ class PreviewScreenshotTest {
 
         assertTrue("Rendered preview image file must exist", primaryFile != null && primaryFile.exists())
         assertTrue("Rendered preview image file must not be empty", primaryFile!!.length() > 0)
+    }
+
+    @Test
+    fun verifyMultiFrameAnimationProgression() {
+        // Disables automatic clock advancement to test discrete 60Hz/120Hz VSYNC animation frames
+        composeTestRule.mainClock.autoAdvance = false
+
+        var isVisible by mutableStateOf(false)
+
+        composeTestRule.setContent {
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
+                exit = fadeOut(animationSpec = tween(200)) + shrinkVertically(animationSpec = tween(200))
+            ) {
+                Text(
+                    text = "LivePaper Animated Motion Element",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+        }
+
+        // Frame 0: t = 0ms (Hidden state)
+        composeTestRule.mainClock.advanceTimeBy(0)
+        val initialBitmap = try {
+            composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+        } catch (t: Throwable) {
+            captureComposeViewViaSkia()
+        }
+        assertTrue("Initial state before transition is valid", initialBitmap.width > 0)
+
+        // Trigger animation transition
+        isVisible = true
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        // Frame 1: Mid-transition t = 150ms (Fluid LivePaper standard settling / interpolation)
+        composeTestRule.mainClock.advanceTimeBy(150)
+        val midBitmap = try {
+            composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+        } catch (t: Throwable) {
+            captureComposeViewViaSkia()
+        }
+        assertTrue("Mid-transition frame at 150ms rendered successfully", midBitmap.width > 0)
+
+        // Frame 2: Final settled state t = 350ms (> 300ms duration)
+        composeTestRule.mainClock.advanceTimeBy(200)
+        val finalBitmap = try {
+            composeTestRule.onRoot().captureToImage().asAndroidBitmap()
+        } catch (t: Throwable) {
+            captureComposeViewViaSkia()
+        }
+        assertTrue("Final settled frame rendered successfully", finalBitmap.width > 0)
+
+        // Verify non-white pixel progression: final frame contains the visible animated element
+        var finalNonWhite = 0
+        for (y in 0 until finalBitmap.height) {
+            for (x in 0 until finalBitmap.width) {
+                val p = finalBitmap.getPixel(x, y)
+                val r = (p shr 16) and 0xFF
+                val g = (p shr 8) and 0xFF
+                val b = p and 0xFF
+                if (r < 250 || g < 250 || b < 250) finalNonWhite++
+            }
+        }
+        assertTrue("Animated element fully rendered in settled state (nonWhite = $finalNonWhite)", finalNonWhite > 50)
     }
 
     /**

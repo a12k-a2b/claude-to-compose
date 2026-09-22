@@ -266,6 +266,71 @@ object MotionTokens {
 }
 `;
   }
+  /**
+   * Generates pressed scale micro-interaction snippet using interactionSource and animateFloatAsState.
+   * @param {Object} [options={}]
+   * @returns {string}
+   */
+  static generateInteractivePressScale(options = {}) {
+    const defaultScale = options.defaultScale !== undefined ? options.defaultScale : '1f';
+    const pressedScale = options.pressedScale !== undefined ? options.pressedScale : '0.97f';
+    const label = options.label || 'buttonScale';
+
+    return `val isPressed by interactionSource.collectIsPressedAsState()\n` +
+           `val animatedScale by animateFloatAsState(\n` +
+           `    targetValue = if (isPressed) ${pressedScale} else ${defaultScale},\n` +
+           `    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),\n` +
+           `    label = "${label}"\n` +
+           `)`;
+  }
+
+  /**
+   * Generates Modifier.animateContentSize expression with spring physics.
+   * @param {Object} [options={}]
+   * @returns {string}
+   */
+  static generateContentSizeAnimation(options = {}) {
+    const stiffness = options.stiffness || 'Spring.StiffnessMediumLow';
+    return `Modifier.animateContentSize(animationSpec = spring(stiffness = ${stiffness}))`;
+  }
+
+  /**
+   * Generates infinite rotation animation snippet using rememberInfiniteTransition.
+   * @param {Object} [options={}]
+   * @returns {string}
+   */
+  static generateKeyframeRotation(options = {}) {
+    const durationMs = options.durationMs || 1000;
+    const label = options.label || 'rotation';
+
+    return `val infiniteTransition = rememberInfiniteTransition(label = "${label}")\n` +
+           `val ${label}Angle by infiniteTransition.animateFloat(\n` +
+           `    initialValue = 0f,\n` +
+           `    targetValue = 360f,\n` +
+           `    animationSpec = infiniteRepeatable(animation = tween(${durationMs}, easing = LinearEasing), repeatMode = RepeatMode.Restart),\n` +
+           `    label = "${label}Angle"\n` +
+           `)`;
+  }
+
+  /**
+   * Generates infinite pulse/alpha animation snippet using rememberInfiniteTransition.
+   * @param {Object} [options={}]
+   * @returns {string}
+   */
+  static generateKeyframeAlpha(options = {}) {
+    const initialValue = options.initialValue !== undefined ? options.initialValue : '0.4f';
+    const targetValue = options.targetValue !== undefined ? options.targetValue : '1f';
+    const durationMs = options.durationMs || 800;
+    const label = options.label || 'pulse';
+
+    return `val infiniteTransition = rememberInfiniteTransition(label = "${label}")\n` +
+           `val ${label}Alpha by infiniteTransition.animateFloat(\n` +
+           `    initialValue = ${initialValue},\n` +
+           `    targetValue = ${targetValue},\n` +
+           `    animationSpec = infiniteRepeatable(animation = tween(${durationMs}, easing = FastOutSlowInEasing), repeatMode = RepeatMode.Reverse),\n` +
+           `    label = "${label}Alpha"\n` +
+           `)`;
+  }
 }
 
 module.exports = {
@@ -280,6 +345,10 @@ module.exports = {
   generatePressedElevation: MotionGenerator.generatePressedElevation,
   generateAnimatedVisibility: MotionGenerator.generateAnimatedVisibility,
   generateInfiniteTransition: MotionGenerator.generateInfiniteTransition,
+  generateInteractivePressScale: MotionGenerator.generateInteractivePressScale,
+  generateContentSizeAnimation: MotionGenerator.generateContentSizeAnimation,
+  generateKeyframeRotation: MotionGenerator.generateKeyframeRotation,
+  generateKeyframeAlpha: MotionGenerator.generateKeyframeAlpha,
   generateTouchTargetKotlinFile: MotionGenerator.generateTouchTargetKotlinFile,
   generateMotionTokensKotlinFile: MotionGenerator.generateMotionTokensKotlinFile
 };

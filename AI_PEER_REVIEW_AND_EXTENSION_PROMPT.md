@@ -48,6 +48,14 @@ Before you begin your review, be aware of three major root-cause fixes recently 
 3. **Compound Vector Fill Winding & Corner Rounding**:
    - *Problem*: Global `fillType = EVEN_ODD` caused overlapping sub-paths inside icon folds to subtract/XOR out, leaving an accidental "white cube" hole inside solid strokes. Action badge plus signs had mathematically razor-sharp 90° corners.
    - *Fix*: Defaulted solid vector contours to `FillType.WINDING` to union overlapping paths, and introduced `CornerPathEffect` in `drawSvgPath` to soften vertices.
+4. **High-Fidelity Motion, Animation & Dynamic UX Subsystem**:
+   - *Problem*: `dom_walker.js` was immediately returning `null` on `display: none` and `visibility: hidden` nodes, pruning conditional dialogs, drawers, accordions, and sheets. CSS keyframes and transitions were dropped, and tests in `test_f15` asserted against local hardcoded string mocks rather than testing the real synthesizer engine.
+   - *Fix*:
+     - Enhanced `dom_walker.js` to preserve conditional subtrees with `isConditional: true` and `visibility: 'hidden'`, while extracting CSS keyframe animations and `:hover`/`:active`/`[data-state]` pseudo-class deltas into `themeHints`.
+     - Extended `schema.json` and `spec_builder.js` to capture `theme.motion` (durations, easings, keyframes, transitions).
+     - Wired `MotionGenerator` into `screen_generator.js` so `translateNode()` automatically wraps conditional containers and dialogs in `AnimatedVisibility` and binds dimension transitions via `Modifier.animateContentSize(spring(...))`.
+     - Upgraded `PreviewScreenshotTest.kt` with `verifyMultiFrameAnimationProgression()` using `composeTestRule.mainClock.autoAdvance = false` and `mainClock.advanceTimeBy()` to verify multi-frame animation snapshots across VSYNC steps.
+     - Replaced tautological mock tests in `test_f15_motion_animation.js` and `test_b15_motion_boundaries.js` with rigorous assertions against production engine functions.
 
 ---
 

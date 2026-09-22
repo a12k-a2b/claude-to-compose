@@ -99,6 +99,9 @@
               "additionalProperties": { "type": "number" }
             }
           ]
+        },
+        "motion": {
+          "$ref": "#/$defs/MotionTokens"
         }
       }
     },
@@ -208,6 +211,52 @@
         }
       }
     },
+    "MotionTokens": {
+      "type": "object",
+      "properties": {
+        "durations": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "easings": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "keyframes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "keyText": { "type": "string" },
+                    "properties": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "property": { "type": "string" },
+              "durationMs": { "type": "number" },
+              "easing": { "type": "string" },
+              "delayMs": { "type": "number" }
+            }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
     "DesignNode": {
       "type": "object",
       "required": ["id", "layout"],
@@ -217,6 +266,7 @@
         "type": { "type": "string" },
         "name": { "type": "string" },
         "role": { "type": "string" },
+        "isConditional": { "type": "boolean" },
         "componentType": {
           "type": "string",
           "enum": [
@@ -280,7 +330,9 @@
               }
             },
             "position": { "type": "string" },
-            "zIndex": { "type": "integer" }
+            "zIndex": { "type": "integer" },
+            "visibility": { "type": "string" },
+            "isConditional": { "type": "boolean" }
           }
         },
         "style": {
@@ -402,6 +454,27 @@
                   "easing": { "type": "string" },
                   "delayMs": { "type": "number" }
                 }
+              }
+            },
+            "animations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "durationMs": { "type": "number" },
+                  "easing": { "type": "string" },
+                  "delayMs": { "type": "number" },
+                  "iterationCount": { "type": "string" },
+                  "direction": { "type": "string" }
+                }
+              }
+            },
+            "conditional": {
+              "type": "object",
+              "properties": {
+                "stateVar": { "type": "string" },
+                "defaultVisible": { "type": "boolean" }
               }
             }
           }

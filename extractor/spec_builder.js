@@ -90,6 +90,8 @@ class SpecBuilder {
     const radii = new Set();
     const shadows = [];
     const textStyles = [];
+    const transitions = [];
+    const animations = [];
 
     function recordColor(hex, type) {
       if (!hex || hex === 'transparent' || hex === '#00000000') return;
@@ -178,6 +180,13 @@ class SpecBuilder {
         }
       }
 
+      if (node.interactions?.transitions && Array.isArray(node.interactions.transitions)) {
+        transitions.push(...node.interactions.transitions);
+      }
+      if (node.interactions?.animations && Array.isArray(node.interactions.animations)) {
+        animations.push(...node.interactions.animations);
+      }
+
       if (node.children && Array.isArray(node.children)) {
         for (const child of node.children) {
           traverse(child);
@@ -196,7 +205,9 @@ class SpecBuilder {
       spacings,
       radii,
       shadows,
-      themeHints
+      themeHints,
+      transitions,
+      animations
     };
   }
 
@@ -204,7 +215,7 @@ class SpecBuilder {
    * Synthesizes Material 3 theme block
    */
   synthesizeTheme(tokens) {
-    const { colorStats, fontFamilies, textStyles, spacings, radii, shadows, themeHints = {} } = tokens;
+    const { colorStats, fontFamilies, textStyles, spacings, radii, shadows, themeHints = {}, transitions = [], animations = [] } = tokens;
 
     // 1. Primary brand color selection
     let primaryCandidate = null;
@@ -391,7 +402,25 @@ class SpecBuilder {
       },
       spacing: Array.from(spacings).sort((a, b) => a - b),
       radii: radiiScale,
-      elevations
+      elevations,
+      motion: {
+        durations: {
+          short1: 50,
+          short2: 100,
+          medium1: 200,
+          medium2: 250,
+          long1: 300,
+          long2: 400
+        },
+        easings: {
+          standard: 'FastOutSlowInEasing',
+          linear: 'LinearEasing',
+          in: 'FastOutLinearInEasing',
+          out: 'LinearOutSlowInEasing'
+        },
+        keyframes: themeHints.keyframes || [],
+        transitions: transitions.length > 0 ? transitions : []
+      }
     };
   }
 
