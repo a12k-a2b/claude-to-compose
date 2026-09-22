@@ -1,7 +1,7 @@
 {
   "title": "Claude-to-Compose design retrofit v1",
-  "updated_at": "2026-09-22T19:01:01Z",
-  "current_focus": "Phase 5: package, document, independently review, and publish the v1 branch",
+  "updated_at": "2026-09-22T19:31:16Z",
+  "current_focus": "Published v1; ready to select the Note Overlay repository revision and Claude Design pilot states",
   "tasks": [
     {
       "id": "P1-01",
@@ -51,9 +51,12 @@
       "id": "P5-01",
       "phase": "5 — Testable delivery",
       "title": "Package, document, independently review, and publish the v1 branch",
-      "status": "RUNNING",
+      "status": "PASS",
       "acceptance": "A clean-clone user can run doctor, initialize a project, inspect an app, create an agent packet, and exercise the verification fixture using documented commands; dedicated branch is pushed to GitHub",
-      "evidence": []
+      "evidence": [
+        "docs/v1/evidence/P5-01.md",
+        "docs/v1/QUICKSTART.md"
+      ]
     },
     {
       "id": "LATER-01",
@@ -96,6 +99,11 @@
     {
       "at": "2026-09-22T19:01:01Z",
       "accepted": 4,
+      "total": 5
+    },
+    {
+      "at": "2026-09-22T19:31:16Z",
+      "accepted": 5,
       "total": 5
     }
   ]

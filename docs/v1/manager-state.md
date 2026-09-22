@@ -34,7 +34,7 @@ Build and push a first locally testable v1 that helps Codex, Claude Code, or ano
 
 ## Active phase
 
-Phase 5 — package the bounded local CLI, document a clean-clone walkthrough, run the integrated gates, record independent reviews, and publish the dedicated branch.
+Complete — the bounded first testable v1 is published on `codex/design-retrofit-v1`. The next phase is the deferred real Note Overlay pilot after the owner supplies the selected source revision and Claude Design links.
 
 ## Explicit exclusions
 
@@ -55,7 +55,7 @@ Phase 5 — package the bounded local CLI, document a clean-clone walkthrough, r
 
 ## Next action
 
-Add the v1 quickstart and aggregate test command, run the final clean-clone-equivalent packaging and focused verification gates, record the bounded claims and known blockers, commit the integrated candidate, and push `codex/design-retrofit-v1`.
+Select a small Note Overlay state matrix, freeze the exact app revision and design captures, then execute the published workflow against real Android build, behavior, native-render, and comparison evidence. Do not promote synthetic fixture replay into project or DC-1 acceptance.
 
 ## Review log
 
@@ -68,3 +68,4 @@ Add the v1 quickstart and aggregate test command, run the final clean-clone-equi
 - P4-01 revisions 1–2: Sol implemented the production semantic verifier and candidate-worktree binding. Astra and Luna found false-green paths involving forged namespaces, subject provenance, ratio ranges, omitted candidate changes, and blocker linkage; explicit negative controls were added for each. The resulting focused suite passed 26/26, but Astra found one final tracked/untracked source-symlink provenance gap.
 - P4-01 revision 3: Sol added no-follow source-sensitive symlink preflight for both baseline and candidate plus tracked-file and untracked-directory regression controls. The focused suite passed 27/27. Astra independently reran the suite and returned `PASS`; Luna additionally tested ignored broken source links in both baseline and candidate and returned final `PASS`. Manager accepted P4 at `2026-09-22T19:01:01Z`. The acceptance is only for fail-closed semantic evaluation of supplied evidence, not for Android behavior, visual fidelity, DC-1 hardware, or release readiness.
 - P4-01 revision 4: Grok Build found that ignored files beneath source descendants literally named `build` or `.gradle` could be filtered out before the changed-path comparison. Sol changed the filter to use segment order and added ignored Kotlin/asset omission controls beneath both names while retaining generated-root exclusion. Grok, Astra, and Luna each returned targeted `PASS`; the final integrated v1 suite passed 64/64.
+- P5-01: The clean-clone quickstart, aggregate v1 command, package metadata, evidence-containment instructions, and local-first deployment boundary were audited. The final v1 gate passed 64/64, fidelity foundations passed 30/30, doctor and package dry-run passed, and all requested independent reviewers returned PASS. The broader legacy unit suite remained 315/324 because of one sandbox listener restriction and absent historical `output/test_da63` artifacts; those were recorded as blockers, not green. Implementation revision `68b583684f78b1e40d4d076f16c78a93fe0a2c74` was pushed to `codex/design-retrofit-v1`, and P5 was accepted at `2026-09-22T19:31:16Z`.
