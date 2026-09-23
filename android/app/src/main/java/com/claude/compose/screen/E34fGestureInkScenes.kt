@@ -98,13 +98,14 @@ private fun StudyFrame(number: Int, title: String, subtitle: String, introductio
 @Composable
 private fun GestureGrammar(modifier: Modifier) {
     var helpOpen by rememberSaveable { mutableStateOf(true) }
-    var selectedGesture by rememberSaveable { mutableStateOf("Erase") }
+    var selectedGesture by rememberSaveable { mutableStateOf("Correct") }
     val gestures = listOf(
-        Triple("Erase", "Scribble to erase", "Scrub back and forth over a stroke and it rubs out — no eraser, no pause."),
+        Triple("Correct", "Scribble to erase", "Scrub back and forth over a stroke and it rubs out — no eraser, no pause."),
         Triple("Select", "Circle to lasso", "Ring anything and hold a beat — the loop turns into a live selection."),
         Triple("Step", "Two fingers back, three forward", "Tap with the other hand while the pen keeps its place — undo and redo without a pause."),
-        Triple("Snap", "Draw rough, hold to snap", "Sketch a shape in one motion, then hold at the end."),
-        Triple("Tools", "Squeeze for tools", "Reach the tool strip without a trip to the toolbar.")
+        Triple("Snap", "Draw rough, hold to true", "Sketch a shape in one stroke and pause at the end — it snaps to a clean line, arc or polygon."),
+        Triple("Summon", "Squeeze for the dial", "A squeeze on the barrel blooms the tool dial (3c) right at the nib, then it fades on release."),
+        Triple("Flip", "Double-tap for last tool", "Two taps on the barrel flip between pen and your most recent tool — usually the eraser.")
     )
     StudyFrame(1, "Gesture grammar", "The pen does the work, so you rarely reach for the bar.",
         "The calmest chrome is chrome you don't touch. Six gestures cover the everyday moves without a trip to the toolbar — each one a natural mark rather than a memorised command.", modifier) {

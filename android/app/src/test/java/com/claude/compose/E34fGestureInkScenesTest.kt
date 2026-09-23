@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.claude.compose.screen.E34F_GESTURE_INK_REFERENCES
 import com.claude.compose.screen.E34fGestureInkScene
 import org.junit.Assert.assertEquals
@@ -27,9 +28,18 @@ class E34fGestureInkScenesTest {
     fun gestureHelpAndSelectionChangeObservableSyntheticState() {
         rule.setContent { E34fGestureInkScene("g1") }
         rule.onNodeWithContentDescription("Exploration 1 of 6 · Gesture grammar · native study").assertExists()
-        rule.onNodeWithContentDescription("Selected synthetic gesture Erase").assertExists()
+        rule.onNodeWithContentDescription("Selected synthetic gesture Correct").assertExists()
+        listOf("Correct", "Select", "Step", "Snap", "Summon", "Flip").forEach { gesture ->
+            rule.onNodeWithContentDescription("Gesture example $gesture").assertExists()
+        }
+        listOf("Scribble to erase", "Circle to lasso", "Two fingers back, three forward",
+            "Draw rough, hold to true", "Squeeze for the dial", "Double-tap for last tool").forEach { title ->
+            rule.onNodeWithText(title).assertExists()
+        }
         rule.onNodeWithContentDescription("Gesture example Select").performClick().assertIsSelected()
         rule.onNodeWithContentDescription("Selected synthetic gesture Select").assertExists()
+        rule.onNodeWithContentDescription("Gesture example Flip").performScrollTo().performClick().assertIsSelected()
+        rule.onNodeWithContentDescription("Selected synthetic gesture Flip").assertExists()
         rule.onNodeWithText("circle + hold").assertExists()
         rule.onNodeWithContentDescription("Gesture help toggle").performClick()
         rule.onNodeWithText("circle + hold").assertDoesNotExist()
