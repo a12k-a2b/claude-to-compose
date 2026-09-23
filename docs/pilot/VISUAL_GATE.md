@@ -56,3 +56,15 @@ The e34f agent's exploratory MAE values used an upscaled native render against
 `BLOCKED` until source/native image dimensions, density, state, and masks match.
 `node --test tests/unit/pilot_strict_compare.test.js` passes its mismatch,
 ineffective-control, and no-resize negative controls.
+
+Independent Grok Build review found that the first toolbar crop ended at
+`200px`, while the pills extend to about `249px`; it omitted their bottoms.
+Exploratory re-scoring through `248px` produced MAE `4.092` and still fails the
+same 4.0 limit. Splitting the pill bounding rectangles produced left `10.032`,
+center `8.076`, and right `2.855` MAE; the first two fail the provisional 4.0
+limit. These post-hoc regions are diagnostic, **not** pre-registered green
+gates. The magenta negative is too coarse to prove sensitivity to a single
+wrong glyph, and the comparator's caller still supplies the crop and limit.
+It now rejects byte-identical reference/candidate input, closing one trivial
+self-comparison false green, but an authenticated native render receipt and a
+frozen scene/region contract remain required for any future PASS claim.

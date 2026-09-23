@@ -70,6 +70,9 @@ function regionMae(reference, candidate, region) {
 async function compare(options) {
   const reference = await readImage(options.reference);
   const candidate = await readImage(options.candidate);
+  if (reference.sha256 === candidate.sha256) {
+    throw new Error('Reference and native candidate are byte-identical; no independent native render was supplied');
+  }
   if (reference.width !== candidate.width || reference.height !== candidate.height) {
     throw new Error('Reference and native screenshot dimensions differ; align capture geometry, do not resize');
   }

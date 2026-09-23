@@ -6,8 +6,9 @@ const path = require('node:path');
 const sharp = require('sharp');
 const { parseArgs, compare } = require('../../tools/pilot/compare-native-reference');
 
-async function png(file, width, height, color) {
-  await sharp({ create: { width, height, channels: 4, background: color } }).png().toFile(file);
+async function png(file, width, height, color, compressionLevel) {
+  await sharp({ create: { width, height, channels: 4, background: color } })
+    .png(compressionLevel === undefined ? {} : { compressionLevel }).toFile(file);
 }
 
 test('strict comparison requires a deliberate negative for every named region', () => {
@@ -35,12 +36,13 @@ test('strict comparison fails visible mismatch, blocks ineffective controls, and
     const deliberatelyBad = path.join(directory, 'bad.png');
     const wrongSize = path.join(directory, 'wrong-size.png');
     await Promise.all([
-      png(reference, 8, 8, '#ffffff'), png(exact, 8, 8, '#ffffff'),
+      png(reference, 8, 8, '#ffffff'), png(exact, 8, 8, '#ffffff', 0),
       png(mismatched, 8, 8, '#dddddd'), png(deliberatelyBad, 8, 8, '#ff00ff'),
       png(wrongSize, 7, 8, '#ffffff')
     ]);
     const regions = [{ id: 'toolbar', x: 0, y: 0, width: 8, height: 8, maxMae: 1 }];
     const base = { reference, regions, negatives: { toolbar: deliberatelyBad } };
+    await assert.rejects(() => compare({ ...base, candidate: reference }), /byte-identical/);
     const pass = await compare({ ...base, candidate: exact });
     assert.equal(pass.outcome, 'PASS');
     assert.equal(pass.regions[0].candidateMae, 0);
