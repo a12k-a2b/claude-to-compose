@@ -30,6 +30,6 @@ The launcher has two tabs:
 For the exact source references and current mismatch evidence, see
 `REFERENCE_CAPTURE_EVIDENCE.md`, `SCENE_MATRIX.md`, and `VISUAL_GATE.md`.
 The source-to-agent handoff packet at
-`/Users/anjan/Documents/SolOS/note-overlay-retrofit-pilot/gallery-packet-v2/`
+`/Users/anjan/Documents/SolOS/note-overlay-retrofit-pilot/gallery-packet-v3/`
 is local evidence and not bundled with the APK. Its native/UX gates are
 `BLOCKED`; a working menu or passing unit tests do not establish visual parity.

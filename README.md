@@ -16,6 +16,24 @@ Claude Design → Jetpack Compose pipeline: device reference + verification comp
 
 > A local, agent-assisted design-retrofit workbench for making an existing Android app look like captured Claude Design evidence without silently replacing the app's behavior. Visual and behavioral fidelity are measured outcomes, not implied by unit-test counts; missing build, render, geometry, or diff evidence is reported as `BLOCKED`.
 
+## Note Overlay native proof (in progress)
+
+The `codex/design-gallery-proof` branch contains a **separate synthetic-data
+Android gallery** for the two owner-supplied Claude Design artifacts. It is not
+a restyled Note Overlay build. The floating-toolbar prototype and four docked
+toolbar variants are functional; the other e34f directions are inventoried in
+the gallery and visibly marked `BLOCKED`. Both references have verified static
+captures at portrait and landscape 4:3 outer viewports. A deterministic
+source-to-agent packet identifies the real Java overlay seam, but does not
+generate Compose code or prove fidelity by itself.
+
+The current exact-size da63 toolbar comparison is **FAIL** (5.651 MAE against a
+provisional 4.0 pilot limit); an intentionally wrong toolbar scores 54.141.
+Passing Android/unit tests and the legacy 100% fixture badges do not change
+that outcome. Motion, full UX coverage, real-app integration, and DC-1 device
+checks remain `BLOCKED`. See [how to try the gallery](docs/pilot/TEST_GALLERY.md),
+the [source inventory](docs/pilot/SCENE_MATRIX.md), and [visual evidence](docs/pilot/VISUAL_GATE.md).
+
 ## Design retrofit v1
 
 The first testable v1 adds a fail-closed path intended for Codex, Claude Code, or another coding agent:
@@ -26,7 +44,7 @@ The first testable v1 adds a fail-closed path intended for Codex, Claude Code, o
 4. implement only in a separate Git worktree; and
 5. verify hash-pinned build, behavior, render, comparison, and provenance evidence as `PASS`, `FAIL`, or `BLOCKED`.
 
-This is deliberately not advertised as a universal one-click web-to-Compose compiler. The existing extractor and synthesizer remain useful experimental lower layers, but a generated screen or green schema test is not accepted as fidelity evidence. Fixture replay proves the verifier, not a real app. A real Note Overlay pilot still needs the selected app repository/revision and Claude Design links.
+This is deliberately not advertised as a universal one-click web-to-Compose compiler. The existing extractor and synthesizer remain useful experimental lower layers, but a generated screen or green schema test is not accepted as fidelity evidence. Fixture replay proves the verifier, not a real app. The Note Overlay repository and two Claude Design links are now known; the owner has not selected a final direction, and no production graft is authorized before gallery validation.
 
 ```bash
 git clone --branch codex/design-retrofit-v1 https://github.com/a12k-a2b/claude-to-compose.git
