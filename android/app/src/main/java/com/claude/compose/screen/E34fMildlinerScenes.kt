@@ -1,7 +1,6 @@
 package com.claude.compose.screen
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -221,18 +224,30 @@ fun E34fMildlinerScenes(sceneId: String, figureIndex: Int = 1, modifier: Modifie
 }
 
 @Composable private fun JumpFlash(fg: Color, night: Boolean, message: String, setMessage: (String) -> Unit) {
-    var jumped by rememberSaveable { mutableStateOf(false) }
-    val amount by animateFloatAsState(if (jumped) 1f else 0f, tween(600), label = "synthetic-jump")
-    val wash by animateColorAsState(if (jumped) ML_AMBER.copy(alpha = .22f) else Color.Transparent, tween(600), label = "synthetic-jump-wash")
+    var pulseSequence by rememberSaveable { mutableIntStateOf(0) }
+    var pulseActive by rememberSaveable { mutableStateOf(false) }
+    val amount = remember { Animatable(0f) }
+    LaunchedEffect(pulseSequence) {
+        if (pulseSequence > 0) {
+            pulseActive = true
+            repeat(2) {
+                amount.animateTo(.34f, tween(300))
+                amount.animateTo(0f, tween(300))
+            }
+            pulseActive = false
+        }
+    }
+    fun pulse() { pulseSequence += 1; setMessage("Synthetic pulse started · source timing and scrolling remain BLOCKED") }
+    val wash = ML_AMBER.copy(alpha = amount.value * .22f)
     Card(night) {
         Text("A single mature plane can intercept thousands of litres of stormwater a year, water the drains no longer have to carry, and a pilot block dropped four degrees against its neighbours last July.",
             color = fg, fontFamily = AbcArizonaFlare, fontSize = 23.sp)
-        Surface(color = wash, shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, ML_AMBER.copy(alpha = amount)),
-            modifier = Modifier.padding(top = 20.dp).fillMaxWidth().clickable { jumped = !jumped; setMessage(if (jumped) "Synthetic highlight pulse started · page scrolling is not connected" else "Flash reset") }
-            .semantics { contentDescription = if (jumped) "Jump flash active" else "Jump flash inactive" }) {
+        Surface(color = wash, shape = RoundedCornerShape(8.dp), border = BorderStroke(1.dp, ML_AMBER.copy(alpha = amount.value)),
+            modifier = Modifier.padding(top = 20.dp).fillMaxWidth().clickable { pulse() }
+            .semantics { contentDescription = if (pulseActive) "Jump flash active" else "Jump flash inactive" }) {
             Text("four degrees against its neighbours", Modifier.padding(12.dp), color = fg, fontFamily = AbcArizonaSans)
         }
-        ClickText("Pulse highlight", fg) { jumped = true; setMessage("Synthetic highlight pulsed · page scrolling is not connected") }
+        ClickText("Pulse highlight", fg) { pulse() }
     }
 }
 
@@ -254,18 +269,41 @@ fun E34fMildlinerScenes(sceneId: String, figureIndex: Int = 1, modifier: Modifie
 @Composable private fun PopupCards(fg: Color, night: Boolean, message: String, setMessage: (String) -> Unit) {
     var size by rememberSaveable { mutableIntStateOf(3) }
     var shade by rememberSaveable { mutableIntStateOf(0) }
+    var glass by rememberSaveable { mutableIntStateOf(79) }
+    var peek by rememberSaveable { mutableStateOf(false) }
+    var snapshots by rememberSaveable { mutableIntStateOf(0) }
     Card(night) {
         Text("Pen", color = fg, fontFamily = AbcArizonaSans, fontSize = 22.sp)
         Text("SIZE", color = ML_MUTED, fontFamily = AbcRomMono, modifier = Modifier.padding(top = 12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(13.dp), modifier = Modifier.padding(vertical = 12.dp)) {
-            (1..5).forEach { n -> ClickText(if (n == size) "●" else "•", fg) { size = n; setMessage("Pen size $n selected") } }
+            (1..5).forEach { n -> PopupChoice("Pen size $n", size == n, fg, if (size == n) ML_AMBER else fg.copy(alpha = .55f)) {
+                size = n; setMessage("Synthetic pen size $n selected")
+            } }
         }
         Text("SHADE", color = ML_MUTED, fontFamily = AbcRomMono)
         Row(horizontalArrangement = Arrangement.spacedBy(13.dp), modifier = Modifier.padding(top = 10.dp)) {
-            (0..2).forEach { n -> ClickText(if (n == shade) "●" else "○", fg) { shade = n; setMessage("Pen shade ${n + 1} selected") } }
+            val shades = listOf(Color(0xFF111111), Color(0xFF666666), Color(0xFFAAAAAA))
+            shades.forEachIndexed { n, color -> PopupChoice("Pen shade ${n + 1}", shade == n, fg, color) {
+                shade = n; setMessage("Synthetic pen shade ${n + 1} selected")
+            } }
         }
-        Text("Glass 79%", color = fg, fontFamily = AbcArizonaSans, modifier = Modifier.padding(top = 14.dp))
-        Text("Pick snips · Peek below · Snap PNG", color = fg, fontFamily = AbcArizonaSans, modifier = Modifier.padding(top = 12.dp))
+        Row(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            InlineAction("Glass $glass%", fg) { glass = when (glass) { 79 -> 0; 0 -> 100; else -> 79 }; setMessage("Synthetic glass opacity $glass percent") }
+            InlineAction(if (peek) "Hide below" else "Peek below", fg) { peek = !peek; setMessage(if (peek) "Synthetic page peek shown" else "Synthetic page peek hidden") }
+            InlineAction("Snap PNG", fg) { snapshots += 1; setMessage("Synthetic capture $snapshots · no image file written") }
+        }
+        Text("Underlying page ${when { peek -> "peeked through"; glass == 0 -> "fully clear"; glass == 100 -> "covered by opaque paper"; else -> "visible through $glass% glass" }}",
+            Modifier.padding(top = 9.dp).semantics { contentDescription = "Synthetic underlying page state" }, color = fg, fontFamily = AbcArizonaSans)
+        if (snapshots > 0) Text("Synthetic capture $snapshots · no image file written", color = ML_MUTED, fontFamily = AbcRomMono,
+            modifier = Modifier.semantics { contentDescription = "Synthetic capture count $snapshots; no file written" })
+    }
+}
+
+@Composable private fun PopupChoice(id: String, active: Boolean, foreground: Color, fill: Color, onClick: () -> Unit) {
+    Box(Modifier.size(44.dp).clip(CircleShape).border(if (active) 2.dp else 1.dp, if (active) ML_AMBER else foreground.copy(alpha = .4f), CircleShape)
+        .clickable(onClick = onClick).semantics { contentDescription = id; selected = active }, contentAlignment = Alignment.Center) {
+        Box(Modifier.size(18.dp).clip(CircleShape).background(fill))
+        if (active) Text("✓", color = if (fill.luminance() < .5f) Color.White else ML_INK, fontSize = 10.sp)
     }
 }
 

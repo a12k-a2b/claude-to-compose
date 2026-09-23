@@ -90,8 +90,7 @@ class E34fMildlinerScenesTest {
         var figure by mutableIntStateOf(1)
         rule.setContent { E34fMildlinerScenes(scene, figureIndex = figure) }
         rule.onNodeWithText("Pulse highlight").performClick()
-        rule.onNodeWithContentDescription("Jump flash active").assertExists()
-        rule.onNodeWithContentDescription("Synthetic feedback: Synthetic highlight pulsed · page scrolling is not connected").assertExists()
+        rule.onNodeWithContentDescription("Synthetic feedback: Synthetic pulse started · source timing and scrolling remain BLOCKED").assertExists()
         figure = 2
         rule.waitForIdle()
         rule.onNodeWithText("Night").assertExists()
@@ -100,6 +99,49 @@ class E34fMildlinerScenesTest {
         rule.waitForIdle()
         rule.onNodeWithText("Next").performClick()
         rule.onNodeWithText("The calm resin is on · Tune how it writes", substring = true).assertExists()
+    }
+
+    @Test @Config(sdk = [34], qualifiers = "w820dp-h740dp-mdpi")
+    fun popupEveryChoiceHasARealHitTargetAndSelectedSemantics() {
+        rule.setContent { E34fMildlinerScenes("cards") }
+        (1..5).forEach { size ->
+            val choice = rule.onNodeWithContentDescription("Pen size $size")
+            val bounds = choice.fetchSemanticsNode().boundsInRoot
+            assertTrue("Pen size $size must have a visible 44dp hit target, bounds=$bounds", bounds.width >= 44f && bounds.height >= 44f)
+            choice.performClick().assertIsSelected()
+        }
+        (1..3).forEach { shade ->
+            val choice = rule.onNodeWithContentDescription("Pen shade $shade")
+            val bounds = choice.fetchSemanticsNode().boundsInRoot
+            assertTrue("Pen shade $shade must have a visible 44dp hit target, bounds=$bounds", bounds.width >= 44f && bounds.height >= 44f)
+            choice.performClick().assertIsSelected()
+        }
+    }
+
+    @Test @Config(sdk = [34], qualifiers = "w820dp-h740dp-mdpi")
+    fun popupGlassPeekAndSnapHaveExplicitSyntheticOutcomes() {
+        rule.setContent { E34fMildlinerScenes("cards") }
+        rule.onNodeWithContentDescription("Glass 79%").performClick()
+        rule.onNodeWithText("Underlying page fully clear").assertExists()
+        rule.onNodeWithContentDescription("Glass 0%").performClick()
+        rule.onNodeWithText("Underlying page covered by opaque paper").assertExists()
+        rule.onNodeWithContentDescription("Peek below").performClick()
+        rule.onNodeWithText("Underlying page peeked through").assertExists()
+        rule.onNodeWithContentDescription("Snap PNG").performClick()
+        rule.onNodeWithContentDescription("Synthetic capture count 1; no file written").assertExists()
+    }
+
+    @Test @Config(sdk = [34], qualifiers = "w820dp-h740dp-mdpi")
+    fun syntheticHighlightPulseReturnsToInactiveOnComposeClock() {
+        rule.mainClock.autoAdvance = false
+        rule.setContent { E34fMildlinerScenes("m4") }
+        rule.onNodeWithText("Pulse highlight").performClick()
+        rule.mainClock.advanceTimeBy(1L)
+        rule.onNodeWithContentDescription("Jump flash active").assertExists()
+        rule.onNodeWithContentDescription("Synthetic feedback: Synthetic pulse started · source timing and scrolling remain BLOCKED").assertExists()
+        rule.mainClock.advanceTimeBy(1_500L)
+        rule.waitForIdle()
+        rule.onNodeWithContentDescription("Jump flash inactive").assertExists()
     }
 
     @Test fun allTenSceneSnapshotsArePinnedToVerifiedSourceCaptureHashes() {
