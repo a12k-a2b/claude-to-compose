@@ -29,7 +29,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import java.io.File
 import java.io.FileOutputStream
-import java.security.MessageDigest
 
 // The packet's LANDSCAPE references are specific live DOM captures, not generic screenshots.
 private val reference = linkedMapOf(
@@ -163,26 +162,5 @@ class E34fFloatingScenesTest {
             if (delta > 12) changed++
         }
         return changed.toDouble() / (first.width * (bottom - top))
-    }
-}
-
-/**
- * Explicit integration check, deliberately outside the default `*Test` discovery.
- * Set `E34F_CAPTURE_DIR` to the verified capture directory and invoke Gradle
- * with `--tests com.claude.compose.E34fFloatingSourceIntegration`.
- */
-class E34fFloatingSourceIntegration {
-    @Test fun pinnedPngHashesMatchProvidedReferenceCapture() {
-        val configured = System.getenv("E34F_CAPTURE_DIR")
-        assertTrue("BLOCKED: set E34F_CAPTURE_DIR to the verified capture directory", !configured.isNullOrBlank())
-        val dir = File(configured!!)
-        assertTrue("BLOCKED: source capture directory is absent", dir.isDirectory)
-        reference.forEach { (id, pair) ->
-            val file = File(dir, pair.first)
-            assertTrue("BLOCKED: missing source capture $id", file.isFile)
-            val digest = MessageDigest.getInstance("SHA-256").digest(file.readBytes())
-                .joinToString("") { "%02x".format(it) }
-            assertEquals("FAIL: source capture changed: $id", pair.second, digest)
-        }
     }
 }

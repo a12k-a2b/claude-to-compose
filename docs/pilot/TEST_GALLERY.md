@@ -11,25 +11,33 @@ From `android/`, run:
 ./gradlew :app:assembleDebug :app:testDebugUnitTest --offline --no-daemon
 ```
 
-The debug APK is at `android/app/build/outputs/apk/debug/app-debug.apk`. The
-local checkpoint built at `b9050c1` has SHA-256
-`f1c7bef9ac20b605d1ccec07fbe289fd945d7a97cc1c0dfec3f1a195e1c2caef`;
-a fresh build may have a different hash. You can install that APK on an Android
-emulator or a device you choose using normal Android tooling. No device install
-or DC-1 hardware check has been performed by this project gate.
+The `--offline` flag matches the verified local build; omit it on a fresh
+machine that must download Gradle dependencies. Run from the gallery branch,
+not the production Note Overlay repository.
+
+The debug APK is at `android/app/build/outputs/apk/debug/app-debug.apk`. Verify
+the exact APK you build with `shasum -a 256` before comparing results; an older
+checkpoint hash is not evidence for newer scenes. You can install that APK on
+an Android emulator or a device you choose using normal Android tooling. No
+device install or DC-1 hardware check has been performed by this project gate.
 
 The launcher has two tabs:
 
 - **Floating overlay**: da63, with a synthetic article. Tap tools, document,
   opacity, history, and menu to inspect native state changes.
 - **Exploration gallery**: all e34f source section/figure IDs are navigable.
-  Only `6a`–`6d` currently render native docked-band variants. An explicit
-  `BLOCKED` label means the item is inventoried but not implemented; do not
-  mistake it for a replica.
+  Native studies cover 31 of 35 sections, including every figure-bearing
+  section and the docked, frosted, floating, rotation, journey, gesture/ink,
+  and mildliner families. The four editorial parent sections (`6`, `4`,
+  `explore`, `mild`) carry an explicit `BLOCKED` label. A selectable native
+  study is not a pixel-parity claim; compare it with its pinned web reference
+  before judging fidelity.
+  Scroll the scene-ID strip horizontally to reach later entries; figure buttons
+  appear beneath it when a section has multiple captured variants.
 
 For the exact source references and current mismatch evidence, see
 `REFERENCE_CAPTURE_EVIDENCE.md`, `SCENE_MATRIX.md`, and `VISUAL_GATE.md`.
 The source-to-agent handoff packet at
-`/Users/anjan/Documents/SolOS/note-overlay-retrofit-pilot/gallery-packet-v3/`
+`/Users/anjan/Documents/SolOS/note-overlay-retrofit-pilot/gallery-packet-v4/`
 is local evidence and not bundled with the APK. Its native/UX gates are
 `BLOCKED`; a working menu or passing unit tests do not establish visual parity.

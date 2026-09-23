@@ -11,7 +11,7 @@ substitute for a chrome-region comparison.
 Current da63 landscape reference is the pinned `1200×900` outer viewport's
 `2400×1720` iframe capture, SHA-256
 `d2cf631229ff97d63e459823b5788b231851a8cc618aa2445fb4339545a45977`.
-The native candidate is the same dimensions, SHA-256
+The first measured native candidate had the same dimensions, SHA-256
 `2b90b442f932c08e0ab44e613b050e5d31a227da9829f15147843536fb837e57`.
 The deliberately magenta toolbar negative has SHA-256
 `63d4ccfde019d53b1834cf4eac27f9a87299b9db486b487dc2663da76c9dd531`.
@@ -56,6 +56,20 @@ The e34f agent's exploratory MAE values used an upscaled native render against
 `BLOCKED` until source/native image dimensions, density, state, and masks match.
 `node --test tests/unit/pilot_strict_compare.test.js` passes its mismatch,
 ineffective-control, and no-resize negative controls.
+
+A packet-driven left-document-pill repair at `a1f17cc` rendered a fresh native
+candidate, SHA-256
+`5a3c3d9b1b66d1e9e0e30b8d5a3c93180b44a05db627dfc463d81df598995c23`.
+The **same registered** landscape top-band region improved `4.751655` →
+`4.040023` MAE but still **FAILS** the provisional `4.0` limit. Its deliberately
+wrong toolbar scored `52.566824`. The post-hoc left-pill diagnostic improved
+`10.258207` → `6.148098` MAE; the center and right pills and article region
+did not improve. The strict report is at
+`android/app/build/da63-gallery-evidence/repair-packet-v1-strict-report.json`.
+This is evidence that the packet helped a targeted repair, not evidence that
+the tool can synthesize other scenes or that the finished UI matches the
+source. The registered crop still cuts off pill bottoms and lacks a sensitive
+single-glyph control.
 
 Independent Grok Build review found that the first toolbar crop ended at
 `200px`, while the pills extend to about `249px`; it omitted their bottoms.

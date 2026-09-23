@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import com.claude.compose.screen.E34F_SCENES
 import com.claude.compose.screen.E34fBandScene
 import com.claude.compose.screen.E34fGalleryScreen
@@ -39,19 +40,31 @@ class E34fGalleryTest {
         assertEquals(35, E34F_SCENES.size)
         assertEquals(33, E34F_SCENES.sumOf { it.figures })
         assertEquals(35, E34F_SCENES.map { it.id }.toSet().size)
-        assertEquals(setOf("6a", "6b", "6c", "6d"), E34F_SCENES.filter { it.implemented }.map { it.id }.toSet())
+        assertEquals(setOf("6a", "6b", "6c", "6d", "1a", "1b", "tb", "2a",
+            "3a", "3b", "3c", "4a", "4b", "4c", "5", "g1", "g2", "g3", "g4", "g5", "g6",
+            "m0", "m1", "m2", "m3", "m4", "presets", "cards", "snip", "small", "onboard"),
+            E34F_SCENES.filter { it.implemented }.map { it.id }.toSet())
     }
 
     @Test @Config(sdk = [34], qualifiers = "w820dp-h740dp-mdpi")
-    fun navigationShowsImplementedBandAndBlockedOtherScene() {
+    fun navigationShowsNativeVariantsAndBlockedOtherScene() {
         rule.setContent { E34fGalleryScreen() }
         rule.onNodeWithContentDescription("6a toolbar band").assertExists()
         rule.onNodeWithContentDescription("Scene 6d: Bold — the ledger band").performClick()
         rule.onNodeWithContentDescription("6d toolbar band").assertExists()
         rule.onNodeWithContentDescription("Scene 1a: Day — the glass over three worlds").performClick()
-        rule.onNodeWithContentDescription("Scene 1a blocked").assertExists()
+        rule.onNodeWithContentDescription("Glass surface 42 percent").assertExists()
         rule.onNodeWithContentDescription("Figure 3 of 3").performClick().assertIsSelected()
-        rule.onNodeWithText("Source figure 3 of 3 is inventoried only.").assertExists()
+        rule.onNodeWithContentDescription("Glass surface 100 percent").assertExists()
+        rule.onNodeWithContentDescription("Scene 5: Does it survive a rotate?").performClick()
+        rule.onNodeWithContentDescription("5/figure-1 native synthetic portrait device; compact layout").assertExists()
+        rule.onNodeWithContentDescription("Scene m1: Both in the bar, over two worlds").performScrollTo().performClick().assertIsSelected()
+        rule.onNodeWithText("Both in the bar, over two worlds").assertExists()
+        rule.onNodeWithContentDescription("Synthetic highlights count 4").assertExists()
+        rule.onNodeWithContentDescription("Scene g1: Gesture grammar").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("Exploration 1 of 6 · Gesture grammar · native study").assertExists()
+        rule.onNodeWithContentDescription("Scene 6: A toolbar with its own chrome").performScrollTo().performClick()
+        rule.onNodeWithContentDescription("Scene 6 blocked").assertExists()
     }
 
     @Test @Config(sdk = [34], qualifiers = "w820dp-h740dp-mdpi")

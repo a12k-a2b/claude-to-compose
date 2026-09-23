@@ -13,13 +13,12 @@ must identify the corresponding owner-supplied Claude artifact URL. Their
 local files must be regular, and referenced vector/font assets cannot escape
 the spec directory. Duplicate, wrong-source, or unsafe specs fail closed.
 
-The
-ExistingAppModel must identify `PadChrome`, `PadService`, and `GlassPadView` as
-UI/host symbols (filename presence alone is insufficient). The packet retains exact section/figure IDs,
-source control labels, source text identity, per-scene screenshot SHA-256,
-capture geometry, viewports, and local screenshot paths. The app seam is marked
-high uncertainty because the model is lexical evidence, not a runtime call
-graph.
+The ExistingAppModel must identify `PadChrome`, `PadService`, and
+`GlassPadView` as UI/host symbols (filename presence alone is insufficient).
+The packet retains exact section/figure IDs, source control labels, source
+text identity, per-scene screenshot SHA-256, capture geometry, viewports, and
+local screenshot paths. The app seam is marked high uncertainty because the
+model is lexical evidence, not a runtime call graph.
 
 Example:
 
@@ -51,6 +50,13 @@ source-text or rendered-pixel hash tying them to the capture manifests, so the
 packet marks the spec-to-capture revision match `UNVERIFIED`. A future capture
 should record a shared source and style identity before treating these as one
 locked reference.
+
+A coding-agent probe on e34f `g1`/`g3` found another limit: the packet has
+their IDs, headings, capture geometry/hashes, and style summaries, but its
+control arrays are empty and it does not contain full per-node section text or
+layout. The agent still needed the pinned PNGs, capture manifest, a narrow
+design-spec excerpt, and nearby Compose conventions to author those studies.
+That is source-grounded manual implementation, not packet-to-code synthesis.
 
 All native fidelity, interaction coverage, motion, accessibility/input, and
 production integration gates are emitted as `BLOCKED`. Source controls are

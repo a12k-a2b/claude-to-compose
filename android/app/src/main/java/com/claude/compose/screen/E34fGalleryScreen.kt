@@ -66,7 +66,11 @@ import com.claude.compose.theme.AbcRomMono
 
 /** IDs and figure counts are frozen from the e34f live-DOM capture inventory. */
 data class E34fScene(val id: String, val title: String, val figures: Int = 0) {
-    val implemented: Boolean get() = id in setOf("6a", "6b", "6c", "6d")
+    val implemented: Boolean get() = id in setOf(
+        "6a", "6b", "6c", "6d", "1a", "1b", "tb", "2a",
+        "3a", "3b", "3c", "4a", "4b", "4c", "5", "g1", "g2", "g3", "g4", "g5", "g6",
+        "m0", "m1", "m2", "m3", "m4", "presets", "cards", "snip", "small", "onboard"
+    )
 }
 
 val E34F_SCENES = listOf(
@@ -148,16 +152,24 @@ fun E34fGalleryScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-        if (current.implemented) {
-            E34fBandScene(current.id, Modifier.weight(1f))
-        } else {
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) {
-                Text("${current.id} · ${current.title}", fontFamily = AbcArizonaFlare, fontSize = 30.sp, color = ink)
-                Text("BLOCKED · Native scene and behavior have not been implemented.",
-                    Modifier.padding(top = 18.dp).semantics { contentDescription = "Scene ${current.id} blocked" },
-                    fontFamily = AbcArizonaSans, fontSize = 17.sp, color = Color(0xFF8A3A2C))
-                if (current.figures > 0) Text("Source figure $currentFigure of ${current.figures} is inventoried only.",
-                    Modifier.padding(top = 8.dp), fontFamily = AbcRomMono, fontSize = 13.sp)
+        when (current.id) {
+            "6a", "6b", "6c", "6d" -> E34fBandScene(current.id, Modifier.weight(1f))
+            "1a", "1b", "tb", "2a" -> E34fGlassScene(current.id, currentFigure, Modifier.weight(1f))
+            "3a", "3b", "3c", "4a", "4b", "4c" -> E34fFloatingScene(current.id, currentFigure, Modifier.weight(1f))
+            "5" -> E34fRotationScene(currentFigure, Modifier.weight(1f))
+            "g2", "g4", "g5", "g6" -> E34fJourneyScenes(current.id, Modifier.weight(1f), figureIndex = currentFigure)
+            "g1", "g3" -> E34fGestureInkScene(current.id, Modifier.weight(1f))
+            "m0", "m1", "m2", "m3", "m4", "presets", "cards", "snip", "small", "onboard" ->
+                E34fMildlinerScenes(current.id, currentFigure, Modifier.weight(1f))
+            else -> {
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp)) {
+                    Text("${current.id} · ${current.title}", fontFamily = AbcArizonaFlare, fontSize = 30.sp, color = ink)
+                    Text("BLOCKED · Native scene and behavior have not been implemented.",
+                        Modifier.padding(top = 18.dp).semantics { contentDescription = "Scene ${current.id} blocked" },
+                        fontFamily = AbcArizonaSans, fontSize = 17.sp, color = Color(0xFF8A3A2C))
+                    if (current.figures > 0) Text("Source figure $currentFigure of ${current.figures} is inventoried only.",
+                        Modifier.padding(top = 8.dp), fontFamily = AbcRomMono, fontSize = 13.sp)
+                }
             }
         }
     }

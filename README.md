@@ -20,15 +20,18 @@ Claude Design → Jetpack Compose pipeline: device reference + verification comp
 
 The `codex/design-gallery-proof` branch contains a **separate synthetic-data
 Android gallery** for the two owner-supplied Claude Design artifacts. It is not
-a restyled Note Overlay build. The floating-toolbar prototype and four docked
-toolbar variants are functional; the other e34f directions are inventoried in
-the gallery and visibly marked `BLOCKED`. Both references have verified static
-captures at portrait and landscape 4:3 outer viewports. A deterministic
-source-to-agent packet identifies the real Java overlay seam, but does not
-generate Compose code or prove fidelity by itself.
+a restyled Note Overlay build. Native Compose studies cover the floating
+overlay and multiple e34f toolbar, glass, floating, rotation, interaction,
+and mildliner directions. Each gallery entry is either a navigable native
+study or visibly marked `BLOCKED`; these are not yet exact replicas. Both
+references have verified static captures at portrait and landscape 4:3 outer
+viewports. A deterministic source-to-agent packet identifies the real Java
+overlay seam and supplies style/vector evidence, but does not generate Compose
+code or prove fidelity by itself.
 
-The current exact-size da63 toolbar comparison is **FAIL** (5.651 MAE against a
-provisional 4.0 pilot limit); an intentionally wrong toolbar scores 54.141.
+The latest measured exact-size da63 toolbar comparison is **FAIL** (4.040 MAE
+against a provisional 4.0 pilot limit); an intentionally wrong toolbar scores
+52.567. This is a narrow top-band comparison, not a full-screen match.
 Passing Android/unit tests and the legacy 100% fixture badges do not change
 that outcome. Motion, full UX coverage, real-app integration, and DC-1 device
 checks remain `BLOCKED`. See [how to try the gallery](docs/pilot/TEST_GALLERY.md),
@@ -55,6 +58,12 @@ node bin/ctc.js doctor --json
 ```
 
 See [the v1 quickstart](docs/v1/QUICKSTART.md), [the frozen artifact contract](docs/v1/V1_CONTRACT.md), and [the end-to-end project plan](docs/END_TO_END_PROJECT_PLAN.md). The v1 is local-first and does not require Railway or any hosted service.
+
+The material below describes the original experimental pipeline and its
+intended capabilities. In particular, its “pixel-perfect,” “production-ready,”
+and pass-percentage language is **not** evidence that the supplied Claude
+Design artifacts match native renders or that Note Overlay has been restyled.
+Use the pilot evidence and fail-closed v1 reports for current acceptance.
 
 ---
 
@@ -84,7 +93,8 @@ See [the v1 quickstart](docs/v1/QUICKSTART.md), [the frozen artifact contract](d
 
 Translating rich web designs into idiomatic, maintainable Android Jetpack Compose code requires more than naive AST or string replacement. Modern web artifacts rely on complex CSS layout trees (flexbox, CSS grid), computed dynamic colors, nested vector graphics, web hover/focus interaction states, and dynamic hydration.
 
-`claude-to-compose` solves this by introducing a **5-stage transformation and verification pipeline**:
+The original `claude-to-compose` prototype approaches this with a **5-stage
+experimental transformation and verification pipeline**:
 
 ```
 +─────────────────────────────────────────────────────────────────────────────+

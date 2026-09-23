@@ -55,8 +55,8 @@ found under each section and its image hash.
    coordinate transform, writer lease, save guard, and real-note isolation.
    Only a separately identified `codex/` design branch may host that trial.
 
-The current extractor can capture the references, but its v1 app inspector
-missed Note Overlay's `PadChrome`/`PadService` UI seam. That is a tool defect
-to address before generating a production retrofit contract. Neither the
-existing 100%-passing synthetic suite nor the gallery's opening screen is a
-substitute for these acceptance rules.
+The v1 app inspector now emits lexical candidates for Note Overlay's Java
+`PadChrome`, `PadService`, and `GlassPadView` seam. Runtime reachability and
+native graft safety are still unverified. Neither the existing 100%-passing
+synthetic suite nor the gallery's opening screen is a substitute for these
+acceptance rules.

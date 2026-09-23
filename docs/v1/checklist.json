@@ -1,7 +1,7 @@
 {
   "title": "Claude-to-Compose design retrofit and native proof gallery",
-  "updated_at": "2026-09-23T07:33:46Z",
-  "current_focus": "Improve visual fidelity and prove a repeatable packet-to-native repair loop; the production Note Overlay graft remains gated",
+  "updated_at": "2026-09-23T08:36:45Z",
+  "current_focus": "Finish and test the synthetic gallery handoff; improve visual fidelity and packet-to-native repeatability before any production Note Overlay graft",
   "tasks": [
     {
       "id": "P1-01",
@@ -100,7 +100,10 @@
       "title": "Replicate the e34f toolbar directions and theme variants",
       "status": "RUNNING",
       "acceptance": "Every distinct toolbar direction and day/night/high-contrast variant in the source matrix has a native selectable proof state and matching reference context",
-      "evidence": []
+      "evidence": [
+        "android/app/src/main/java/com/claude/compose/screen/E34fGalleryScreen.kt",
+        "docs/pilot/SCENE_MATRIX.md"
+      ]
     },
     {
       "id": "P7-03",
@@ -108,7 +111,10 @@
       "title": "Replicate the e34f beyond-the-bar interactions and supporting chrome",
       "status": "RUNNING",
       "acceptance": "Gesture, glass, ink, selection, page, first-stroke, mildliner, preset, popup, snip, small-control, and onboarding examples have native inspectable states; unsupported behavior is explicit",
-      "evidence": []
+      "evidence": [
+        "android/app/src/main/java/com/claude/compose/screen/E34fGestureInkScenes.kt",
+        "android/app/src/main/java/com/claude/compose/screen/E34fMildlinerScenes.kt"
+      ]
     },
     {
       "id": "P8-01",
@@ -116,15 +122,22 @@
       "title": "Compare native renders and interactions against pinned Claude references",
       "status": "RUNNING",
       "acceptance": "Exact APK, viewport, state, render, interaction, and visual-difference evidence are tied together; negative controls fail; no source-only or test-count-only green claim",
-      "evidence": []
+      "evidence": [
+        "docs/pilot/VISUAL_GATE.md",
+        "tests/unit/pilot_strict_compare.test.js"
+      ]
     },
     {
       "id": "P8-02",
       "phase": "8 — Evidence-based validation",
       "title": "Prove the source packet improves a repeatable coding-agent design handoff",
-      "status": "PENDING",
+      "status": "RUNNING",
       "acceptance": "A fresh agent implements one frozen scene primarily from the emitted packet; source and output hashes, extra context used, repair iterations, and same-size visual results are retained; a controlled second scene or design change reuses the loop without bespoke test code",
-      "evidence": []
+      "evidence": [
+        "docs/pilot/GALLERY_PACKET.md",
+        "docs/pilot/VISUAL_GATE.md",
+        "tools/pilot/build-visual-repair-packet.js"
+      ]
     },
     {
       "id": "P9-01",
