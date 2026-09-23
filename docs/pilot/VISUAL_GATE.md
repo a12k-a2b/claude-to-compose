@@ -1,7 +1,7 @@
 # Native gallery visual gate (pilot)
 
 `tools/pilot/compare-native-reference.js` compares raw PNG pixels in named,
-pre-registered regions. It rejects dimension mismatches instead of rescaling;
+explicitly configured regions. It rejects dimension mismatches instead of rescaling;
 each region requires a deliberately wrong negative-control image that must
 score at least one MAE point worse than the candidate. A `PASS` is scoped only
 to the registered static pixel regions, not the whole UI, interaction behavior,
@@ -16,8 +16,9 @@ The native candidate is the same dimensions, SHA-256
 The deliberately magenta toolbar negative has SHA-256
 `63d4ccfde019d53b1834cf4eac27f9a87299b9db486b487dc2663da76c9dd531`.
 
-Pre-registered toolbar crop: `(x=0, y=0, width=2368, height=200)` pixels,
-maximum mean absolute RGB channel error `4.0/255`. Result: **FAIL**;
+The first pilot run configured a toolbar crop of `(x=0, y=0, width=2368,
+height=200)` pixels and a provisional mean absolute RGB channel-error limit
+of `4.0/255`. This is not yet an owner-approved final tolerance. Result: **FAIL**;
 candidate `5.651`, negative control `54.141`. The negative control establishes
 that this region metric detects that particular surface defect, not icon
 shape, motion, or all possible layout errors. The JSON report is at

@@ -1,7 +1,7 @@
 {
   "title": "Claude-to-Compose design retrofit and native proof gallery",
-  "updated_at": "2026-09-23T06:54:29Z",
-  "current_focus": "Build and verify an isolated native gallery for both Note Overlay Claude designs before touching the production app",
+  "updated_at": "2026-09-23T07:10:23Z",
+  "current_focus": "Improve visual fidelity and expand native scene/UX coverage; the production Note Overlay graft remains gated",
   "tasks": [
     {
       "id": "P1-01",
@@ -71,12 +71,28 @@
       ]
     },
     {
+      "id": "P6-02",
+      "phase": "6 — Reference truth",
+      "title": "Emit a deterministic source-to-gallery agent packet with the real app seam",
+      "status": "PASS",
+      "acceptance": "Four verified manifests and the app model produce byte-stable JSON/Markdown containing exact scene IDs, screenshot provenance, controls, and uncertain Java overlay seam clues, with all native/UX gates BLOCKED",
+      "evidence": [
+        "docs/pilot/GALLERY_PACKET.md",
+        "tests/unit/pilot_gallery_packet.test.js",
+        "docs/pilot/REFERENCE_CAPTURE_EVIDENCE.md"
+      ]
+    },
+    {
       "id": "P7-01",
       "phase": "7 — Isolated native proof app",
-      "title": "Replicate the da63 overlay as reusable native Android UI over a synthetic article",
-      "status": "RUNNING",
-      "acceptance": "A buildable Compose proof screen renders the toolbar and representative tool/opacity states in portrait and landscape with inspectable captures and working controls",
-      "evidence": []
+      "title": "Build a functional da63 native proof over a synthetic article",
+      "status": "PASS",
+      "acceptance": "A buildable Compose proof screen renders representative tool/opacity states in portrait and landscape with inspectable captures and working controls; visual parity is a separate P8 gate and is currently FAIL",
+      "evidence": [
+        "docs/pilot/NATIVE_BUILD_EVIDENCE.md",
+        "android/app/src/test/java/com/claude/compose/Da63GalleryTest.kt",
+        "docs/pilot/VISUAL_GATE.md"
+      ]
     },
     {
       "id": "P7-02",
@@ -90,7 +106,7 @@
       "id": "P7-03",
       "phase": "7 — Isolated native proof app",
       "title": "Replicate the e34f beyond-the-bar interactions and supporting chrome",
-      "status": "PENDING",
+      "status": "RUNNING",
       "acceptance": "Gesture, glass, ink, selection, page, first-stroke, mildliner, preset, popup, snip, small-control, and onboarding examples have native inspectable states; unsupported behavior is explicit",
       "evidence": []
     },
@@ -98,7 +114,7 @@
       "id": "P8-01",
       "phase": "8 — Evidence-based validation",
       "title": "Compare native renders and interactions against pinned Claude references",
-      "status": "PENDING",
+      "status": "RUNNING",
       "acceptance": "Exact APK, viewport, state, render, interaction, and visual-difference evidence are tied together; negative controls fail; no source-only or test-count-only green claim",
       "evidence": []
     },
@@ -167,6 +183,11 @@
       "at": "2026-09-23T06:54:29Z",
       "accepted": 6,
       "total": 11
+    },
+    {
+      "at": "2026-09-23T07:10:23Z",
+      "accepted": 8,
+      "total": 12
     }
   ]
 }
