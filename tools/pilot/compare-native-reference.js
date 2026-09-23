@@ -10,13 +10,16 @@ const { atomicWriteNoFollow, rejectDangerousRoot, resolveExplicit } = require('.
 
 function parseArgs(argv) {
   const options = { regions: [], negatives: {} };
+  const singles = new Set();
   for (let i = 0; i < argv.length; i += 2) {
     const name = argv[i];
     const value = argv[i + 1];
     if (!value) throw new Error(`Missing value for ${name}`);
-    if (name === '--reference') options.reference = value;
-    else if (name === '--candidate') options.candidate = value;
-    else if (name === '--output') options.output = value;
+    if (['--reference', '--candidate', '--output'].includes(name)) {
+      if (singles.has(name)) throw new Error(`Duplicate option: ${name}`);
+      singles.add(name);
+      options[name.slice(2)] = value;
+    }
     else if (name === '--region') {
       const match = value.match(/^([a-z][a-z0-9-]*):(\d+),(\d+),(\d+),(\d+):([0-9]+(?:\.[0-9]+)?)$/);
       if (!match) throw new Error('Region format: name:x,y,width,height:maxMae');

@@ -19,6 +19,11 @@ test('strict comparison requires a deliberate negative for every named region', 
     '--reference', '/tmp/a.png', '--candidate', '/tmp/b.png', '--output', '/tmp/report.json',
     '--region', 'toolbar:0,0,4,4:4', '--negative', 'other:/tmp/c.png'
   ]), /negative-control/);
+  assert.throws(() => parseArgs([
+    '--reference', '/tmp/a.png', '--reference', '/tmp/forged.png',
+    '--candidate', '/tmp/b.png', '--output', '/tmp/report.json',
+    '--region', 'toolbar:0,0,4,4:4', '--negative', 'toolbar:/tmp/c.png'
+  ]), /Duplicate option/);
 });
 
 test('strict comparison fails visible mismatch, blocks ineffective controls, and refuses resize', async () => {

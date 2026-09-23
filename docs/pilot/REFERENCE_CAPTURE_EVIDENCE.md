@@ -28,6 +28,15 @@ the `e34f` source-text SHA-256 is
 `node --test tests/unit/pilot_capture_scenes.test.js` passed 5/5, including a
 tampered-image negative control and changed-source-identity control.
 
+Source-text identity and the exact section/figure inventory do **not** by
+themselves lock CSS, fonts, or motion. In two historical e34f 1200×900
+captures with the same text hash, only 43 of 68 PNG hashes were identical;
+the `1a` section differed by about 2.30/255 mean RGB channel error, while
+several other changed PNGs differed by under 0.02/255. The verified v3 files
+are pinned snapshots for this pilot, not proof that future live recaptures are
+pixel deterministic. A stronger visual-source lock or controlled state replay
+is still needed before a repeated capture can be promoted automatically.
+
 Source IDs in `e34f` are 35 editorial sections and 33 nested figure views.
 They are an exact capture inventory, not 68 separate native designs or proof
 that a web interaction works. Dynamic states must be characterized separately.
