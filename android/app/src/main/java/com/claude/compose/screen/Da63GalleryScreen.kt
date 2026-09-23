@@ -119,14 +119,33 @@ fun Da63GalleryScreen(modifier: Modifier = Modifier, proofChromeBackdrop: Color 
 @Composable
 private fun DocumentPill(modifier: Modifier, open: Boolean, large: Boolean, onClick: () -> Unit) {
     Pill(modifier.height(if (large) 80.dp else 64.dp)) {
-        Row(Modifier.fillMaxSize().clickable(onClick = onClick).padding(horizontal = if (large) 24.dp else 14.dp).semantics { contentDescription = "Document options" },
+        Row(Modifier.fillMaxSize().clickable(onClick = onClick)
+            .padding(horizontal = if (large) 8.dp else 14.dp)
+            .semantics { contentDescription = "Document options" },
             verticalAlignment = Alignment.CenterVertically) {
-            Da63SvgGlyph("document", ink)
-            Spacer(Modifier.width(if (large) 20.dp else 12.dp))
-            Box(Modifier.width(1.dp).height(30.dp).background(rule))
-            Spacer(Modifier.width(if (large) 20.dp else 12.dp))
-            Text("Field notes", color = ink, fontFamily = AbcArizonaSans, fontSize = if (large) 19.sp else 17.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(if (open) " ⌃" else " ⌄", color = ink)
+            if (large) {
+                // The source uses a 64px icon hit area, then 8px gutters around its divider.
+                Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+                    Da63SvgGlyph("document", ink)
+                }
+                Spacer(Modifier.width(8.dp))
+                Box(Modifier.width(1.dp).height(30.dp).background(rule))
+                Spacer(Modifier.width(8.dp))
+                Row(Modifier.padding(start = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text("Field notes", color = ink, fontFamily = AbcArizonaSans, fontSize = 18.sp,
+                        letterSpacing = (-0.38).sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Spacer(Modifier.width(9.dp))
+                    Text(if (open) "⌃" else "⌄", color = ink, fontSize = 18.sp)
+                }
+            } else {
+                Da63SvgGlyph("document", ink)
+                Spacer(Modifier.width(12.dp))
+                Box(Modifier.width(1.dp).height(30.dp).background(rule))
+                Spacer(Modifier.width(12.dp))
+                Text("Field notes", color = ink, fontFamily = AbcArizonaSans, fontSize = 17.sp,
+                    maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(if (open) " ⌃" else " ⌄", color = ink)
+            }
         }
     }
 }
