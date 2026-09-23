@@ -1,7 +1,7 @@
 {
-  "title": "Claude-to-Compose design retrofit v1",
-  "updated_at": "2026-09-22T19:31:16Z",
-  "current_focus": "Published v1; ready to select the Note Overlay repository revision and Claude Design pilot states",
+  "title": "Claude-to-Compose design retrofit and native proof gallery",
+  "updated_at": "2026-09-23T06:54:29Z",
+  "current_focus": "Build and verify an isolated native gallery for both Note Overlay Claude designs before touching the production app",
   "tasks": [
     {
       "id": "P1-01",
@@ -59,11 +59,63 @@
       ]
     },
     {
+      "id": "P6-01",
+      "phase": "6 — Reference truth",
+      "title": "Inventory every distinct design direction, state, and interaction in both supplied artifacts",
+      "status": "PASS",
+      "acceptance": "A source-linked inventory and geometry/hash-verified static references cover da63 and all 35 e34f sections plus 33 figures at two named 4:3 outer viewports; interaction and motion remain explicitly outside this phase",
+      "evidence": [
+        "docs/pilot/SCENE_MATRIX.md",
+        "docs/pilot/REFERENCE_CAPTURE_EVIDENCE.md",
+        "tests/unit/pilot_capture_scenes.test.js"
+      ]
+    },
+    {
+      "id": "P7-01",
+      "phase": "7 — Isolated native proof app",
+      "title": "Replicate the da63 overlay as reusable native Android UI over a synthetic article",
+      "status": "RUNNING",
+      "acceptance": "A buildable Compose proof screen renders the toolbar and representative tool/opacity states in portrait and landscape with inspectable captures and working controls",
+      "evidence": []
+    },
+    {
+      "id": "P7-02",
+      "phase": "7 — Isolated native proof app",
+      "title": "Replicate the e34f toolbar directions and theme variants",
+      "status": "RUNNING",
+      "acceptance": "Every distinct toolbar direction and day/night/high-contrast variant in the source matrix has a native selectable proof state and matching reference context",
+      "evidence": []
+    },
+    {
+      "id": "P7-03",
+      "phase": "7 — Isolated native proof app",
+      "title": "Replicate the e34f beyond-the-bar interactions and supporting chrome",
+      "status": "PENDING",
+      "acceptance": "Gesture, glass, ink, selection, page, first-stroke, mildliner, preset, popup, snip, small-control, and onboarding examples have native inspectable states; unsupported behavior is explicit",
+      "evidence": []
+    },
+    {
+      "id": "P8-01",
+      "phase": "8 — Evidence-based validation",
+      "title": "Compare native renders and interactions against pinned Claude references",
+      "status": "PENDING",
+      "acceptance": "Exact APK, viewport, state, render, interaction, and visual-difference evidence are tied together; negative controls fail; no source-only or test-count-only green claim",
+      "evidence": []
+    },
+    {
+      "id": "P9-01",
+      "phase": "9 — Owner evaluation",
+      "title": "Deliver a testable proof app and honest comparison gallery for choosing a direction",
+      "status": "PENDING",
+      "acceptance": "Owner can compare the native variants and Claude references, exercise controls, and see remaining mismatches and device limitations before any production graft",
+      "evidence": []
+    },
+    {
       "id": "LATER-01",
       "phase": "Later — Real Note Overlay pilot",
-      "title": "Capture the owner-approved Note Overlay Claude Design links and execute the first real retrofit",
+      "title": "Graft a chosen, validated native design into a disposable Note Overlay design branch",
       "status": "DEFERRED",
-      "acceptance": "Selected Note Overlay states are redesigned in-place and verified on the agreed source revision and DC-1 profile",
+      "acceptance": "Only after proof validation and design selection, restyle the existing chrome on a codex design branch while preserving the ink and persistence invariants; no main-branch or live-data mutation",
       "evidence": []
     },
     {
@@ -105,6 +157,16 @@
       "at": "2026-09-22T19:31:16Z",
       "accepted": 5,
       "total": 5
+    },
+    {
+      "at": "2026-09-23T06:23:41Z",
+      "accepted": 5,
+      "total": 11
+    },
+    {
+      "at": "2026-09-23T06:54:29Z",
+      "accepted": 6,
+      "total": 11
     }
   ]
 }

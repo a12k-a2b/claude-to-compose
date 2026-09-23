@@ -562,8 +562,20 @@ function inspectRepository(root, clock = () => new Date()) {
       }
     }
     if (productionSource && relative.endsWith('.java')) {
-      for (const match of clean.matchAll(/\bclass\s+([A-Za-z_]\w*)\s+extends\s+([A-Za-z_][\w.]*)/g)) {
-        const classification = classifyKotlinClass(match[2]);
+      for (const match of clean.matchAll(/\bclass\s+([A-Za-z_]\w*)(?:\s+extends\s+([A-Za-z_][\w.]*))?/g)) {
+        const supertype = match[2]?.split('.').pop();
+        let classification = match[2] ? classifyKotlinClass(match[2]) : null;
+        if (!classification && ['AccessibilityService', 'Service'].includes(supertype)) {
+          // Service-hosted overlays can be the visible entry point even when
+          // no Activity, XML layout, or Compose function owns their chrome.
+          classification = { kind: 'OTHER', confidence: 0.82 };
+        }
+        if (!classification && match[1] === path.basename(relative, '.java')
+            && /\bnew\s+(?:FrameLayout|LinearLayout|RelativeLayout|ConstraintLayout|RecyclerView|ComposeView|View)\s*\(/.test(clean)) {
+          // A same-named top-level class constructs a View tree in code.
+          // OTHER is deliberate: lexical evidence does not prove it is a View.
+          classification = { kind: 'OTHER', confidence: 0.7 };
+        }
         if (!classification) continue;
         const name = match[1];
         const qualifiedName = packageName ? `${packageName}.${name}` : name;

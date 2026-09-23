@@ -104,6 +104,24 @@ afterEach(() => {
 });
 
 describe('ctc v1 read-only app inspection', () => {
+  it('finds Java-built overlay chrome and its accessibility-service host without claiming runtime reachability', () => {
+    const app = copyFixture();
+    const source = path.join(app, 'app/src/main/java/fixture/app');
+    fs.writeFileSync(path.join(source, 'OverlayChrome.java'),
+      'package fixture.app;\nfinal class OverlayChrome { void build(android.content.Context context) { new FrameLayout(context); } }\n');
+    fs.writeFileSync(path.join(source, 'OverlayService.java'),
+      'package fixture.app;\npublic class OverlayService extends AccessibilityService { }\n');
+    initializeGit(app);
+    const result = ctc(['inspect-app', '--android', app, '--output', path.join(tempDir(), 'model.json'), '--json']);
+    assert.equal(result.status, 0, result.stderr);
+    const model = parseSingleJson(result.stdout);
+    for (const name of ['fixture.app.OverlayChrome', 'fixture.app.OverlayService']) {
+      const symbol = model.uiSymbols.find(item => item.qualifiedName === name);
+      assert.equal(symbol?.kind, 'OTHER', name);
+      assert(model.uncertainties.some(item => item.subjectRef === symbol.id && item.impact === 'HIGH'));
+    }
+  });
+
   it('doctor reports narrow local capabilities and never invokes project Gradle', () => {
     const sentinel = path.join(tempDir(), 'gradle-ran');
     const result = ctc(['doctor', '--json'], { GRADLE_SENTINEL: sentinel });

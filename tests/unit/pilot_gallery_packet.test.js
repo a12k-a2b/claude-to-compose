@@ -5,6 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { PNG: PngImage } = require('pngjs');
 const test = require('node:test');
 const { sourceContracts } = require('../../tools/pilot/source-contracts');
 const { buildPacket, emitPacket, parseArgs, renderMarkdown } = require('../../tools/pilot/build-gallery-packet');
@@ -13,10 +14,7 @@ const DESIGN_URLS = {
   'da63f0b2-6919-408a-b3eb-68685f019fe6': 'https://claude.ai/code/artifact/da63f0b2-6919-408a-b3eb-68685f019fe6',
   'e34f4387-f506-4de5-bced-ef318d7f8bdf': 'https://claude.ai/code/artifact/e34f4387-f506-4de5-bced-ef318d7f8bdf'
 };
-const PNG = Buffer.alloc(24);
-PNG.set(Buffer.from('89504e470d0a1a0a', 'hex'), 0);
-PNG.writeUInt32BE(20, 16);
-PNG.writeUInt32BE(20, 20);
+const PNG = PngImage.sync.write(new PngImage({ width: 20, height: 20 }));
 const PNG_HASH = crypto.createHash('sha256').update(PNG).digest('hex');
 
 function appModel(root, includeSeam = true) {

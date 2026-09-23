@@ -6,8 +6,8 @@ for coding agents. It does not generate Compose code or claim visual fidelity.
 
 The command requires exactly four verified capture directories: one portrait
 and one landscape capture for each of the two owner-supplied designs. The
-ExistingAppModel must identify `PadChrome`, `PadService`, and `GlassPadView` in
-its UI symbols or source evidence. The packet retains exact section/figure IDs,
+ExistingAppModel must identify `PadChrome`, `PadService`, and `GlassPadView` as
+UI/host symbols (filename presence alone is insufficient). The packet retains exact section/figure IDs,
 source control labels, source text identity, per-scene screenshot SHA-256,
 capture geometry, viewports, and local screenshot paths. The app seam is marked
 high uncertainty because the model is lexical evidence, not a runtime call

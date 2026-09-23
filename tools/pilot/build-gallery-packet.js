@@ -48,20 +48,15 @@ function seamCandidates(appModel) {
       || !appModel.provenance?.revision || !Array.isArray(appModel.provenance?.evidence)) {
     throw new Error('App model must be an ExistingAppModel with uiSymbols and provenance evidence');
   }
-  const entries = appModel.uiSymbols.map(symbol => ({
-    text: `${symbol.qualifiedName || ''} ${symbol.location?.path || ''}`,
-    symbol
-  }));
-  const files = appModel.provenance.evidence.map(item => ({ text: item.path || '', symbol: null, evidence: item }));
   return SEAM_NAMES.map(name => {
-    const found = [...entries, ...files].filter(entry => entry.text.includes(name));
-    if (!found.length) throw new Error(`App model does not identify required seam ${name}`);
+    const found = appModel.uiSymbols.filter(symbol => symbol.qualifiedName?.split('.').pop() === name);
+    if (!found.length) throw new Error(`App model does not identify required UI/host symbol ${name}`);
     return {
       name,
       confidence: 'HIGH_UNCERTAINTY',
       status: 'CANDIDATE_REQUIRES_SOURCE_REVIEW',
-      evidenceRefs: [...new Set(found.flatMap(entry => entry.symbol?.evidenceRefs || (entry.evidence?.id ? [entry.evidence.id] : [])))].sort(),
-      observedLocations: [...new Set(found.map(entry => entry.symbol?.location?.path || entry.evidence?.path).filter(Boolean))].sort(),
+      evidenceRefs: [...new Set(found.flatMap(symbol => symbol.evidenceRefs || []))].sort(),
+      observedLocations: [...new Set(found.map(symbol => symbol.location?.path).filter(Boolean))].sort(),
       reason: 'Lexical ExistingAppModel evidence only; it does not establish runtime ownership, call direction, or safe retrofit boundaries.'
     };
   });
@@ -186,7 +181,8 @@ function renderMarkdown(packet) {
   lines.push('', '## App seam candidates', '');
   for (const seam of packet.app.seamCandidates) lines.push(`- ${seam.name} — ${seam.status} (${seam.confidence}); locations: ${seam.observedLocations.join(', ') || '(none)'}. ${seam.reason}`);
   lines.push('', '## Scene inventory', '', '| Design | Scene ID | Variant | Heading | Source controls |', '| --- | --- | --- | --- | --- |');
-  for (const scene of packet.scenes) lines.push(`| ${scene.designId} | ${scene.sceneId} | ${scene.variant} | ${scene.heading.replaceAll('|', '\\|')} | ${scene.controls.join(', ').replaceAll('|', '\\|')} |`);
+  const tableCell = value => String(value).replace(/\s+/g, ' ').replaceAll('|', '\\|');
+  for (const scene of packet.scenes) lines.push(`| ${scene.designId} | ${scene.sceneId} | ${scene.variant} | ${tableCell(scene.heading)} | ${tableCell(scene.controls.join(', '))} |`);
   lines.push('', 'Each scene has portrait and landscape reference records in the JSON packet, including source hashes, viewport identity, screenshot hash, capture geometry, and screenshot path.', '', '## Gate state', '');
   for (const [name, state] of Object.entries(packet.gates)) lines.push(`- ${name}: **${state}**`);
   lines.push('', 'The current standalone hand-coded gallery does not prove translator success. Native visual comparison, working state transitions, timestamped motion evidence, accessibility/input checks, and a protected production retrofit review are still required.', '');
