@@ -1,7 +1,7 @@
 {
   "title": "Claude-to-Compose design retrofit and native proof gallery",
-  "updated_at": "2026-09-23T07:10:23Z",
-  "current_focus": "Improve visual fidelity and expand native scene/UX coverage; the production Note Overlay graft remains gated",
+  "updated_at": "2026-09-23T07:33:46Z",
+  "current_focus": "Improve visual fidelity and prove a repeatable packet-to-native repair loop; the production Note Overlay graft remains gated",
   "tasks": [
     {
       "id": "P1-01",
@@ -119,6 +119,14 @@
       "evidence": []
     },
     {
+      "id": "P8-02",
+      "phase": "8 — Evidence-based validation",
+      "title": "Prove the source packet improves a repeatable coding-agent design handoff",
+      "status": "PENDING",
+      "acceptance": "A fresh agent implements one frozen scene primarily from the emitted packet; source and output hashes, extra context used, repair iterations, and same-size visual results are retained; a controlled second scene or design change reuses the loop without bespoke test code",
+      "evidence": []
+    },
+    {
       "id": "P9-01",
       "phase": "9 — Owner evaluation",
       "title": "Deliver a testable proof app and honest comparison gallery for choosing a direction",
@@ -188,6 +196,11 @@
       "at": "2026-09-23T07:10:23Z",
       "accepted": 8,
       "total": 12
+    },
+    {
+      "at": "2026-09-23T07:33:46Z",
+      "accepted": 8,
+      "total": 13
     }
   ]
 }
