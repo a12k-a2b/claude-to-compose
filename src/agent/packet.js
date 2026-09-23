@@ -77,14 +77,16 @@ function buildJsonPacket(screenId, migrationPlan, correspondenceMap, designContr
   const boundaries = migrationPlan?.boundaries || {};
   const rawAllowed = (boundaries.allowedModificationPaths && boundaries.allowedModificationPaths.length > 0)
     ? boundaries.allowedModificationPaths
-    : ['app/src/main/java/com/claude/noteapp/ui/editor/**'];
+    : ['app/src/main/java/com/claude/noteapp/ui/editor'];
 
   const allowedModificationPaths = rawAllowed.map(p => {
+    let sanitized;
     try {
-      return sanitizePath(p);
+      sanitized = sanitizePath(p);
     } catch (_) {
-      return p;
+      sanitized = String(p).replace(/\\/g, '/');
     }
+    return sanitized.replace(/\/\*\*.*$/, '').replace(/\/\*.*$/, '');
   });
 
   const forbiddenPaths = (boundaries.forbiddenPaths && boundaries.forbiddenPaths.length > 0)
@@ -391,13 +393,18 @@ function buildJsonPacket(screenId, migrationPlan, correspondenceMap, designContr
       ]
     },
     verification: {
-      buildCommands: [
-        './gradlew compileDebugKotlin --no-daemon'
-      ],
-      unitTestCommands: [
-        './gradlew testDebugUnitTest --no-daemon'
-      ],
-      ctcVerifyCommands: [
+      buildCommands: (migrationPlan?.verificationCommands && migrationPlan.verificationCommands.filter(c => c.includes('compile')).length > 0)
+        ? migrationPlan.verificationCommands.filter(c => c.includes('compile'))
+        : ['./gradlew compileDebugKotlin --no-daemon'],
+      unitTestCommands: (migrationPlan?.verificationCommands && migrationPlan.verificationCommands.filter(c => c.includes('test')).length > 0)
+        ? migrationPlan.verificationCommands.filter(c => c.includes('test'))
+        : ['./gradlew testDebugUnitTest --no-daemon'],
+      ctcVerifyCommands: (migrationPlan?.verificationCommands && migrationPlan.verificationCommands.filter(c => c.includes('verify')).length > 0)
+        ? migrationPlan.verificationCommands.filter(c => c.includes('verify'))
+        : [`node bin/ctc.js verify --screen ${screenId} --profile daylight-dc1`],
+      verificationCommands: migrationPlan?.verificationCommands || [
+        './gradlew compileDebugKotlin --no-daemon',
+        './gradlew testDebugUnitTest --no-daemon',
         `node bin/ctc.js verify --screen ${screenId} --profile daylight-dc1`
       ],
       failureBudgets: {
@@ -415,17 +422,71 @@ function buildJsonPacket(screenId, migrationPlan, correspondenceMap, designContr
 }
 
 /**
+ * Adapts a 4-layer design contract or retrofit contract into a scoped MigrationPlan.
+ * Normalizes allowed modification paths by stripping glob wildcards to ensure strict
+ * compliance with candidate_verifier.js.
+ *
+ * @param {object} contract Design or retrofit contract
+ * @param {string} [screenId='note_editor'] Screen identifier
+ * @returns {object} Migration plan
+ */
+function adaptContractToMigrationPlan(contract, screenId = 'note_editor') {
+  if (!contract || typeof contract !== 'object') {
+    return null;
+  }
+  const boundary = contract.implementationBoundary || {};
+  const rawAllowed = boundary.allowedPaths || boundary.allowedModificationPaths || [
+    'app/src/main/java/com/claude/noteapp/ui/editor'
+  ];
+  const allowedModificationPaths = rawAllowed.map(p => {
+    return String(p).replace(/\\/g, '/').replace(/\/\*\*.*$/, '').replace(/\/\*.*$/, '');
+  });
+
+  const forbiddenPaths = boundary.prohibitedChanges || boundary.forbiddenPaths || [
+    'app/src/main/java/com/claude/noteapp/data/**',
+    'app/src/main/java/com/claude/noteapp/presentation/**ViewModel*.kt',
+    'app/src/main/java/com/claude/noteapp/presentation/**Action*.kt',
+    'app/src/main/java/com/claude/noteapp/navigation/**'
+  ];
+
+  const forbiddenBehaviors = boundary.forbiddenBehaviors || [
+    'EPD screen clear waveforms / ACTION_REFRESH_SCREEN broadcast or artificial dismissal delays',
+    'Mock domain data / Fake repositories in production screens replacing Room DAO',
+    'Hardcoded dummy lists replacing ViewModel StateFlow collections',
+    'Removing contentDescription or accessibility semantics from interactive IconButtons',
+    'Tampering with verification thresholds, tolerance budgets, or golden references to force pass'
+  ];
+
+  const verificationCommands = boundary.verificationCommands || [
+    './gradlew compileDebugKotlin --no-daemon',
+    './gradlew testDebugUnitTest --no-daemon',
+    `node bin/ctc.js verify --screen ${screenId} --profile daylight-dc1`
+  ];
+
+  return {
+    screenId: contract.screenId || screenId,
+    boundaries: {
+      allowedModificationPaths,
+      forbiddenPaths,
+      forbiddenBehaviors
+    },
+    verificationCommands
+  };
+}
+
+/**
  * Generates an agent implementation packet in markdown, json, or both formats.
  *
  * @param {object} options
  * @param {string} [options.screenId='note_editor'] Target screen identifier
- * @param {object} options.migrationPlan Phased migration plan (REQUIRED)
- * @param {object} [options.correspondenceMap] Semantic correspondence map
+ * @param {object} [options.migrationPlan] Phased migration plan (or contract)
+ * @param {object} [options.contract] Direct design or retrofit contract adapter
  * @param {object} [options.designContract] 4-layer design contract IR
+ * @param {object} [options.correspondenceMap] Semantic correspondence map
  * @param {object} [options.existingAppModel] Pre-retrofit AST app model
  * @param {string} [options.format='both'] Output format: 'markdown' | 'json' | 'both'
  * @returns {{ markdown?: string, json?: object }}
- * @throws {Error} If migrationPlan is missing or format is unsupported
+ * @throws {Error} If migrationPlan is missing and no contract is provided, or format is unsupported
  */
 function generateImplementationPacket(options = {}) {
   // 1. Validate format first
@@ -436,13 +497,20 @@ function generateImplementationPacket(options = {}) {
     }
   }
 
+  // Contract adapter fallback if migrationPlan is omitted or null
+  const contract = options.contract || options.designContract;
+  let migrationPlan = options.migrationPlan;
+  if (!migrationPlan && contract) {
+    migrationPlan = adaptContractToMigrationPlan(contract, options.screenId);
+  }
+
   // 2. Validate migrationPlan (REQUIRED)
-  if (!options || options.migrationPlan === null || options.migrationPlan === undefined) {
+  if (!migrationPlan) {
     throw new Error('migrationPlan required: options.migrationPlan cannot be null or undefined');
   }
 
   // 3. Boundary validation and sanitization
-  const boundaries = options.migrationPlan?.boundaries || options.migrationPlan || {};
+  const boundaries = migrationPlan?.boundaries || migrationPlan || {};
   const allowed = boundaries.allowedModificationPaths || [];
   for (const p of allowed) {
     sanitizePath(p);
@@ -460,13 +528,13 @@ function generateImplementationPacket(options = {}) {
 
   const screenId = (typeof options.screenId === 'string' && options.screenId.trim().length > 0)
     ? options.screenId.trim()
-    : (options.migrationPlan?.screenId || 'note_editor');
+    : (migrationPlan?.screenId || 'note_editor');
 
   const jsonPacket = buildJsonPacket(
     screenId,
-    options.migrationPlan,
+    migrationPlan,
     options.correspondenceMap,
-    options.designContract,
+    options.designContract || options.contract,
     options.existingAppModel
   );
 
@@ -492,5 +560,6 @@ module.exports = {
   MATERIAL3_COLOR_SCHEME_MAPPING,
   DEFAULT_FORBIDDEN_PATHS,
   sanitizePath,
-  generateImplementationPacket
+  generateImplementationPacket,
+  adaptContractToMigrationPlan
 };

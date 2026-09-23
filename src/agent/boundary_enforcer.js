@@ -9,6 +9,7 @@
 'use strict';
 
 const path = require('path');
+const { hasTraversal } = require('./safety');
 
 /**
  * Sanitizes a file or directory path.
@@ -50,6 +51,7 @@ function sanitizePath(filePath) {
   const decodedSegments = decodedSlashes.split('/');
 
   if (
+    hasTraversal(raw) ||
     segments.includes('..') ||
     normalizedSlashes.includes('../') ||
     normalizedSlashes.includes('/..') ||

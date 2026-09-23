@@ -86,7 +86,8 @@ const SUBCOMMAND_OPTIONS = Object.freeze({
     'screen', 'screenId',
     'evidence',
     'contract',
-    'file'
+    'file',
+    'workspace', 'w'
   ])),
   map: Object.freeze(new Set([
     ...GLOBAL_FLAGS,
@@ -105,15 +106,25 @@ const SUBCOMMAND_OPTIONS = Object.freeze({
     'format',
     'plan', 'plan-file',
     'map', 'map-file',
-    'contract'
+    'contract',
+    'android', 'a', 'appDir', 'app-dir', 'project',
+    'workspace', 'w',
+    'branch', 'b',
+    'candidate', 'c',
+    'target', 't',
+    'env', 'e', 'harness',
+    's'
   ])),
   verify: Object.freeze(new Set([
     ...GLOBAL_FLAGS,
     'screen', 'screenId',
     'app-dir', 'appDir', 'a', 'android', 'project',
+    'candidate', 'c',
+    'contract',
     'stage', 's',
     'until-stage', 'untilStage',
-    'evidence', 'evidenceDir'
+    'evidence', 'evidenceDir',
+    'approval', 'A'
   ])),
   defects: Object.freeze(new Set([
     ...GLOBAL_FLAGS,
@@ -201,13 +212,32 @@ function parseArgs(args = []) {
 
   // Canonicalize standard aliases
   if (options.flags['app-dir']) options.flags.appDir = options.flags['app-dir'];
-  if (options.flags.a && !options.flags.appDir) options.flags.appDir = options.flags.a;
+  if (options.flags.a) {
+    if (!options.flags.appDir) options.flags.appDir = options.flags.a;
+    if (!options.flags.android) options.flags.android = options.flags.a;
+  }
   if (options.flags.android && !options.flags.appDir) options.flags.appDir = options.flags.android;
-  if (options.flags.project && !options.flags.appDir) options.flags.appDir = options.flags.project;
+  if (options.flags.appDir && !options.flags.android) options.flags.android = options.flags.appDir;
+  if (options.flags.project) {
+    if (!options.flags.appDir) options.flags.appDir = options.flags.project;
+    if (!options.flags.android) options.flags.android = options.flags.project;
+  }
+
+  if (options.flags.w && !options.flags.workspace) options.flags.workspace = options.flags.w;
+  if (options.flags.b && !options.flags.branch) options.flags.branch = options.flags.b;
+
+  if (options.flags.c && !options.flags.candidate) options.flags.candidate = options.flags.c;
 
   if (options.flags.o && !options.flags.output) options.flags.output = options.flags.o;
   if (options.flags.p && !options.flags.profile) options.flags.profile = options.flags.p;
   if (options.flags.s && !options.flags.stage) options.flags.stage = options.flags.s;
+  if (options.flags.t && !options.flags.target) options.flags.target = options.flags.t;
+  if (options.flags.e && !options.flags.env) options.flags.env = options.flags.e;
+
+  if (options.flags.screen && !options.flags.screenId) options.flags.screenId = options.flags.screen;
+  if (options.flags.screenId && !options.flags.screen) options.flags.screen = options.flags.screenId;
+
+  if (options.flags.A && !options.flags.approval) options.flags.approval = options.flags.A;
 
   return options;
 }
@@ -523,11 +553,12 @@ function dispatch(args = []) {
       output: outputStr
     });
   } catch (err) {
+    const exitCode = typeof err.exitCode === 'number' ? err.exitCode : EXIT_CODES.FAIL;
     const formatted = formatOutput({
       success: false,
-      status: 'FAIL',
+      status: exitCode === 3 ? 'INPUT_INVALID' : (exitCode === 2 ? 'BLOCKED' : 'FAIL'),
       command: primary,
-      exitCode: EXIT_CODES.FAIL,
+      exitCode,
       error: err.message
     });
     return createHybridResult({

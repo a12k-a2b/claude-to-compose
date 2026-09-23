@@ -56,6 +56,34 @@ const {
   computeSha256
 } = require('./compiler');
 
+const {
+  validateOwnerApproval,
+  validateOwnerApprovalOrThrow,
+  validateMeasuredScene,
+  validateLayoutIntent,
+  validateBehaviorContract,
+  validateDesignSystem,
+  validateContractReceipt,
+  validateSchema,
+  formatSchemaIssues,
+  formatSchemaErrorsText,
+  createContractAjv,
+  schemas
+} = require('./schemas');
+
+const {
+  loadOwnerApproval,
+  loadOwnerApprovals,
+  approvalFor,
+  assertAllApprovalsUsed,
+  assertNoEvidenceCrossWiring,
+  evaluateContractDeviations,
+  evaluateDeviations,
+  DEVIATION_DOMAINS,
+  DEVIATION_STATUSES,
+  OWNER_APPROVAL_SCHEMA
+} = require('./owner_approval');
+
 module.exports = {
   // Layer 1: Measured Scene
   createMeasuredNode,
@@ -100,5 +128,32 @@ module.exports = {
   validateScreenId,
   checkDuplicateSourceIds,
   writeContractToDisk,
-  computeSha256
+  computeSha256,
+
+  // Schemas & Validators (Draft 2020-12)
+  validateOwnerApproval,
+  validateOwnerApprovalOrThrow,
+  validateMeasuredScene,
+  validateLayoutIntent,
+  validateBehaviorContract,
+  validateDesignSystem,
+  validateContractReceipt,
+  validateSchema,
+  formatSchemaIssues,
+  formatSchemaErrorsText,
+  createContractAjv,
+  schemas,
+
+  // Owner Approval & Deviation Engine
+  loadOwnerApproval,
+  loadOwnerApprovals,
+  approvalFor,
+  assertAllApprovalsUsed,
+  assertNoEvidenceCrossWiring,
+  evaluateContractDeviations,
+  evaluateDeviations,
+  DEVIATION_DOMAINS,
+  DEVIATION_STATUSES,
+  OWNER_APPROVAL_SCHEMA
 };
+

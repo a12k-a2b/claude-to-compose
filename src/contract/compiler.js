@@ -15,6 +15,17 @@ const crypto = require('node:crypto');
 const Ajv2020 = require('ajv/dist/2020');
 const addFormats = require('ajv-formats');
 
+const {
+  validateOwnerApproval,
+  validateMeasuredScene,
+  validateLayoutIntent,
+  validateBehaviorContract,
+  validateDesignSystem,
+  validateContractReceipt,
+  formatSchemaIssues,
+  schemas: contractSchemas
+} = require('./schemas');
+
 const { createMeasuredNode, createMeasuredBundle, allocateSourceId } = require('./measured_scene_builder');
 const { inferNodeIntent, createLayoutIntentBundle } = require('./layout_intent_builder');
 const { createBehaviorContract } = require('./behavior_contract_builder');
@@ -371,20 +382,8 @@ function synthesizeLayers({ screenId, evidence = {}, options = {} }) {
 }
 
 function validateContractAgainstSchemas(contract, schemaOverrides = {}) {
-  const ajv = new Ajv2020({ allErrors: true, strict: false });
-  addFormats(ajv);
-
   const schemaDir = path.resolve(__dirname, 'schemas');
   const errors = [];
-
-  function loadSchema(name) {
-    if (schemaOverrides[name]) return schemaOverrides[name];
-    const p = path.join(schemaDir, `${name}.json`);
-    if (fs.existsSync(p)) {
-      return JSON.parse(fs.readFileSync(p, 'utf8'));
-    }
-    return null;
-  }
 
   const layerConfigs = [
     { key: 'measuredScenes', schemaName: 'measured_scene' },
@@ -400,9 +399,15 @@ function validateContractAgainstSchemas(contract, schemaOverrides = {}) {
     designSystem: { valid: true, errors: [] }
   };
 
+  const hasOverrides = schemaOverrides && Object.keys(schemaOverrides).length > 0;
+  let dynamicAjv = null;
+  if (hasOverrides) {
+    dynamicAjv = new Ajv2020({ allErrors: true, strict: false });
+    addFormats(dynamicAjv);
+  }
+
   for (const { key, schemaName } of layerConfigs) {
     const data = contract[key];
-    const schema = loadSchema(schemaName);
 
     if (!data) {
       const msg = `[${key}] Missing required layer in contract bundle`;
@@ -412,16 +417,68 @@ function validateContractAgainstSchemas(contract, schemaOverrides = {}) {
       continue;
     }
 
-    if (schema && data) {
-      const validate = ajv.compile(schema);
-      const valid = validate(data);
-      if (!valid) {
-        layers[key].valid = false;
-        for (const err of validate.errors) {
-          const msg = `[${key}] ${err.instancePath} ${err.message} (${err.keyword})`;
-          errors.push(msg);
-          layers[key].errors.push(msg);
+    if (hasOverrides) {
+      const schema = schemaOverrides[schemaName] || (() => {
+        const p = path.join(schemaDir, `${schemaName}.json`);
+        return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : null;
+      })();
+      if (schema) {
+        const validate = dynamicAjv.compile(schema);
+        const valid = validate(data);
+        if (!valid) {
+          layers[key].valid = false;
+          for (const err of validate.errors) {
+            const msg = `[${key}] ${err.instancePath} ${err.message} (${err.keyword})`;
+            errors.push(msg);
+            layers[key].errors.push(msg);
+          }
         }
+      }
+    } else {
+      let validator;
+      if (key === 'measuredScenes') validator = validateMeasuredScene;
+      else if (key === 'layoutIntent') validator = validateLayoutIntent;
+      else if (key === 'behaviorContract') validator = validateBehaviorContract;
+      else if (key === 'designSystem') validator = validateDesignSystem;
+
+      if (validator) {
+        const valid = validator(data);
+        if (!valid) {
+          layers[key].valid = false;
+          for (const err of (validator.errors || [])) {
+            const msg = `[${key}] ${err.instancePath} ${err.message} (${err.keyword})`;
+            errors.push(msg);
+            layers[key].errors.push(msg);
+          }
+        }
+      }
+    }
+  }
+
+  // Validate owner approvals if present in contract
+  if (Array.isArray(contract.ownerApprovals)) {
+    layers.ownerApprovals = { valid: true, errors: [] };
+    for (let i = 0; i < contract.ownerApprovals.length; i++) {
+      const approval = contract.ownerApprovals[i];
+      const valid = validateOwnerApproval(approval);
+      if (!valid) {
+        layers.ownerApprovals.valid = false;
+        for (const err of (validateOwnerApproval.errors || [])) {
+          const msg = `[ownerApprovals[${i}]] ${err.instancePath} ${err.message} (${err.keyword})`;
+          errors.push(msg);
+          layers.ownerApprovals.errors.push(msg);
+        }
+      }
+    }
+  } else if (contract.ownerApproval && typeof contract.ownerApproval === 'object') {
+    layers.ownerApproval = { valid: true, errors: [] };
+    const valid = validateOwnerApproval(contract.ownerApproval);
+    if (!valid) {
+      layers.ownerApproval.valid = false;
+      for (const err of (validateOwnerApproval.errors || [])) {
+        const msg = `[ownerApproval] ${err.instancePath} ${err.message} (${err.keyword})`;
+        errors.push(msg);
+        layers.ownerApproval.errors.push(msg);
       }
     }
   }
@@ -455,6 +512,14 @@ function writeContractToDisk(arg1, arg2, arg3, arg4) {
 
   if (!validation) {
     validation = validateContractAgainstSchemas(contract);
+  }
+
+  if (fs.existsSync(outputDir)) {
+    const st = fs.statSync(outputDir);
+    if (!st.isDirectory()) {
+      const { InputError } = require('../agent/safety');
+      throw new InputError(`output directory "${outputDir}" collides with a protected regular file`);
+    }
   }
 
   try {
@@ -659,5 +724,6 @@ module.exports = {
   validateScreenId,
   checkDuplicateSourceIds,
   writeContractToDisk,
-  computeSha256
+  computeSha256,
+  validateOwnerApproval
 };

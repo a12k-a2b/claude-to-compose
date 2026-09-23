@@ -1,299 +1,234 @@
 ---
 name: claude-to-compose
-description: Convert Claude Design web artifacts into production-ready Jetpack Compose Android applications with verified visual and UX fidelity
+description: Autonomous design retrofit compiler and verification harness for existing Jetpack Compose applications targeting Daylight Computer (DC1) LivePaper.
 ---
 
-# Claude to Compose: Antigravity Custom Skill & Multi-Agent Workflow
+# Claude to Compose (`ctc`): Antigravity Retrofit & Verification Skill
 
-The `claude-to-compose` skill automates the translation of web-based Claude Design shareable artifacts (`claude.site`, `claude.ai/share`) and local HTML/CSS bundles into production-grade, idiomatic Android Jetpack Compose Material 3 applications.
-
-This skill orchestrates a 4-agent autonomous pipeline that performs headless DOM and asset extraction, architectural Kotlin synthesis, native UX touch and motion mapping, and dual-track programmatic and perceptual visual verification.
+The `claude-to-compose` (`ctc`) skill enables Antigravity agents to inspect existing functional Android applications, ingest approved Claude Design redesigns, synthesize native Jetpack Compose UI with Sol:OS 8-bit grayscale tokens, and execute an automated, fail-closed verification loop on Daylight Computer (DC1) LivePaper hardware.
 
 ---
 
-## Slash Command Workflow Trigger
+## 1. Core Architecture & Operating Modes
 
-The primary user entry point is the `/claude-to-compose` slash command.
+`ctc` operates under two modes, with **Retrofit Mode** as the primary:
+1. **Retrofit Mode (Primary)**: Takes an existing, functional Android application and an approved Claude Design specification, generates correspondence mappings, scaffolds an isolated descendant Git worktree, and restyles presentation composables while strictly preserving domain architecture, Room databases, ViewModel state flows, back navigation, and test tags.
+2. **Greenfield Mode (Secondary)**: Synthesizes standalone Compose screens and M3 theme bundles when no pre-existing Android codebase exists.
 
-### Syntax
+### Slash Command Workflow: `/claude-to-compose`
+When invoked via the `/claude-to-compose` slash command, Antigravity agents execute the autonomous compiler pipeline across three high-level phases:
+- **Extraction**: Inspects existing Android application AST, captures design artifacts, and builds formal 4-layer design contracts.
+- **Synthesis**: Restyles and synthesizes Jetpack Compose UI with Sol:OS 8-bit grayscale tokens, strictly confined to candidate worktree boundaries.
+- **Verification**: Executes the progressive 6-stage verification gate on Daylight Computer (DC1) LivePaper hardware and runs the causal defect oracle for iterative remediation.
+
+---
+
+## 2. The 8-Stage Retrofit Workflow
+
+Antigravity agents execute retrofits through an 8-stage sequence powered by the local `ctc` CLI (`bin/ctc.js`):
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        8-STAGE RETROFIT WORKFLOW                       │
+└────────────────────────────────────────────────────────────────────────┘
+  Stage 1: Preflight       node bin/ctc.js doctor --json
+              │
+              ▼
+  Stage 2: Baseline        node bin/ctc.js init && node bin/ctc.js baseline <app-dir> --json
+              │
+              ▼
+  Stage 3: Inspect App     node bin/ctc.js inspect-app <app-dir> --json
+              │
+              ▼
+  Stage 4: Capture Design  node bin/ctc.js capture <design-dir> && ctc contract build <screen>
+              │
+              ▼
+  Stage 5: Map & Plan      node bin/ctc.js map <contract> <app-dir> && ctc plan <map>
+              │
+              ▼
+  Stage 6: Agent Worktree  node bin/ctc.js agent worktree --android <app> --branch <b> --output <wt>
+              │
+              ▼
+  Stage 7: Verify Gate     node bin/ctc.js verify <screen> --candidate <wt> --json
+              │
+              ├───[PASS]───► Certify & Merge Worktree
+              │
+              ▼
+  Stage 8: Causal Defects  node bin/ctc.js defects --report <report.json> --json
+                           (Apply inverse geometric offsets & re-verify)
+```
+
+### Stage 1: Preflight (`ctc doctor`)
+Validates local system prerequisites:
+- Node.js >= 18.0.0
+- Playwright browser binaries
+- JDK 17 (Java Virtual Machine)
+- Android SDK (`ANDROID_HOME`, `adb`)
+- Connected Daylight Computer (DC1) tablet (`rooted 3` / `rooted 4`) with root access (`su 0`).
 ```bash
-/claude-to-compose <input-url-or-file> [options]
+node bin/ctc.js doctor --json
 ```
 
-### Parameters & Arguments
-- `<input>` (Required): Target URL (`https://claude.site/...`, `https://claude.ai/share/...`) or local HTML file path (`tests/fixtures/s1_saas_dashboard/index.html`).
-- `-o, --output <dir>`: Spec and screenshot output directory (default: `./output`).
-- `-a, --android-dir <dir>`: Android project root directory (default: `./android`).
-- `-p, --package <pkg>`: Base Kotlin package name (default: `com.claude.compose`).
-- `--viewport <types>`: Viewports to extract: `mobile`, `desktop`, or `both` (default: `both`).
-- `--clean`: Clean output and generated directories before execution.
-- `--skip-extract`: Skip extraction if a validated `design_spec.json` already exists.
-- `--skip-gradle`: Skip Gradle compilation and preview rendering (for offline/dry-run environments).
-- `--max-iterations <n>`: Maximum iterative refinement attempts if visual similarity < 90 (default: `3`).
-- `--min-score <n>`: Minimum verification rubric pass threshold (default: `90`).
-- `--debug`: Enable verbose diagnostic logging.
-
-### Invocation Examples
+### Stage 2: Workspace Init & Baseline (`ctc init`, `ctc baseline`)
+Initializes the `.ctc/` workspace directory and records an immutable baseline snapshot of the unmodified Android project:
+- Verifies Git working tree is clean.
+- Executes `./gradlew compileDebugKotlin` and `./gradlew testDebugUnitTest`.
+- Captures test results, commit hash, and build artifacts into `app-baseline.json`.
 ```bash
-# Ingest remote Claude shareable link
-/claude-to-compose https://claude.site/artifacts/4a1b2c3d -o ./output/saas_spec
+node bin/ctc.js init
+node bin/ctc.js baseline ./fixtures/note-app --json
+```
 
-# Ingest local HTML artifact fixture
-/claude-to-compose tests/fixtures/s1_saas_dashboard/index.html -o ./output/dashboard --package com.claude.compose
+### Stage 3: Lexical App Inspection (`ctc inspect-app`)
+Parses the target Android application AST:
+- Discovers composable screens, navigation routes (`NoteAppDestination`), ViewModels (`NoteEditorViewModel`), actions (`NoteEditorAction`), Room DAOs (`NoteDao`), and UI test tags (`NoteAppTestTags`).
+- Identifies behavior invariants: 500ms debounced autosave, Room persistence, and back navigation.
+- Emits `existing-app-model.json`.
+```bash
+node bin/ctc.js inspect-app ./fixtures/note-app --json
+```
 
-# Headless extraction CLI invocation (direct engine execution)
-node bin/claude-extract.js tests/fixtures/s1_saas_dashboard/index.html -o ./output/dashboard --viewport both
+### Stage 4: Design Contract Extraction (`ctc capture`, `ctc contract build`)
+Extracts a 4-layer immutable design contract from the Claude Design artifact:
+- **Layer 1 (Measured Scene)**: Absolute bounding boxes, paint order, baseline offsets, font resources.
+- **Layer 2 (Inferred Layout Intent)**: Flex/Row/Column/Box topology, gaps, padding, and responsive breakpoints (1184 x 1584 portrait, 1584 x 1184 landscape).
+- **Layer 3 (Behavior Contract)**: Gesture dynamics, focus transitions, loading/empty states.
+- **Layer 4 (Design System)**: Sol:OS 8-bit neutral tokens (`--os-0` to `--os-1000`) and WCAG AAA contrast rules.
+```bash
+node bin/ctc.js capture ./fixtures/claude_design_bundle --screen note_editor --json
+node bin/ctc.js contract build note_editor --json
+```
 
-# Autonomous end-to-end workflow runner
-node skills/claude-to-compose/workflow.js tests/fixtures/s1_saas_dashboard/index.html
+### Stage 5: Correspondence Mapping & Migration Planning (`ctc map`, `ctc plan`)
+Establishes 1:1 correspondences between Claude Design elements and existing Kotlin symbols:
+- Maps design nodes to composable functions and UI state properties.
+- Defines strict `allowedModificationPaths` (e.g. `app/src/main/java/com/claude/noteapp/ui/editor/**`).
+- Designates `forbiddenPaths` (DAOs, Room database, ViewModels, navigation).
+- Emits `correspondence.json` and `migration-plan.json`.
+```bash
+node bin/ctc.js map .ctc/designs/note_editor/contract/design-contract.json ./fixtures/note-app --screen note_editor --json
+node bin/ctc.js plan .ctc/designs/note_editor/mapping/correspondence.json --screen note_editor --json
+```
+
+### Stage 6: Automated Worktree Scaffolding (`ctc agent worktree`)
+Provisions an isolated Git worktree branched off the clean baseline commit and seeds coding agent contexts:
+- Executes `git worktree add -b <branch> <output> HEAD`.
+- Seeds `.ctc-workspace.json` marker.
+- Generates `agent-packet.json` (Draft 2020-12) and `AGENT_PACKET.md` (< 300 lines) at candidate root.
+- Scaffolds harness rules (`.cursorrules`, `.cursor/rules/ctc-retrofit.mdc`, `CLAUDE.md`, `.claude/skills/ctc/`).
+```bash
+node bin/ctc.js agent worktree \
+  --android ./fixtures/note-app \
+  --workspace . \
+  --branch retrofit/note_editor \
+  --output ./worktrees/candidate_note_editor \
+  --screen note_editor \
+  --json
+```
+
+### Stage 7: 6-Stage Progressive Verification (`ctc verify`)
+Executes the fail-closed verification pipeline on the candidate worktree:
+1. **Stage 1: Schema & Worktree Provenance**: Verifies descendant worktree ancestry, clean baseline, symlink audit, and strict `allowedPaths` confinement.
+2. **Stage 2: Android Compilation & Contrast**: Executes `./gradlew compileDebugKotlin` and evaluates Sol:OS 8-bit grayscale contrast (WCAG AAA >= 7.0:1 for normal text).
+3. **Stage 3: Layout Telemetry & Touch Geometry**: Asserts all 11 `NoteAppTestTags` exist and validates >= 48dp invisible hit-slop.
+4. **Stage 4: Perceptual Metrics & Invariants**: Evaluates Sobel edge contour alignment (>= 85%), MSSIM (>= 0.72), Ink Dice (>= 0.85), spatial drift (<= 3.0px), and verifies Room autosave unit tests pass.
+5. **Stage 5: Behavioral Scenario Replay**: Replays interaction states and portrait/landscape rotations.
+6. **Stage 6: DC1 Hardware Qualification**: Deploys APK to connected DC1 tablet and verifies zero EPD waveform flashes.
+```bash
+node bin/ctc.js verify note_editor --app-dir ./fixtures/note-app --candidate ./worktrees/candidate_note_editor --json
+```
+
+### Stage 8: Causal Defect Diagnosis (`ctc defects`)
+When verification fails (Exit Code 1), the Defect Oracle attributes discrepancies to root causes:
+- Attributes errors to stable element IDs (e.g., `daylight#note_editor/title_input`).
+- Diagnoses root causes (`PARENT_INSET_ACCUMULATION`, `THEME_TOKEN_MISREFERENCE`, `TOUCH_TARGET_TOO_SMALL`).
+- Emits actionable AST directives and inverse offset/padding adjustments.
+```bash
+node bin/ctc.js defects --report .ctc/reports/verification-report.json --json
 ```
 
 ---
 
-## Pipeline Execution Phases
+## 3. Daylight Computer (DC1) LivePaper Hardware Profile
 
-The end-to-end translation pipeline transitions sequentially through three primary phases: **Extraction**, **Synthesis**, and **Verification**.
+### 3.1 Display Architecture (LivePaper)
+- **Technology**: Custom **Reflective LCD / Transflective LCD** (LivePaper).
+- **Refresh Rate**: Native **60Hz to 120Hz** (silky smooth, full fluid framerate).
+- **Color Depth**: **8-bit Grayscale (256 discrete levels of gray)**, monochrome.
+- **Physical Characteristics**: Reflects ambient light (sunlight readable, zero blue light), illuminated by pure amber frontlight.
+- **Display Pipeline**: Driven by standard Android `SurfaceFlinger`, `Choreographer`, `VSYNC`, Skia/HWUI rendering with GPU double/triple buffering.
 
-```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                            PIPELINE ARCHITECTURE                             │
-└──────────────────────────────────────────────────────────────────────────────┘
- [Input URL / HTML]
-         │
-         ▼
-┌──────────────────┐
-│ EXTRACTION PHASE │  Extractor Agent (Playwright Engine)
-│                  │  • Hydration barrier & frame piercing
-│                  │  • Computed layout, typography, colors, shadows, borders
-│                  │  • SVG vector parsing & multi-viewport screenshots
-└────────┬─────────┘
-         │ Artifacts: design_spec.json + mobile/desktop screenshots + SVGs
-         ▼
-┌──────────────────┐
-│ SYNTHESIS PHASE  │  Compose Architect & Motion Specialist Agents
-│                  │  • M3 Design Tokens (Theme.kt, Color.kt, Type.kt, Elevation.kt, Shape.kt)
-│                  │  • Atomic Composables (Buttons, Cards, Inputs, Badges, etc.)
-│                  │  • Full Screen Assembly (ClaudeDesignScreen.kt)
-│                  │  • Motion, touch ripple & touch target compliance (>= 48dp)
-│                  │  • Interactive Light/Dark @Previews
-└────────┬─────────┘
-         │ Artifacts: Synthesized Kotlin Android source tree
-         ▼
-┌──────────────────┐
-│VERIFICATION PHASE│  Visual QA Agent (Gradle + Pixelmatch/SSIM + Rubric)
-│                  │  • ./gradlew compileDebugKotlin (0 errors)
-│                  │  • ./gradlew testDebugUnitTest (Robolectric preview capture)
-│                  │  • Pixelmatch & SSIM visual diff against mobile reference
-│                  │  • 10-Point Agent-as-Judge Audit Rubric (score >= 90)
-│                  │  • Output: verification_report.md
-└────────┬─────────┘
-         │
-         ├───[Score < 90]───► Iterative Refinement Loop (max 3 cycles) ──► Re-synthesize
-         │
-         └───[Score >= 90]──► PROCEED_PUBLISH (Git commit & GitHub push)
-```
+### 3.2 ZERO EPD / E-Ink Workarounds — STRICT PROHIBITIONS
+You must NEVER treat, describe, or program for the DC1 as an Electronic Paper Display (EPD) or E-Ink panel.
+- **NO Waveforms or Particle Refreshes**: There are NO microcapsules or electrophoretic particles.
+- **NO Ghosting / Artifacting**: The panel has zero physical ghosting.
+- **NEVER use E-ink Screen Flash Hooks**: Never broadcast `ACTION_REFRESH_SCREEN`, never trigger waveform clear flashes, and never introduce artificial pauses or delays on modal dismissal.
+
+### 3.3 Official Daylight Sol:OS Grayscale Scale
+Always use the pre-calibrated Sol:OS neutral scale from `tokens/colors.css`:
+- `--os-0`: `#FFFFFF` (Base paper / ground)
+- `--os-50`: `#F7F7F7` (Surface panels / cards)
+- `--os-100`: `rgba(0,0,0,0.08)` / `#DCD5C9` (Hairline borders, 1dp)
+- `--os-150`: `#F5F5F5` (Recessed canvas / input fields)
+- `--os-200`: `#CCCCCC` (Disabled controls / inactive chips)
+- `--os-300`: `#858585` (Low emphasis / tertiary text)
+- `--os-400`: `#535353` (Secondary text ink / icons)
+- `--os-800`: `#343434` (Dark fields / pressed states)
+- `--os-900`: `#1A1A1A` (Primary text ink / headlines)
+- `--os-1000`: `#000000` (Max black ink / focus rings)
+- **Calibrated Brand Grays**: Yellow -> `#CECECE`, Amber -> `#9D9D9E`, Orange -> `#6C6C6D`.
+
+### 3.4 Kinematics & Touch Modeling
+- **Hardware Coordinate Inset**: Active display incorporates a **+8px hardware coordinate inset**. Touch coordinates must account for this boundary.
+- **Capacitive Touch Modeling**: Linux Multi-Touch Protocol B (`/dev/input/event2`). Uses Minimum Jerk velocity profiles, contact ellipse deformation, and Fitts's Law duration.
+- **Stylus Digitizer**: Wacom I2C Digitizer (`/dev/input/event4`) supporting 4096 pressure levels and tilt ([-9000, 9000]).
+- **Latency Standards**: Sub-frame (<16ms) response for physical keyboard events (`<Esc>`, `<Enter>`, `<1>`, `<2>`). Fluid 60fps/120fps animations.
+- **Touch Target Compliance**: >= 48dp x 48dp touch targets implemented via invisible hit-slop (`Modifier.minimumInteractiveComponentSize()`), never inflating visual container bounds.
+
+### 3.5 Connected Hardware & Device Concurrency
+- **`rooted 3`**: Serial `JMBR00380` (Model: DC_1, Product: vext_jagar, Rooted via `su 0`)
+- **`rooted 4`**: Serial `JMBR00405` (Model: DC_1, Product: vext_jagar, Rooted via `su 0`)
+- **Concurrency Etiquette**: When multiple agents or threads are running, check status via `daylight_fleet_status`. If one tablet is leased or busy, target the other device. Never issue conflicting input streams or reboot a device in active use.
 
 ---
 
-### Phase 1: Extraction Phase
+## 4. Antigravity Tool Patterns & MCP Integrations
 
-**Responsible Role**: Extractor Agent (`skills/claude-to-compose/prompts/extractor_agent.md`)  
-**CLI Tool**: `bin/claude-extract.js` (`claude-extract`)  
-**Core Engine**: `extractor/engine.js`
-
-1. **Target Ingestion & Frame Piercing**:
-   - Accepts public Claude URLs (`https://claude.site/...`, `https://claude.ai/share/...`) or local HTML/CSS files.
-   - For remote URLs: detects sandboxed `claudeusercontent.com` iframes and pierces through the parent DOM to the target application root.
-   - For local files: spins up an ephemeral HTTP server on `127.0.0.1` to prevent CORS and local asset loading restrictions.
-2. **5-Phase Hydration Barrier Synchronization**:
-   - Stage 1: `networkidle` (zero pending network connections for >= 500ms).
-   - Stage 2: DOM Ready (document interactive state).
-   - Stage 3: Tailwind CDN evaluation & dynamic CSS injection check.
-   - Stage 4: Font loading barrier (`document.fonts.ready` promise resolution).
-   - Stage 5: Settling delay (300ms post-render stabilization).
-3. **Computed Token & Tree Extraction**:
-   - Recursively traverses the resolved DOM hierarchy via `extractor/dom_walker.js`.
-   - Layout: Flexbox (`flex-direction`, `justify-content`, `align-items`, `gap`), CSS Grid, absolute positions, padding, margin, box-sizing.
-   - Typography: Font family, computed font weight (100-900), font size (px), line height, letter spacing, text alignment, text transform.
-   - Colors: Background, foreground/text, border colors normalized to Hex (`#RRGGBB` / `#AARRGGBB`) and RGBA with chromatic significance scoring.
-   - Elevations & Shadows: `box-shadow` x/y offsets, blur radius, spread radius, shadow color.
-   - Borders & Shapes: Border widths, styles, colors, and 4-corner radii.
-4. **SVG Vector Asset Extraction**:
-   - Parses inline `<svg>` elements and linked `.svg` files via `extractor/svg_parser.js`.
-   - Normalizes viewports, viewBoxes, paths, fill/stroke rules, and saves standardized SVGs to `output/assets/`.
-5. **Multi-Viewport Screenshot Capture**:
-   - Mobile Viewport: 390x844 CSS pixels at 3.0x device scale factor (1170x2532 physical resolution). Saved to `output/screenshots/mobile_reference.png`.
-   - Desktop Viewport: 1440x900 CSS pixels at 2.0x device scale factor (2880x1800 physical resolution). Saved to `output/screenshots/desktop_reference.png`.
-6. **Specification Output**:
-   - Validates spec against JSON Schema Draft 2020-12 (`extractor/schema.json`).
-   - Emits canonical `output/design_spec.json`.
-
----
-
-### Phase 2: Synthesis Phase
-
-**Responsible Roles**: Compose Architect Agent (`prompts/compose_architect_agent.md`) & Motion Specialist Agent (`prompts/motion_specialist_agent.md`)  
-**CLI Tool**: `synthesizer/index.js` (`claude-synthesize`)  
-**Target Project**: `android/app/src/main/java/com/claude/compose/`
-
-1. **Design Tokens Generation (`theme/`)**:
-   - `Theme.kt`: Complete Material 3 Theme wrapper supporting dynamic theme switching (`isSystemInDarkTheme()`) and providing `MaterialTheme(colorScheme, typography, shapes, content)`.
-   - `Color.kt`: Light and Dark `ColorScheme`s mapped from extracted primary, secondary, surface, background, outline, and container colors.
-   - `Type.kt`: Material 3 `Typography` scale (Display, Headline, Title, Body, Label) mapped from extracted font sizes, weights, and line heights.
-   - `Elevation.kt` & `Shape.kt`: Elevation tokens (Level 0 through 5) and `RoundedCornerShape` tokens matching extracted corner radii.
-2. **Vector Graphics Translation (`icons/` & `res/drawable/`)**:
-   - Generates Compose `ImageVector` DSL objects in `icons/ClaudeIcons.kt`.
-   - Generates Android XML `VectorDrawable` files in `res/drawable/ic_*.xml`.
-3. **Atomic Components Synthesis (`components/`)**:
-   - Generates standalone, modular composables:
-     - `AppButton.kt`: Buttons with variants (Filled, Outlined, Text), loading states, and minimum touch target size.
-     - `AppCard.kt`: Elevated and outlined cards matching extracted shadows and shapes.
-     - `AppTextField.kt`: Text inputs with placeholder, error text, and focus borders.
-     - `AppBadge.kt`, `AppChip.kt`, `AppCheckbox.kt`, `AppRadioButton.kt`.
-     - `AppNavigation.kt`: Navigation headers, tabs, and bottom action bars.
-   - Enforces clean state hoisting: callers pass value and event lambdas (`onValueChange: (String) -> Unit`, `onClick: () -> Unit`).
-4. **Motion & UX Translation (`motion/`)**:
-   - Maps web hover and focus states to native Android touch ripples (`MutableInteractionSource`, `collectIsPressedAsState()`).
-   - Maps CSS transitions and keyframes to Compose animations (`AnimatedVisibility`, `animateColorAsState`, `animateFloatAsState`, `tween()`, `spring()`).
-   - Generates `TouchTarget.kt`: Enforces >= 48dp touch targets via `Modifier.minimumInteractiveComponentSize()`.
-   - Generates `MotionTokens.kt`: Standardized animation duration and easing curves.
-5. **Full Screen Assembly & Previews (`screen/`)**:
-   - Generates `ClaudeDesignScreen.kt` composing atomic components into scrollable layouts (`LazyColumn` or `Column(Modifier.verticalScroll())`).
-   - Employs `rememberSaveable` for reactive state persistence (active tabs, toggle states, input forms).
-   - Generates interactive `@Preview` annotations covering Light Theme, Dark Theme (`uiMode = UI_MODE_NIGHT_YES`), and device form factors.
-
----
-
-### Phase 3: Verification Phase
-
-**Responsible Role**: Visual QA Agent (`prompts/visual_qa_agent.md`)  
-**Harness**: Gradle Build + Robolectric + Pixelmatch + SSIM + Agent-as-Judge  
-**Report Output**: `verification_report.md`
-
-1. **Programmatic Build & Lint Verification**:
-   - Executes `./gradlew compileDebugKotlin` in `android/`.
-   - Enforces 0 compilation errors and clean Material 3 imports.
-2. **Headless Preview Capture**:
-   - Executes `./gradlew testDebugUnitTest` running JUnit4 Robolectric test `PreviewScreenshotTest.kt`.
-   - Captures the `@Preview` composable using Robolectric Native Graphics (RNG) and outputs `android/app/build/outputs/preview/rendered_preview.png`.
-3. **Programmatic Visual Diff**:
-   - Executes `node verification/run_diff.js --ref output/screenshots/mobile_reference.png --rendered android/app/build/outputs/preview/rendered_preview.png --output output/diff`.
-   - Quantifies visual fidelity:
-     - `pixelMismatchCount`: Total pixel count differing between reference and rendered preview.
-     - `pixelSimilarityPercentage`: ((Total - Mismatch) / Total) * 100.
-     - `mssimScore`: Mean Structural Similarity Index (0.0 - 1.0).
-     - Generates diff overlay (`diff_overlay.png`) and 3-way side-by-side composite (`composite.png`).
-4. **Agent-as-Judge 10-Point Audit Rubric**:
-   Evaluates 10 distinct quality dimensions (each scored 0 - 10 points, total 100 points):
-   1. Typography Hierarchy & Scaling
-   2. Color System & Contrast Fidelity
-   3. Layout Alignment & Spacing Grid
-   4. Corner Radii & Shape Consistency
-   5. Elevation & Shadow Accuracy
-   6. Vector Asset & Icon Fidelity
-   7. Interactive State Coverage (Hoisting & Lambdas)
-   8. Touch Target Compliance (>= 48dp)
-   9. Accessibility Semantics (Labels & Roles)
-   10. Motion & Animation Specification Fidelity
-   - **Pass Mathematics**: Total Score >= 90 / 100.
-   - **Veto Rule**: If any single dimension scores < 5 / 10, the audit fails automatically (`veto: true`), triggering the refinement loop regardless of total score.
-5. **Verification Report Generation**:
-   - Compiles all quantitative metrics, test logs, embedded composite screenshots, and the rubric scoring table into `verification_report.md`.
-
----
-
-## Multi-Agent Role Workflow & Handoff Sequence
-
-The pipeline executes through an explicit 4-stage handoff sequence between specialized agent roles:
-
-```
-Stage 1: Extractor Agent
-  │  (Executes headless Playwright inspection, captures DOM tokens & screenshots)
-  │  Emits: design_spec.json + screenshots/mobile_reference.png + assets/*.svg
-  ▼
-Stage 2: Compose Architect Agent
-  │  (Synthesizes M3 tokens, atomic composables, and ClaudeDesignScreen.kt)
-  │  Emits: Kotlin M3 composables and preview annotations
-  ▼
-Stage 3: Motion & UX Specialist Agent
-  │  (Implements rememberSaveable states, touch ripples, AnimatedVisibility)
-  │  Emits: Enhanced interactive composables with >= 48dp touch targets
-  ▼
-Stage 4: Visual QA Agent
-  │  (Runs Gradle build, Robolectric preview capture, Pixelmatch/SSIM diff, audit rubric)
-  │  Emits: verification_report.md
-  ▼
-Decision:
-  • Score < 90 or Veto < 5 ──► TRIGGER_REFINEMENT (route feedback to Architect / Motion)
-  • Score >= 90            ──► PROCEED_PUBLISH (handoff to Sentinel / Orchestrator)
+### 4.1 Shell Command Execution Patterns (`run_command`)
+Execute all `ctc` CLI commands with the `--json` flag to enable deterministic output parsing:
+```bash
+node bin/ctc.js doctor --json
+node bin/ctc.js baseline ./fixtures/note-app --json
+node bin/ctc.js inspect-app ./fixtures/note-app --json
+node bin/ctc.js verify note_editor --app-dir ./fixtures/note-app --candidate ./worktrees/candidate_note_editor --json
+node bin/ctc.js defects --report .ctc/reports/verification-report.json --json
 ```
 
-### Exact Handoff Transitions
-1. `Extractor -> design_spec.json + screenshots -> Compose Architect`
-2. `Compose Architect -> Kotlin M3 Composables -> Motion Specialist`
-3. `Motion Specialist -> State & Animations -> Visual QA`
-4. `Visual QA -> verification_report.md -> Sentinel / Orchestrator`
+### 4.2 Standard Exit Code Protocol
+| Exit Code | Status | Meaning | Agent Action |
+|---|---|---|---|
+| `0` | `PASS` | All stages passed cleanly | Proceed to merge / certification |
+| `1` | `FAIL` | Verification failure / regression | Invoke `ctc defects` and apply inverse remediation |
+| `2` | `BLOCKED` | Missing baseline, unapproved deviation | Halt and report blocker; request human approval |
+| `3` | `INPUT_INVALID` | Argument error, path traversal, boundary breach | Fix arguments or confine edits to `allowedPaths` |
+| `4` | `INFRASTRUCTURE_ERROR` | Missing binary, device disconnect | Reconnect device or check toolchain |
+
+### 4.3 Daylight QA MCP Tool Integrations
+- `daylight_fleet_status`: Query connected DC1 tablets and check exclusive concurrency leases.
+- `daylight_touch_tap`: Biomechanically modeled touch tap with +8px inset compensation.
+- `daylight_touch_swipe`: Ergonomic thumb arc swipe following CMC joint pivot kinematics.
+- `daylight_micro_scroll`: Human reading scroll dynamics with perpendicular Gaussian micro-tremor.
+- `daylight_wacom_stroke`: High-precision stylus stroke (4096 pressure levels, tilt X/Y).
+- `daylight_capture_screen`: Capture LivePaper frame and evaluate 8-bit contrast and Sol:OS tokens.
+- `daylight_query_ui`: Inspect Android UI Automator accessibility tree for test tags and click centers.
+- `daylight_closed_loop_step`: Atomic Action -> Settle (150ms) -> Screencap & Hierarchy -> Evaluate cycle.
 
 ---
 
-## Error Escalation and Recovery Protocols
-
-When encountering unexpected faults during execution, agents must follow these standardized troubleshooting and recovery protocols.
-
-### 1. Network Failures & Unreachable URLs
-- **Symptoms**: `ERR_CONNECTION_REFUSED`, `ENOTFOUND`, HTTP 4xx/5xx responses during extraction.
-- **Recovery Protocol**:
-  1. Retry navigation up to 3 times using exponential backoff (1s, 2s, 4s).
-  2. For local HTML file inputs, verify file readability and ensure the ephemeral HTTP server is listening on `127.0.0.1` before attempting browser navigation.
-  3. If the host is unreachable after retries, the Extractor Agent exits with code `4` (`NAVIGATION_FAILED`).
-  4. Escalate to Orchestrator: Report failed URL, HTTP status code, and suggest providing a downloaded local HTML/CSS bundle.
-
-### 2. Hydration Timeout & Dynamic Framework Stalls
-- **Symptoms**: `HydrationTimeoutError`: DOM not settled within 30,000ms; pending XHR/fetch requests.
-- **Recovery Protocol**:
-  1. Re-run extraction with extended timeout: `--timeout 60000`.
-  2. Check if the root container (`#root`, `#app`, `[data-artifact-id]`) contains populated children despite pending background polling.
-  3. If DOM children exist, proceed with extraction and log a hydration warning.
-  4. If the DOM remains empty after 60s, exit with code `5` (`HYDRATION_TIMEOUT`).
-  5. Escalate to Orchestrator: Provide snapshot of unresolved network requests and recommendations for manual HTML extraction.
-
-### 3. Kotlin & Gradle Compilation Errors
-- **Symptoms**: `./gradlew compileDebugKotlin` exits with non-zero status; unresolved symbol, syntax error, or deprecated M3 API.
-- **Recovery Protocol**:
-  1. Visual QA Agent intercepts the Gradle compiler output (`stderr`) and extracts the failing file path, line number, and error message.
-  2. Creates a localized defect ticket and routes directly back to the Compose Architect Agent.
-  3. Compose Architect Agent inspects the error:
-     - Missing import -> add correct `androidx.compose.material3.*` import.
-     - Type mismatch -> adjust `Dp`, `Color`, or lambda signature.
-     - Resource ID collision -> normalize `R.drawable.*` naming.
-  4. Synthesizer re-emits patched Kotlin file.
-  5. Pipeline re-triggers `./gradlew compileDebugKotlin`.
-  6. Maximum allowable compile recovery cycles: 3 attempts. If compilation fails 3 times, abort and escalate to human supervisor.
-
-### 4. Visual Regression & Rubric Failure (Score < 90 or Dimension < 5)
-- **Symptoms**: Visual similarity < 90%, MSSIM < 0.90, or 10-point audit rubric total < 90.
-- **Recovery Protocol (Iterative Refinement Loop)**:
-  1. Trigger status: `TRIGGER_REFINEMENT`.
-  2. Visual QA Agent analyzes the `diff_overlay.png` and rubric breakdown to identify top defect categories:
-     - Spacing/Layout: Component width/height or padding mismatch.
-     - Typography: Text line-height or font-size mismatch.
-     - Color/Contrast: Incorrect background/foreground hex mapping.
-     - Elevation: Shadow blur or elevation level mismatch.
-  3. Formulates structured refinement directives for Compose Architect and Motion Specialist:
-     - Target file: e.g. `android/.../components/AppCard.kt`
-     - Expected property: `shape = RoundedCornerShape(16.dp)`, `defaultElevation = 2.dp`
-  4. Compose Architect updates component generators and re-synthesizes code.
-  5. Visual QA re-runs `./gradlew testDebugUnitTest` and visual diff analysis.
-  6. Pipeline evaluates new score. If score >= 90 and no dimension < 5, transition to `PROCEED_PUBLISH`.
-  7. If score remains < 90 after 3 iterations, emit `verification_report.md` documenting remaining variances and escalate to Orchestrator for review.
-
----
-
-## Anti-Patterns & Prohibitions
-
-1. **NO Hardcoded Dimensions for Responsive Elements**: Do NOT use fixed pixel widths for full-width cards; use `Modifier.fillMaxWidth()` with padding.
-2. **NO Unhoisted Interactive State**: Do NOT keep input text or toggle values solely inside leaf composables; always expose `(value, onValueChange)` lambdas.
-3. **NO Sub-48dp Touch Targets**: Do NOT render clickable icons or small chips without `Modifier.minimumInteractiveComponentSize()`.
-4. **NO Raw Hex Values in UI Code**: Do NOT embed `Color(0xFF...)` directly inside screens; reference `MaterialTheme.colorScheme.*`.
-5. **NO Unvalidated Spec Passing**: Do NOT pass unvalidated JSON to the synthesizer; always validate against `extractor/schema.json`.
-6. **NO Skipping Verification**: Do NOT proceed to publishing without a passing Gradle build and generated `verification_report.md`.
+## 5. Anti-Patterns & Prohibitions
+1. **NO Greenfield Overwriting in Retrofit Mode**: Never overwrite existing app modules with disconnected demo scaffolds.
+2. **NO Modifying Domain or Storage Architecture**: Never alter Room DAOs, database schemas, ViewModel state flows, or event contracts.
+3. **NO EPD Flash Hooks or Waveform Delays**: Never use `ACTION_REFRESH_SCREEN` or artificial pauses.
+4. **NO Raw Hex Colors**: Never embed arbitrary hex codes; use pre-calibrated Sol:OS neutral tokens (`--os-0` to `--os-1000`).
+5. **NO Sub-48dp Touch Targets**: Never render interactive controls without >= 48dp hit-slop.
+6. **NO Mutating Verification Tolerances**: Never tamper with golden references or failure budgets to force green.

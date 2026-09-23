@@ -257,3 +257,67 @@ Reference document: docs/PROJECT_PLAN_EXISTING_APP_RETROFIT.md
 - [ ] Physical DC1 qualification validates live app deployment, capacitive touch interaction, and zero EPD waveform flashes on tablet hardware.
 - [ ] All 284 existing regression tests continue to pass without regressions.
 
+
+## 2026-09-23T06:14:14Z
+
+Integrate the external coding-agent integration layer (for Cursor, Claude Code, Antigravity, and Codex) and candidate Git worktree verification from the \`codex/design-retrofit-v1\` branch into \`branch-2\` of \`claude_to_compose\`, formalizing end-to-end agent-assisted design retrofits with automated worktree scaffolding, fail-closed safety, and rigorous adversarial audit.
+
+Working directory: /Users/anjan/.gemini/antigravity/scratch/claude_to_compose
+Git branch: branch-2
+Integrity mode: development
+Reference document: docs/PROJECT_PLAN_EXISTING_APP_RETROFIT.md
+
+## Requirements
+
+### R1. Candidate Git Worktree Isolation & Safety Subsystem
+- Implement the safety and path-confinement subsystem (\`src/agent/safety.js\`):
+  - Enforce atomic writes with \`O_NOFOLLOW\` to prevent symlink traversal attacks.
+  - Ban parent traversals (\`..\`), dangerous roots (\`/\`, \`$HOME\`), and source-sensitive symlinks.
+- Enhance \`ctc verify\` with \`--candidate <worktree-path>\`:
+  - Verify that \`--candidate\` is a real descendant Git worktree branched off the clean baseline repository.
+  - Disallow source-sensitive symlinks, verify git change tracking and hashes, and reject any edits outside \`implementationBoundary.allowedPaths\`.
+  - Validate workspace-relative evidence receipts and reject fabricated summaries or missing candidate APK/build hashes.
+
+### R2. Automated Worktree & Agent Context Scaffolder (\`ctc agent worktree\`)
+- Add the \`ctc agent worktree\` CLI command to automate developer onboarding:
+  - Takes \`--android <path>\`, \`--workspace <path>\`, \`--branch <branch-name>\`, and \`--output <candidate-path>\`.
+  - Automatically executes \`git worktree add\`, generates the scoped agent packet, and configures the target candidate directory for coding agents with a single command.
+
+### R3. First-Class Coding Agent Harnesses (Cursor, Claude Code, Antigravity, Codex)
+- Build first-class integrations and tool harnesses for all 4 major coding environments:
+  - **Cursor**: Generate project rules (\`.cursor/rules/\` and \`.cursorrules\`) instructing Cursor on reading agent packets, respecting boundaries, running \`ctc verify\`, and resolving structured defects.
+  - **Claude Code**: Generate \`CLAUDE.md\` and Claude Code skills (\`.claude/skills/ctc/\`) for running CLI commands and parsing JSON defect outputs.
+  - **Codex / OpenAI**: Produce structured agent system prompts and execution contracts in \`docs/CODING_AGENTS.md\`.
+  - **Antigravity**: Formalize the native skill in \`skills/claude-to-compose/SKILL.md\` connecting AGY agents directly to the local \`ctc\` CLI.
+
+### R4. Owner Approval & Intentional Deviation Contract
+- Integrate the Draft 2020-12 \`owner_approval.schema.json\` schema and manifest into \`src/contract/schemas/\`.
+- Support explicit human approvals for intentional deviations from standard Android behavior or design contracts (e.g. custom layout choices, accepted font substitutions).
+- Ensure that unapproved visual/behavioral deviations strictly result in \`FAIL\`, while missing required approvals result in \`BLOCKED\`.
+
+### R5. Unified Agent Quickstart & End-to-End Pilot Workflow
+- Deliver a comprehensive, reproducible quickstart (\`docs/QUICKSTART_CODING_AGENTS.md\`) demonstrating how an engineer in Cursor, Claude Code, Antigravity, or Codex executes a complete retrofit cycle from Claude Design link to native Compose on DC1 hardware.
+- Provide end-to-end integration tests verifying the full flow with an external agent workflow simulation on \`fixtures/note-app\`.
+
+### R6. Adversarial Audit & Regression Protection
+- Run adversarial stress suites testing candidate worktree forgery, path escapes, out-of-scope edits, and symlink attacks.
+- Ensure all 1,172 existing passing tests continue to pass 100% green without regressions.
+- Conduct a formal forensic integrity audit confirming zero stubs or test bypasses.
+
+## Acceptance Criteria
+
+### Worktree Safety & Verification
+- [ ] \`ctc verify --candidate <worktree>\` successfully verifies a valid descendant worktree and rejects non-worktree or dirty baseline checkouts.
+- [ ] Rejects any edit outside \`allowedPaths\` and any source-sensitive symlink.
+- [ ] Atomic file write protects against symlink race attacks.
+
+### Agent Tooling & Scaffolding
+- [ ] Generates valid configuration and instruction sets for Cursor (\`.cursorrules\`), Claude Code (\`CLAUDE.md\`), Codex, and Antigravity.
+- [ ] \`ctc agent worktree\` automatically spins up a clean candidate worktree pinned to the baseline commit.
+
+### Owner Approval & Deviations
+- [ ] Validates \`owner-approval.json\` against Draft 2020-12 schema; unapproved deviations cause deterministic \`FAIL\` or \`BLOCKED\`.
+
+### Regression & Integrity
+- [ ] All 1,172 current test scenarios across unit, E2E v2, and legacy regression suites pass 100% green.
+- [ ] Adversarial stress tests verify detection of forged receipts and worktree tampering.

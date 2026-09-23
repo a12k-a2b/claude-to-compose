@@ -18,7 +18,15 @@ function execute(parsed) {
     if (!screenId) {
       throw new Error('Screen ID required for "contract build" (e.g. ctc contract build note_editor)');
     }
-    const evidenceDir = parsed.flags.evidence || path.resolve('.ctc/designs', screenId, 'evidence');
+    const outputPath = parsed.flags.output || parsed.flags.o || parsed.flags.outputDir;
+    if (outputPath && fs.existsSync(outputPath)) {
+      const st = fs.statSync(outputPath);
+      if (!st.isDirectory()) {
+        const { InputError } = require('../../agent/safety');
+        throw new InputError(`output directory "${outputPath}" collides with a protected regular file`);
+      }
+    }
+    const evidenceDir = parsed.flags.evidence || (parsed.flags.workspace ? path.join(parsed.flags.workspace, 'evidence') : path.resolve('.ctc/designs', screenId, 'evidence'));
     const res = buildDesignContract(screenId, evidenceDir, {
       outputDir: parsed.flags.output,
       profile: parsed.flags.profile,
