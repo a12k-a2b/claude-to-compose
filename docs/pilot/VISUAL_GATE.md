@@ -65,7 +65,9 @@ The **same registered** landscape top-band region improved `4.751655` →
 wrong toolbar scored `52.566824`. The post-hoc left-pill diagnostic improved
 `10.258207` → `6.148098` MAE; the center and right pills and article region
 did not improve. The strict report is at
-`android/app/build/da63-gallery-evidence/repair-packet-v1-strict-report.json`.
+`android/app/build/da63-gallery-evidence/repair-packet-v1-strict-report.json`;
+the final integrated build produced the same candidate hash and result at
+`android/app/build/da63-gallery-evidence/final-integrated-strict-report.json`.
 This is evidence that the packet helped a targeted repair, not evidence that
 the tool can synthesize other scenes or that the finished UI matches the
 source. The registered crop still cuts off pill bottoms and lacks a sensitive

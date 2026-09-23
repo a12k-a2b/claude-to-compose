@@ -1,7 +1,7 @@
 {
   "title": "Claude-to-Compose design retrofit and native proof gallery",
-  "updated_at": "2026-09-23T08:36:45Z",
-  "current_focus": "Finish and test the synthetic gallery handoff; improve visual fidelity and packet-to-native repeatability before any production Note Overlay graft",
+  "updated_at": "2026-09-23T08:58:59Z",
+  "current_focus": "Owner evaluation of the synthetic gallery, then exact-size visual and motion repair before any production Note Overlay graft",
   "tasks": [
     {
       "id": "P1-01",
@@ -143,9 +143,13 @@
       "id": "P9-01",
       "phase": "9 — Owner evaluation",
       "title": "Deliver a testable proof app and honest comparison gallery for choosing a direction",
-      "status": "PENDING",
+      "status": "RUNNING",
       "acceptance": "Owner can compare the native variants and Claude references, exercise controls, and see remaining mismatches and device limitations before any production graft",
-      "evidence": []
+      "evidence": [
+        "docs/pilot/TEST_GALLERY.md",
+        "docs/pilot/NATIVE_BUILD_EVIDENCE.md",
+        "docs/pilot/VISUAL_GATE.md"
+      ]
     },
     {
       "id": "LATER-01",
