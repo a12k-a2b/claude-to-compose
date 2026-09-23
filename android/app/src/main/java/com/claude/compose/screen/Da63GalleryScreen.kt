@@ -59,7 +59,7 @@ enum class GalleryTool(val label: String, val asset: String) {
     Contrast("Contrast", "contrast")
 }
 
-/** Native interaction proof for da63; the article below is synthetic demonstration content. */
+/** Native interaction scaffold for da63; the article and history are synthetic demonstration state. */
 @Composable
 fun Da63GalleryScreen(modifier: Modifier = Modifier, proofChromeBackdrop: Color = Color.Transparent) {
     var selectedName by rememberSaveable { mutableStateOf(GalleryTool.Pen.name) }

@@ -35,10 +35,11 @@ test('strict comparison fails visible mismatch, blocks ineffective controls, and
     const mismatched = path.join(directory, 'mismatched.png');
     const deliberatelyBad = path.join(directory, 'bad.png');
     const wrongSize = path.join(directory, 'wrong-size.png');
+    const transparent = path.join(directory, 'transparent.png');
     await Promise.all([
       png(reference, 8, 8, '#ffffff'), png(exact, 8, 8, '#ffffff', 0),
       png(mismatched, 8, 8, '#dddddd'), png(deliberatelyBad, 8, 8, '#ff00ff'),
-      png(wrongSize, 7, 8, '#ffffff')
+      png(wrongSize, 7, 8, '#ffffff'), png(transparent, 8, 8, '#ffffff00')
     ]);
     const regions = [{ id: 'toolbar', x: 0, y: 0, width: 8, height: 8, maxMae: 1 }];
     const base = { reference, regions, negatives: { toolbar: deliberatelyBad } };
@@ -51,6 +52,7 @@ test('strict comparison fails visible mismatch, blocks ineffective controls, and
     const blocked = await compare({ ...base, candidate: exact, negatives: { toolbar: exact } });
     assert.equal(blocked.outcome, 'BLOCKED');
     await assert.rejects(() => compare({ ...base, candidate: wrongSize }), /dimensions differ/);
+    await assert.rejects(() => compare({ ...base, candidate: transparent }), /transparency/);
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }

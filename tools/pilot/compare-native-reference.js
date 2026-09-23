@@ -51,6 +51,9 @@ async function readImage(rawPath) {
   const metadata = await sharp(bytes).metadata();
   if (metadata.format !== 'png' || !metadata.width || !metadata.height) throw new Error(`Expected a PNG: ${file}`);
   const pixels = await sharp(bytes).ensureAlpha().raw().toBuffer();
+  for (let offset = 3; offset < pixels.length; offset += 4) {
+    if (pixels[offset] !== 255) throw new Error(`Screenshot contains transparency; compare opaque rendered pixels: ${file}`);
+  }
   return { file, sha256: crypto.createHash('sha256').update(bytes).digest('hex'), width: metadata.width, height: metadata.height, pixels };
 }
 

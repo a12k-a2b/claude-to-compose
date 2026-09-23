@@ -66,5 +66,6 @@ limit. These post-hoc regions are diagnostic, **not** pre-registered green
 gates. The magenta negative is too coarse to prove sensitivity to a single
 wrong glyph, and the comparator's caller still supplies the crop and limit.
 It now rejects byte-identical reference/candidate input, closing one trivial
-self-comparison false green, but an authenticated native render receipt and a
+self-comparison false green, and rejects transparent screenshots that could
+hide RGB mismatches behind alpha. An authenticated native render receipt and a
 frozen scene/region contract remain required for any future PASS claim.
