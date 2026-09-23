@@ -27,6 +27,19 @@ The previous prototype scored `16.569` on the same crop, so the repair is a
 meaningful improvement but not visual acceptance. A separate article crop
 worsened from `4.561` to `5.049`; it is not folded into the toolbar score.
 
+A subsequent source-SVG import at commit `085b8a5` reduced the same landscape
+top-band MAE from `5.651` to `4.752` (new native PNG SHA-256
+`918275db75c78a6af8a495ca6840b2f8dfeea9d72ea4d640e7ac2c3700b1b1bf`;
+deliberately magenta negative `53.259`). The pill ellipse mask improved from
+`9.969` to `8.258`, while the article crop remained `5.049`. Portrait
+top-band MAE is `5.766`. The 4.0 provisional landscape gate still **FAILS**,
+with a second strict report at
+`/Users/anjan/Documents/SolOS/note-overlay-retrofit-pilot/da63-strict-visual-report-v2.json`,
+and a better toolbar does not imply full-page fidelity. The vector importer
+validated all 11 captured SVGs; its `--check` and four unit tests passed, as
+did the four focused da63 Android tests. None of those checks substitutes for
+a native-device or motion evaluation.
+
 To reproduce after rendering fresh same-sized native and negative PNGs:
 
 ```sh
