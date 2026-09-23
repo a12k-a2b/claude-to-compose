@@ -19,19 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Redo
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.AutoFixOff
-import androidx.compose.material.icons.filled.BorderColor
-import androidx.compose.material.icons.filled.Contrast
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Highlight
-import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.filled.Screenshot
-import androidx.compose.material.icons.filled.ContentCut
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -45,17 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,14 +49,14 @@ import com.claude.compose.theme.AbcRomMono
 private val ink = Color(0xFF1A1A1A)
 private val rule = Color(0xFFE9E9E9)
 
-enum class GalleryTool(val label: String, val icon: ImageVector) {
-    Pen("Pen", Icons.Default.BorderColor),
-    Pencil("Pencil", Icons.Default.Edit),
-    Highlighter("Highlighter", Icons.Default.Highlight),
-    Eraser("Eraser", Icons.Default.AutoFixOff),
-    Lasso("Lasso", Icons.Default.Screenshot),
-    Scissors("Scissors", Icons.Default.ContentCut),
-    Contrast("Contrast", Icons.Default.Contrast)
+enum class GalleryTool(val label: String, val asset: String) {
+    Pen("Pen", "pen"),
+    Pencil("Pencil", "pencil"),
+    Highlighter("Highlighter", "highlighter"),
+    Eraser("Eraser", "eraser"),
+    Lasso("Lasso", "lasso"),
+    Scissors("Scissors", "scissors"),
+    Contrast("Contrast", "contrast")
 }
 
 /** Native interaction proof for da63; the article below is synthetic demonstration content. */
@@ -139,7 +121,7 @@ private fun DocumentPill(modifier: Modifier, open: Boolean, large: Boolean, onCl
     Pill(modifier.height(if (large) 80.dp else 64.dp)) {
         Row(Modifier.fillMaxSize().clickable(onClick = onClick).padding(horizontal = if (large) 24.dp else 14.dp).semantics { contentDescription = "Document options" },
             verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Description, contentDescription = null, tint = ink, modifier = Modifier.size(if (large) 26.dp else 23.dp))
+            Da63SvgGlyph("document", ink)
             Spacer(Modifier.width(if (large) 20.dp else 12.dp))
             Box(Modifier.width(1.dp).height(30.dp).background(rule))
             Spacer(Modifier.width(if (large) 20.dp else 12.dp))
@@ -160,13 +142,13 @@ private fun ToolPill(selected: GalleryTool, onSelect: (GalleryTool) -> Unit, onO
                 IconButton(onClick = { onSelect(tool) }, modifier = Modifier.size(if (compact) 46.dp else 64.dp)
                     .background(if (active) ink else Color.Transparent, CircleShape)
                     .semantics { this.selected = active; contentDescription = "${tool.label} tool" }) {
-                    GalleryGlyph(tool, if (active) Color.White else ink)
+                    Da63SvgGlyph(tool.asset, if (active) Color.White else ink)
                 }
             }
             Divider()
             IconButton(onClick = onOpacity, modifier = Modifier.size(if (compact) 46.dp else 64.dp)
                 .semantics { contentDescription = "Opacity options" }) {
-                GalleryGlyph(GalleryTool.Contrast, ink)
+                Da63SvgGlyph("contrast", ink)
             }
         }
     }
@@ -177,14 +159,14 @@ private fun HistoryPill(canUndo: Boolean, large: Boolean, onUndo: () -> Unit, on
     Pill(if (large) Modifier.width(227.dp).height(80.dp) else Modifier.height(64.dp)) {
         Row(Modifier.padding(horizontal = if (large) 8.dp else 6.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onUndo, enabled = canUndo, modifier = Modifier.size(if (large) 64.dp else 46.dp).semantics { contentDescription = "Undo" }) {
-                Icon(Icons.AutoMirrored.Filled.Undo, null, tint = if (canUndo) ink else Color.Gray)
+                Da63SvgGlyph("undo", if (canUndo) ink else Color.Gray)
             }
             IconButton(onClick = onRedo, enabled = !canUndo, modifier = Modifier.size(if (large) 64.dp else 46.dp).semantics { contentDescription = "Redo" }) {
-                Icon(Icons.AutoMirrored.Filled.Redo, null, tint = if (canUndo) Color.Gray else ink)
+                Da63SvgGlyph("redo", if (canUndo) Color(0xFFB5B5B5) else ink)
             }
             Divider()
             IconButton(onClick = onMenu, modifier = Modifier.size(if (large) 64.dp else 46.dp).semantics { contentDescription = "More options" }) {
-                Icon(Icons.Default.MoreHoriz, null, tint = ink)
+                Da63SvgGlyph("more", ink)
             }
         }
     }
@@ -199,61 +181,60 @@ private fun Pill(modifier: Modifier, content: @Composable () -> Unit) {
 @Composable
 private fun Divider() { Box(Modifier.padding(horizontal = 3.dp).width(1.dp).height(28.dp).background(rule)) }
 
-/** Compact native strokes based on the da63 SVG silhouettes, shared by every toolbar state. */
+/** SVG path data is generated from the captured asset bundle and drawn natively. */
 @Composable
-private fun GalleryGlyph(tool: GalleryTool, tint: Color) {
+private fun Da63SvgGlyph(name: String, tint: Color) {
+    val asset = Da63VectorAssets.all.getValue(name)
     Canvas(Modifier.size(26.dp)) {
-        val k = size.width / 26f
-        fun o(x: Float, y: Float) = Offset(x * k, y * k)
-        val stroke = Stroke(width = 2.1f * k, cap = StrokeCap.Round)
-        when (tool) {
-            GalleryTool.Pen -> {
-                val nib = Path().apply {
-                    moveTo(5*k, 22*k); lineTo(7*k, 12*k); lineTo(15*k, 4*k)
-                    quadraticTo(17*k, 2*k, 19*k, 4*k); lineTo(23*k, 8*k)
-                    quadraticTo(24*k, 10*k, 22*k, 12*k); lineTo(14*k, 20*k)
-                    close()
+        val scale = size.width / asset.viewBox
+        drawIntoCanvas { canvas ->
+            val native = canvas.nativeCanvas
+            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = tint.toArgb() }
+            native.save()
+            native.scale(scale, scale)
+            for (part in asset.parts) {
+                val path = when (part.kind) {
+                    "path" -> androidx.core.graphics.PathParser.createPathFromPathData(part.data)
+                    "rect" -> android.graphics.Path().apply {
+                        val n = part.numbers
+                        addRoundRect(n[0], n[1], n[0] + n[2], n[1] + n[3], n[4], n[4], android.graphics.Path.Direction.CW)
+                    }
+                    "circle" -> android.graphics.Path().apply {
+                        val n = part.numbers
+                        addCircle(n[0], n[1], n[2], android.graphics.Path.Direction.CW)
+                    }
+                    else -> error("Unsupported da63 glyph part: ${part.kind}")
                 }
-                drawPath(nib, tint, style = stroke)
-                drawCircle(tint, 1.3f*k, o(14f, 11f))
-                drawLine(tint, o(6f, 22f), o(14f, 14f), 1.8f*k)
-            }
-            GalleryTool.Pencil -> {
-                val body = Path().apply {
-                    moveTo(4*k, 17*k); lineTo(16*k, 5*k); lineTo(22*k, 11*k)
-                    lineTo(10*k, 23*k); lineTo(4*k, 23*k); close()
+                path.fillType = if (part.evenOdd) android.graphics.Path.FillType.EVEN_ODD else android.graphics.Path.FillType.WINDING
+                val combined = android.graphics.Matrix()
+                for (values in part.matrices) {
+                    val step = android.graphics.Matrix().apply {
+                        setValues(floatArrayOf(values[0], values[2], values[4], values[1], values[3], values[5], 0f, 0f, 1f))
+                    }
+                    combined.postConcat(step)
                 }
-                drawPath(body, tint, style = stroke)
-                drawLine(tint, o(13f, 8f), o(19f, 14f), 1.8f*k)
-            }
-            GalleryTool.Highlighter -> {
-                drawRoundRect(tint, o(5f, 10f), Size(16*k, 7*k), CornerRadius(2*k), style = stroke)
-                drawLine(tint, o(9f, 13.5f), o(17f, 13.5f), 2f*k)
-            }
-            GalleryTool.Eraser -> {
-                val eraser = Path().apply {
-                    moveTo(3*k, 17*k); lineTo(15*k, 4*k); lineTo(23*k, 12*k)
-                    lineTo(12*k, 23*k); lineTo(9*k, 23*k); close()
+                path.transform(combined)
+                if (part.fill) {
+                    paint.style = android.graphics.Paint.Style.FILL
+                    native.drawPath(path, paint)
                 }
-                drawPath(eraser, tint, style = stroke)
-                drawLine(tint, o(9f, 11f), o(17f, 19f), 2f*k)
-                drawLine(tint, o(10f, 23f), o(24f, 23f), 2f*k)
+                if (part.stroke) {
+                    paint.style = android.graphics.Paint.Style.STROKE
+                    paint.strokeWidth = part.strokeWidth
+                    paint.strokeCap = when (part.cap) {
+                        "round" -> android.graphics.Paint.Cap.ROUND
+                        "square" -> android.graphics.Paint.Cap.SQUARE
+                        else -> android.graphics.Paint.Cap.BUTT
+                    }
+                    paint.strokeJoin = when (part.join) {
+                        "round" -> android.graphics.Paint.Join.ROUND
+                        "bevel" -> android.graphics.Paint.Join.BEVEL
+                        else -> android.graphics.Paint.Join.MITER
+                    }
+                    native.drawPath(path, paint)
+                }
             }
-            GalleryTool.Lasso -> {
-                drawOval(tint, o(3f, 4f), Size(20*k, 13*k), style = stroke)
-                val tail = Path().apply { moveTo(9*k, 16*k); quadraticTo(10*k, 21*k, 4*k, 23*k) }
-                drawPath(tail, tint, style = stroke)
-            }
-            GalleryTool.Scissors -> {
-                drawCircle(tint, 3.2f*k, o(6f, 7f), style = stroke)
-                drawCircle(tint, 3.2f*k, o(6f, 19f), style = stroke)
-                drawLine(tint, o(9f, 9f), o(22f, 21f), 2f*k, cap = StrokeCap.Round)
-                drawLine(tint, o(9f, 17f), o(22f, 4f), 2f*k, cap = StrokeCap.Round)
-            }
-            GalleryTool.Contrast -> {
-                drawCircle(tint, 10f*k, o(13f, 13f), style = stroke)
-                drawArc(tint, -90f, 180f, true, o(3f, 3f), Size(20*k, 20*k))
-            }
+            native.restore()
         }
     }
 }
